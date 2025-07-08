@@ -2,17 +2,24 @@ package src
 
 import (
 	"fmt"
+	"log"
 	redis "skycrypt/src/db"
 	"skycrypt/src/handlers"
 	"skycrypt/src/routes"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 )
 
 func SetupApplication() error {
 	err := redis.InitRedis("localhost:6379", "", 0)
 	if err != nil {
 		return fmt.Errorf("failed to connect to Redis: %v", err)
+	}
+
+	err = godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
 	}
 
 	return nil

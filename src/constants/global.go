@@ -26,8 +26,6 @@ var InvalidProfileIdError = fiber.Map{
 	"message": "Please provide a valid profile ID",
 }
 
-const HYPIXEL_API_KEY = ""
-
 var FAIRY_SOULS = map[string]int{
 	"normal":   266,
 	"stranded": 4,
