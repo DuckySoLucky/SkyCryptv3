@@ -1,0 +1,34 @@
+package constants
+
+import "github.com/gofiber/fiber/v2"
+
+var InvalidUserError = fiber.Map{
+	"error":   "User not found",
+	"status":  "error",
+	"message": "Please provide a valid username",
+}
+
+var FoundNoProfilesError = fiber.Map{
+	"error":   "No profiles found",
+	"status":  "error",
+	"message": "This user has no profiles",
+}
+
+var FoundNoPlayerError = fiber.Map{
+	"error":   "No player found",
+	"status":  "error",
+	"message": "This user has no player data",
+}
+
+var InvalidProfileIdError = fiber.Map{
+	"error":   "Invalid profile ID",
+	"status":  "error",
+	"message": "Please provide a valid profile ID",
+}
+
+const HYPIXEL_API_KEY = ""
+
+var FAIRY_SOULS = map[string]int{
+	"normal":   266,
+	"stranded": 4,
+}
