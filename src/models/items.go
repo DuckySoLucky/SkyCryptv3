@@ -31,6 +31,7 @@ type ExtraAttributes struct {
 	FarmedCultivating *int           `nbt:"farmed_cultivating" json:"farmed_cultivating,omitempty"`
 	ExpertiseKills    *int           `nbt:"expertise_kills" json:"expertise_kills,omitempty"`
 	CompactBlocks     *int           `nbt:"compact_blocks" json:"compact_blocks,omitempty"`
+	Modifier          string         `nbt:"modifier" json:"modifier,omitempty"`
 }
 
 type Display struct {
@@ -63,6 +64,7 @@ type DecodedInventory struct {
 }
 
 type ProcessedItem struct {
+	Item
 	Texture        string          `json:"texture_path,omitempty"`
 	DisplayName    string          `json:"display_name,omitempty"`
 	Lore           []string        `json:"lore,omitempty"`
@@ -70,4 +72,5 @@ type ProcessedItem struct {
 	Recombobulated bool            `json:"recombobulated,omitempty"`
 	Categories     []string        `json:"categories,omitempty"`
 	ContainsItems  []ProcessedItem `json:"containsItems,omitempty"`
+	Source         string          `json:"source,omitempty"`
 }

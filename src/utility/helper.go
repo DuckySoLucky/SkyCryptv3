@@ -17,6 +17,12 @@ func GetRawLore(text string) string {
 	return colorCodeRegex.ReplaceAllString(text, "")
 }
 
+var nonAsciiRegex = regexp.MustCompile(`[^\x00-\x7F]`)
+
+func RemoveNonAscii(text string) string {
+	return nonAsciiRegex.ReplaceAllString(text, "")
+}
+
 func Contains(slice []string, item string) bool {
 	for _, s := range slice {
 		if s == item {
@@ -64,14 +70,14 @@ func ParseInt(n string) (int, error) {
 
 func RarityNameToInt(rarity string) int {
 	for i, r := range constants.RARITIES {
-		if strings.ToUpper(r) == rarity {
+		if strings.EqualFold(r, rarity) {
 			return i
 		}
 	}
 	return 0
 }
 
-func FormatNumber(n interface{}) string {
+func FormatNumber(n any) string {
 	var value float64
 	switch v := n.(type) {
 	case int:
@@ -115,6 +121,7 @@ func FormatNumber(n interface{}) string {
 	}
 	return strconv.FormatFloat(result, 'f', 1, 64) + suffix
 }
+
 func ParseTimestamp(timestamp string) int {
 	t, err := time.Parse("1/2/06 3:04 PM", timestamp)
 	if err != nil {
@@ -122,4 +129,23 @@ func ParseTimestamp(timestamp string) int {
 	}
 
 	return int(t.Unix())
+}
+
+func Every[T any](slice []T, predicate func(T) bool) bool {
+	for _, item := range slice {
+		if !predicate(item) {
+			return false
+		}
+	}
+	return true
+}
+
+func IndexOf(slice []string, item string) int {
+	for i, v := range slice {
+		if v == item {
+			return i
+		}
+	}
+
+	return -1
 }

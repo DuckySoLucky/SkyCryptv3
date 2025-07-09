@@ -7,24 +7,26 @@ import (
 	"skycrypt/src/utility"
 )
 
-func ProcessItems(items *[]models.Item) []models.ProcessedItem {
+func ProcessItems(items *[]models.Item, source string) []models.ProcessedItem {
 	var processedItems []models.ProcessedItem
 	for _, item := range *items {
-		processedItem := ProcessItem(&item)
+		processedItem := ProcessItem(&item, source)
 		processedItems = append(processedItems, processedItem)
 	}
 
 	return processedItems
 }
 
-func ProcessItem(item *models.Item) models.ProcessedItem {
+func ProcessItem(item *models.Item, source string) models.ProcessedItem {
 	if item.Tag == nil {
 		return models.ProcessedItem{}
 	}
 
 	processedItem := models.ProcessedItem{
+		Item:        *item,
 		DisplayName: item.Tag.Display.Name,
 		Lore:        item.Tag.Display.Lore,
+		Source:      source,
 	}
 
 	// POTIONS
@@ -109,7 +111,7 @@ func ProcessItem(item *models.Item) models.ProcessedItem {
 	}
 
 	if item.ContainsItems != nil {
-		processedItem.ContainsItems = ProcessItems(&item.ContainsItems)
+		processedItem.ContainsItems = ProcessItems(&item.ContainsItems, source)
 	}
 
 	return processedItem

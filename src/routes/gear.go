@@ -44,12 +44,22 @@ func GearHandler(c *fiber.Ctx) error {
 			continue
 		}
 
-		processedItems[inventoryId] = stats.ProcessItems(&inventoryData)
+		processedItems[inventoryId] = stats.ProcessItems(&inventoryData, inventoryId)
+	}
+
+	allItems := make([]models.ProcessedItem, 0)
+	for _, inventoryId := range inventoryKeys {
+		if processedItems[inventoryId] != nil {
+			allItems = append(allItems, processedItems[inventoryId]...)
+		}
 	}
 
 	fmt.Printf("Returning /api/gear/%s in %s\n", profileId, time.Since(timeNow))
 
 	return c.JSON(fiber.Map{
-		"items": processedItems,
+		"armor":     stats.GetArmor(processedItems["armor"]),
+		"equipment": stats.GetEquipment(processedItems["equipment"]),
+		"wardrobe":  stats.GetWardrobe(processedItems["wardrobe"]),
+		"weapons":   stats.GetWeapons(allItems),
 	})
 }

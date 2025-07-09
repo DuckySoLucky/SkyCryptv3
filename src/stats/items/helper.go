@@ -15,12 +15,12 @@ var rarityPattern = func() *regexp.Regexp {
 		if rarity == "very_special" {
 			upperRarities[i] = "VERY\\s+SPECIAL"
 		} else {
-			upperRarities[i] = strings.ToUpper(rarity)
+			upperRarities[i] = strings.ToUpper(strings.ReplaceAll(rarity, "_", " "))
 		}
 	}
 
 	raritiesStr := strings.Join(upperRarities, "|")
-	pattern := `(` + raritiesStr + `)\s+([A-Z\s]+?)$`
+	pattern := `^(?:a )?(?:SHINY )?(?:(` + raritiesStr + `) ?)?(?:DUNGEON )?([A-Z ]+)?(?:a)?$`
 	return regexp.MustCompile(pattern)
 }()
 
@@ -30,16 +30,26 @@ type itemDataType struct {
 }
 
 func ParseItemTypeFromLore(lore []string, item models.Item) itemDataType {
-	for i := len(lore) - 1; i >= 0; i-- {
-		// line := utility.GetRawLore(lore[i])
-		match := rarityPattern.FindStringSubmatch(lore[i])
+	loreCopy := make([]string, len(lore))
+	copy(loreCopy, lore)
 
-		if len(match) >= 3 {
-			rarity := strings.ToLower(strings.ReplaceAll(match[1], " ", "_"))
-			itemType := strings.TrimSpace(strings.ToLower(match[2]))
+	for i, j := 0, len(loreCopy)-1; i < j; i, j = i+1, j-1 {
+		loreCopy[i], loreCopy[j] = loreCopy[j], loreCopy[i]
+	}
+
+	for _, line := range loreCopy {
+		rawLine := utility.GetRawLore(line)
+		match := rarityPattern.FindStringSubmatch(rawLine)
+
+		if len(match) > 0 {
+			var rarity = "common"
+			if len(match) > 1 && match[1] != "" {
+				rarity = strings.ToLower(strings.ReplaceAll(match[1], " ", "_"))
+			}
 
 			categories := []string{}
-			if itemType != "" {
+			if len(match) > 2 && match[2] != "" {
+				itemType := strings.TrimSpace(strings.ToLower(match[2]))
 				categories = getCategories(itemType, item)
 			}
 
@@ -264,4 +274,12 @@ func AddLevelableEnchantmentsToLore(amount int, constant constants.EnchantmentLa
 		*itemLore = append(*itemLore, fmt.Sprintf("§8%s to tier up!", utility.FormatNumber(toNextLevel)))
 	}
 
+}
+
+func GetId(item models.ProcessedItem) string {
+	if item.Tag == nil || item.Tag.ExtraAttributes.ID == "" {
+		return ""
+	}
+
+	return item.Tag.ExtraAttributes.ID
 }

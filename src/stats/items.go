@@ -87,22 +87,6 @@ func GetItems(useProfile *models.Member, profileId string) (map[string][]models.
 			output[inventoryId] = items
 		}
 
-		/*
-					      if (key.startsWith("backpack_") && !key.includes("icon")) {
-			        const backpackIndex = key.split("_").pop();
-			        const iconKey = `backpack_icon_${backpackIndex}`;
-			        const backpackIcon = backpackIconMap.get(iconKey)[0];
-
-			        backpackIcon.extra = { source: `backpack_icon_${backpackIndex}` };
-			        allItems.push(backpackIcon);
-
-			        if (backpackIcon) {
-			          output.backpack.push({
-			            ...backpackIcon,
-			            containsItems: await processItems(value, "backpack", packs)
-			          });
-			        }
-		*/
 		if strings.HasPrefix(inventoryId, "backpack_") && !strings.Contains(inventoryId, "icon") {
 			if output["backpack"] == nil {
 				output["backpack"] = []models.Item{}
