@@ -1,9 +1,20 @@
 package utility
 
-import "regexp"
+import (
+	"regexp"
+	"skycrypt/src/constants"
+	"strconv"
+	"strings"
+	"time"
+
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
+)
+
+var colorCodeRegex = regexp.MustCompile("§[0-9a-fk-or]")
 
 func GetRawLore(text string) string {
-	return regexp.MustCompile("§[0-9a-fk-or]").ReplaceAllString(text, "")
+	return colorCodeRegex.ReplaceAllString(text, "")
 }
 
 func Contains(slice []string, item string) bool {
@@ -37,4 +48,78 @@ func Max(a, b int) int {
 		return a
 	}
 	return b
+}
+
+func TitleCase(s string) string {
+	return cases.Title(language.English).String(s)
+}
+
+func ParseInt(n string) (int, error) {
+	i, err := strconv.Atoi(n)
+	if err != nil {
+		return 0, err
+	}
+	return i, nil
+}
+
+func RarityNameToInt(rarity string) int {
+	for i, r := range constants.RARITIES {
+		if strings.ToUpper(r) == rarity {
+			return i
+		}
+	}
+	return 0
+}
+
+func FormatNumber(n interface{}) string {
+	var value float64
+	switch v := n.(type) {
+	case int:
+		value = float64(v)
+	case float64:
+		value = v
+	case float32:
+		value = float64(v)
+	default:
+		return "0"
+	}
+
+	abs := value
+	if abs < 0 {
+		abs = -abs
+	}
+
+	var suffix string
+	var divisor float64
+
+	switch {
+	case abs >= 1e9:
+		suffix = "B"
+		divisor = 1e9
+	case abs >= 1e6:
+		suffix = "M"
+		divisor = 1e6
+	case abs >= 1e3:
+		suffix = "K"
+		divisor = 1e3
+	default:
+		if value == float64(int(value)) {
+			return strconv.Itoa(int(value))
+		}
+		return strconv.FormatFloat(value, 'f', -1, 64)
+	}
+
+	result := value / divisor
+	if result == float64(int(result)) {
+		return strconv.Itoa(int(result)) + suffix
+	}
+	return strconv.FormatFloat(result, 'f', 1, 64) + suffix
+}
+func ParseTimestamp(timestamp string) int {
+	t, err := time.Parse("1/2/06 3:04 PM", timestamp)
+	if err != nil {
+		return 0
+	}
+
+	return int(t.Unix())
 }

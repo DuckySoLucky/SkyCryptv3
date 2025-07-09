@@ -24,6 +24,8 @@ type Member struct {
 	Leveling       *leveling       `json:"leveling,omitempty"`
 	Currencies     *currencies     `json:"currencies,omitempty"`
 	FairySouls     *fairySouls     `json:"fairy_soul,omitempty"`
+	Inventory      *inventory      `json:"inventory,omitempty"`
+	Rift           *rift           `json:"rift,omitempty"`
 }
 
 type coopInvitation struct {
@@ -87,4 +89,40 @@ type banking struct {
 
 type fairySouls struct {
 	TotalCollected int `json:"total_collected,omitempty"`
+}
+
+type inventory struct {
+	Inventory     encodedInventory            `json:"inv_contents"`
+	Enderchest    encodedInventory            `json:"ender_chest_contents"`
+	BackpackIcons map[string]encodedInventory `json:"backpack_icons"`
+	Armor         encodedInventory            `json:"inv_armor"`
+	Equipment     encodedInventory            `json:"equipment_contents"`
+	PersonalVault encodedInventory            `json:"personal_vault_contents"`
+	Backpack      map[string]encodedInventory `json:"backpack_contents"`
+	Wardrobe      encodedInventory            `json:"wardrobe_contents"`
+	BagContents   bagContents                 `json:"bag_contents"`
+}
+
+type encodedInventory struct {
+	Type int    `json:"type"`
+	Data string `json:"data"`
+}
+
+type bagContents struct {
+	PotionBag   encodedInventory `json:"potion_bag,omitempty"`
+	TalismanBag encodedInventory `json:"talisman_bag,omitempty"`
+	FishingBag  encodedInventory `json:"fishing_bag,omitempty"`
+	SacksBag    encodedInventory `json:"sacks_bag,omitempty"`
+	Quiver      encodedInventory `json:"quiver,omitempty"`
+}
+
+type rift struct {
+	Inventory riftInventory `json:"inventory,omitempty"`
+}
+
+type riftInventory struct {
+	Inventory  encodedInventory `json:"inv_contents"`
+	Armor      encodedInventory `json:"inv_armor"`
+	Enderchest encodedInventory `json:"ender_chest_contents"`
+	Equipment  encodedInventory `json:"equipment_contents"`
 }

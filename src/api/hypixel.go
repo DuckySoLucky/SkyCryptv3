@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -9,6 +8,7 @@ import (
 	redis "skycrypt/src/db"
 	"skycrypt/src/models"
 	"skycrypt/src/utility"
+	jsoniter "github.com/json-iterator/go"
 )
 
 var HYPIXEL_API_KEY = os.Getenv("HYPIXEL_API_KEY")
@@ -28,6 +28,7 @@ func GetPlayer(uuid string) (*models.Player, error) {
 
 	cache, err := redis.Get(fmt.Sprintf(`player:%s`, uuid))
 	if err == nil && cache != "" {
+		var json = jsoniter.ConfigCompatibleWithStandardLibrary
 		err = json.Unmarshal([]byte(cache), &rawReponse)
 		if err == nil {
 			return &rawReponse.Player, nil
@@ -46,6 +47,7 @@ func GetPlayer(uuid string) (*models.Player, error) {
 		return &response, fmt.Errorf("error reading response: %v", err)
 	}
 
+	var json = jsoniter.ConfigCompatibleWithStandardLibrary
 	err = json.Unmarshal(body, &rawReponse)
 	if err != nil {
 		return &rawReponse.Player, fmt.Errorf("error parsing JSON: %v", err)
@@ -68,6 +70,7 @@ func GetProfiles(uuid string) (*models.HypixelProfilesResponse, error) {
 
 	cache, err := redis.Get(fmt.Sprintf(`profiles:%s`, uuid))
 	if err == nil && cache != "" {
+		var json = jsoniter.ConfigCompatibleWithStandardLibrary
 		err = json.Unmarshal([]byte(cache), &response)
 		if err == nil {
 			return &response, nil
@@ -85,6 +88,7 @@ func GetProfiles(uuid string) (*models.HypixelProfilesResponse, error) {
 		return &response, fmt.Errorf("error reading response: %v", err)
 	}
 
+	var json = jsoniter.ConfigCompatibleWithStandardLibrary
 	err = json.Unmarshal(body, &response)
 	if err != nil {
 		return &response, fmt.Errorf("error parsing JSON: %v", err)
@@ -131,6 +135,7 @@ func GetMuseum(profileId string) (*map[string]models.Museum, error) {
 
 	cache, err := redis.Get(fmt.Sprintf(`museum:%s`, profileId))
 	if err == nil && cache != "" {
+		var json = jsoniter.ConfigCompatibleWithStandardLibrary
 		err = json.Unmarshal([]byte(cache), &rawReponse)
 		if err == nil {
 			return &rawReponse.Members, nil
@@ -148,6 +153,7 @@ func GetMuseum(profileId string) (*map[string]models.Museum, error) {
 		return nil, fmt.Errorf("error reading response: %v", err)
 	}
 
+	var json = jsoniter.ConfigCompatibleWithStandardLibrary
 	err = json.Unmarshal(body, &rawReponse)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing JSON: %v", err)

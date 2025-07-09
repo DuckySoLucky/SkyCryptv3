@@ -1,6 +1,6 @@
 package constants
 
-var DefaultSkillCaps = map[string]int{
+var DEFAULT_SKILL_CAPS = map[string]int{
 	"farming":       50,
 	"mining":        60,
 	"combat":        60,
@@ -15,14 +15,14 @@ var DefaultSkillCaps = map[string]int{
 	"dungeoneering": 50,
 }
 
-const NonRunecraftingLevelCap = 3
+const NON_RUNECRAFTING_LEVEL_CAP = 3
 
 var MaxedSkillCaps = map[string]int{
 	"farming": 60,
 	"taming":  60,
 }
 
-var RunecraftingXP = map[int]int{
+var RUNECRAFTING_XP = map[int]int{
 	1: 50, 2: 100, 3: 125, 4: 160, 5: 200,
 	6: 250, 7: 315, 8: 400, 9: 500, 10: 625,
 	11: 785, 12: 1000, 13: 1250, 14: 1600, 15: 2000,
@@ -30,7 +30,7 @@ var RunecraftingXP = map[int]int{
 	21: 7800, 22: 9800, 23: 12200, 24: 15300, 25: 19050,
 }
 
-var DungeoneeringXP = map[int]int{
+var DUNGEONEERING_XP = map[int]int{
 	1: 50, 2: 75, 3: 110, 4: 160, 5: 230,
 	6: 330, 7: 470, 8: 670, 9: 950, 10: 1340,
 	11: 1890, 12: 2665, 13: 3760, 14: 5260, 15: 7380,
@@ -44,7 +44,7 @@ var DungeoneeringXP = map[int]int{
 	51: 200000000,
 }
 
-var SocialXP = map[int]int{
+var SOCIAL_XP = map[int]int{
 	1: 50, 2: 100, 3: 150, 4: 250, 5: 500,
 	6: 750, 7: 1000, 8: 1250, 9: 1500, 10: 2000,
 	11: 2500, 12: 3000, 13: 3750, 14: 4500, 15: 6000,
@@ -52,7 +52,7 @@ var SocialXP = map[int]int{
 	21: 25000, 22: 30000, 23: 35000, 24: 40000, 25: 50000,
 }
 
-var DefaultLevelingXP = map[int]int{
+var DEFAULT_LEVELLING_XP = map[int]int{
 	1: 50, 2: 125, 3: 200, 4: 300, 5: 500,
 	6: 750, 7: 1000, 8: 1500, 9: 2000, 10: 3500,
 	11: 5000, 12: 7500, 13: 10000, 14: 15000, 15: 20000,
@@ -67,20 +67,20 @@ var DefaultLevelingXP = map[int]int{
 	56: 5800000, 57: 6100000, 58: 6400000, 59: 6700000, 60: 7000000,
 }
 
-var HotmXP = map[int]int{
+var HOTM_XP = map[int]int{
 	1: 0, 2: 3000, 3: 9000, 4: 25000, 5: 60000,
 	6: 100000, 7: 150000, 8: 210000, 9: 290000, 10: 400000,
 }
 
-var SkyblockXP = map[int]int{
+var SKYBLOCK_XP = map[int]int{
 	1: 100,
 }
 
-var CosmeticSkills = []string{"runecrafting", "social"}
+var COSMETIC_SKILLS = []string{"runecrafting", "social"}
 
-var Infinite = []string{"dungeoneering", "skyblock_level"}
+var INFINITE = []string{"dungeoneering", "skyblock_level"}
 
-var SkillIcons = map[string]string{
+var SKILL_ICONS = map[string]string{
 	"skyblock_level": "/api/head/2e2cc42015e6678f8fd49ccc01fbf787f1ba2c32bcf559a015332fc5db50",
 	"farming":        "/api/item/GOLDEN_HOE",
 	"combat":         "/api/item/STONE_SWORD",

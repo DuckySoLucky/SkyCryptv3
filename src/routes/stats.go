@@ -104,6 +104,8 @@ func StatsHandler(c *fiber.Ctx) error {
 	museum := (*profileMuseum)[mowojang.UUID]
 	userProfile := &userProfileValue
 
+	stats.GetItems(userProfile, profile.ProfileID)
+
 	fmt.Printf("Returning /api/stats/%s in %s\n", uuid, time.Since(timeNow))
 
 	return c.JSON(fiber.Map{

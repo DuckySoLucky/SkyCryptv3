@@ -33,7 +33,7 @@ func GetSkills(userProfile *models.Member, profile *models.Profile, player *mode
 			capValue := skillLevelCaps[skill]
 			extra := &stats.ExtraSkillData{
 				Type:    skill,
-				Texture: constants.SkillIcons[skill],
+				Texture: constants.SKILL_ICONS[skill],
 				Cap:     &capValue,
 			}
 
@@ -64,7 +64,7 @@ func GetSkills(userProfile *models.Member, profile *models.Profile, player *mode
 	var skillCount int
 
 	for skillName, skillData := range output.Skills {
-		if utility.Contains(constants.CosmeticSkills, skillName) {
+		if utility.Contains(constants.COSMETIC_SKILLS, skillName) {
 			continue
 		}
 

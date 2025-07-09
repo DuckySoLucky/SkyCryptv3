@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	redis "skycrypt/src/db"
@@ -10,6 +9,8 @@ import (
 
 	"net/http"
 	"strings"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 func GetUUID(username string) (string, error) {
@@ -31,6 +32,7 @@ func GetUUID(username string) (string, error) {
 		return post.UUID, fmt.Errorf("error reading response: %v", err)
 	}
 
+	var json = jsoniter.ConfigCompatibleWithStandardLibrary
 	err = json.Unmarshal(body, &post)
 	if err != nil {
 		return post.UUID, fmt.Errorf("error parsing JSON: %v", err)
@@ -61,6 +63,7 @@ func GetUsername(uuid string) (string, error) {
 		return post.Name, fmt.Errorf("error reading response: %v", err)
 	}
 
+	var json = jsoniter.ConfigCompatibleWithStandardLibrary
 	err = json.Unmarshal(body, &post)
 	if err != nil {
 		return post.Name, fmt.Errorf("error parsing JSON: %v", err)
@@ -84,6 +87,7 @@ func ResolvePlayer(uuid string) (*models.MowojangReponse, error) {
 
 	cache, err := redis.Get(fmt.Sprintf("mowojang:%s", uuid))
 	if err == nil && cache != "" {
+		var json = jsoniter.ConfigCompatibleWithStandardLibrary
 		err = json.Unmarshal([]byte(cache), &post)
 		if err == nil {
 			return &post, nil
@@ -101,6 +105,7 @@ func ResolvePlayer(uuid string) (*models.MowojangReponse, error) {
 		return &post, fmt.Errorf("error reading response: %v", err)
 	}
 
+	var json = jsoniter.ConfigCompatibleWithStandardLibrary
 	err = json.Unmarshal(body, &post)
 	if err != nil {
 		return &post, fmt.Errorf("error parsing JSON: %v", err)

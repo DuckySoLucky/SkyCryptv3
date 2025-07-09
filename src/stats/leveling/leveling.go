@@ -8,12 +8,12 @@ import (
 )
 
 var skillTables = map[string]map[int]int{
-	"default":        constants.DefaultLevelingXP,
-	"runecrafting":   constants.RunecraftingXP,
-	"social":         constants.SocialXP,
-	"dungeoneering":  constants.DungeoneeringXP,
-	"hotm":           constants.HotmXP,
-	"skyblock_level": constants.SkyblockXP,
+	"default":        constants.DEFAULT_LEVELLING_XP,
+	"runecrafting":   constants.RUNECRAFTING_XP,
+	"social":         constants.SOCIAL_XP,
+	"dungeoneering":  constants.DUNGEONEERING_XP,
+	"hotm":           constants.HOTM_XP,
+	"skyblock_level": constants.SKYBLOCK_XP,
 }
 
 type ExtraSkillData struct {
@@ -27,7 +27,7 @@ func getXpTable(skillType string) map[int]int {
 		return table
 	}
 
-	return constants.DefaultLevelingXP
+	return constants.DEFAULT_LEVELLING_XP
 }
 
 func GetLevelByXp(xp int, extra *ExtraSkillData) *models.Skill {
@@ -44,7 +44,7 @@ func GetLevelByXp(xp int, extra *ExtraSkillData) *models.Skill {
 	}
 
 	// the level that this player is capped at
-	levelCap := constants.DefaultSkillCaps[extra.Type]
+	levelCap := constants.DEFAULT_SKILL_CAPS[extra.Type]
 	if extra.Cap != nil && *extra.Cap != 0 {
 		levelCap = *extra.Cap
 	}
@@ -76,7 +76,7 @@ func GetLevelByXp(xp int, extra *ExtraSkillData) *models.Skill {
 	}
 
 	// Whether the skill has infinite leveling
-	isInfiniteLevelable := utility.Contains(constants.Infinite, extra.Type)
+	isInfiniteLevelable := utility.Contains(constants.INFINITE, extra.Type)
 
 	// adds support for infinite leveling
 	if isInfiniteLevelable {
@@ -138,9 +138,9 @@ func GetLevelByXp(xp int, extra *ExtraSkillData) *models.Skill {
 		maxed = false
 	}
 
-	texture := constants.SkillIcons[extra.Type]
+	texture := constants.SKILL_ICONS[extra.Type]
 	if extra.Texture != "" {
-		if textureIcon, exists := constants.SkillIcons[extra.Texture]; exists {
+		if textureIcon, exists := constants.SKILL_ICONS[extra.Texture]; exists {
 			texture = textureIcon
 		}
 	}
@@ -208,7 +208,7 @@ func GetXpByLevel(level int, extra *ExtraSkillData) models.Skill {
 	}
 
 	// the level that this player is capped at
-	levelCap := constants.DefaultSkillCaps[extra.Type]
+	levelCap := constants.DEFAULT_SKILL_CAPS[extra.Type]
 	if extra.Cap != nil {
 		levelCap = *extra.Cap
 	}
@@ -240,7 +240,7 @@ func GetXpByLevel(level int, extra *ExtraSkillData) models.Skill {
 	}
 
 	// Whether the skill has infinite leveling
-	isInfiniteLevelable := utility.Contains(constants.Infinite, extra.Type)
+	isInfiniteLevelable := utility.Contains(constants.INFINITE, extra.Type)
 
 	// adds support for infinite leveling
 	if isInfiniteLevelable {
@@ -293,9 +293,9 @@ func GetXpByLevel(level int, extra *ExtraSkillData) models.Skill {
 	// whether the skill is maxed or not
 	maxed := level >= maxLevel
 
-	texture := constants.SkillIcons[extra.Type]
+	texture := constants.SKILL_ICONS[extra.Type]
 	if extra.Texture != "" {
-		if textureIcon, exists := constants.SkillIcons[extra.Texture]; exists {
+		if textureIcon, exists := constants.SKILL_ICONS[extra.Texture]; exists {
 			texture = textureIcon
 		}
 	}
