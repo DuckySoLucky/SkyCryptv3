@@ -62,7 +62,6 @@ func GetArmor(armor []models.ProcessedItem) armorResult {
 		var outputName string
 		var reforgeName string
 
-		// Getting armor_name
 		var armorNames = make([]string, len(armor))
 		for i := range armor {
 			name := ""

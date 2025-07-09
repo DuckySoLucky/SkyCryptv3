@@ -19,7 +19,6 @@ type RedisClient struct {
 }
 
 func InitRedis(addr string, password string, db int) error {
-	// Store connection parameters for potential re-initialization
 	redisAddr = addr
 	redisPassword = password
 	redisDB = db
@@ -51,7 +50,6 @@ func (r *RedisClient) Set(key string, value interface{}, expirationSeconds int) 
 
 func Get(key string) (string, error) {
 	if redisClient == nil {
-		// Try to re-initialize if connection was lost
 		if redisAddr != "" {
 			err := InitRedis(redisAddr, redisPassword, redisDB)
 			if err != nil {
@@ -65,7 +63,7 @@ func Get(key string) (string, error) {
 	val, err := redisClient.Get(ctx, key).Result()
 	if err != nil {
 		if err == redis.Nil {
-			return "", nil // Key does not exist
+			return "", nil
 		}
 		return "", fmt.Errorf("could not get value from Redis: %v", err)
 	}
@@ -89,7 +87,6 @@ func NewRedisClient(addr string, password string, db int) *RedisClient {
 
 func Set(key string, value interface{}, expirationSeconds int) error {
 	if redisClient == nil {
-		// Try to re-initialize if connection was lost
 		if redisAddr != "" {
 			err := InitRedis(redisAddr, redisPassword, redisDB)
 			if err != nil {
@@ -112,7 +109,7 @@ func (r *RedisClient) Get(key string) (string, error) {
 	val, err := r.client.Get(ctx, key).Result()
 	if err != nil {
 		if err == redis.Nil {
-			return "", nil // Key does not exist
+			return "", nil
 		}
 		return "", fmt.Errorf("could not get value from Redis: %v", err)
 	}

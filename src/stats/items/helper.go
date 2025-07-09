@@ -174,7 +174,6 @@ func getGemstoneKeys() []string {
 }
 
 func extractGemTier(value any) string {
-	// Handle case where value might be a map with quality field
 	if valueMap, ok := value.(map[string]any); ok {
 		if quality, exists := valueMap["quality"]; exists {
 			if qualityStr, ok := quality.(string); ok {
@@ -183,7 +182,6 @@ func extractGemTier(value any) string {
 		}
 	}
 
-	// Handle case where value is directly a string
 	if valueStr, ok := value.(string); ok {
 		return valueStr
 	}
@@ -200,10 +198,7 @@ func generateGemLore(gemType, tier, rarity string) string {
 		return "§c§oMISSING GEMSTONE DATA§r"
 	}
 
-	// Gem color
 	color := "§" + gemstoneData.Color
-
-	// Gem stats
 	if rarity != "" {
 		gemstoneStats, statsExist := gemstoneData.Stats[strings.ToUpper(tier)]
 		if statsExist {

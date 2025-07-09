@@ -41,6 +41,5 @@ func SetupRoutes(app *fiber.App) {
 
 	app.Get("/api/gear/:uuid/:profileId", routes.GearHandler)
 
-	// Root endpoint
 	app.Get("/", handlers.HelloHandler)
 }

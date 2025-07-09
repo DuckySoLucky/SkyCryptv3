@@ -28,7 +28,6 @@ func main() {
 		Level: compress.LevelBestSpeed, // Fastest compression
 	}))
 
-	// Initialize Redis after fork - each process gets its own connection
 	err := src.SetupApplication()
 	if err != nil {
 		panic(err)
