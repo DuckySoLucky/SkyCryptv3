@@ -3,6 +3,7 @@ package src
 import (
 	"fmt"
 	"log"
+	notenoughupdates "skycrypt/src/NotEnoughUpdates"
 	redis "skycrypt/src/db"
 	"skycrypt/src/handlers"
 	"skycrypt/src/routes"
@@ -19,7 +20,15 @@ func SetupApplication() error {
 
 	err = godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatal("error loading .env file")
+	}
+
+	if err := notenoughupdates.InitializeNEURepository(); err != nil {
+		return fmt.Errorf("error initializing repository: %v", err)
+	}
+
+	if err := notenoughupdates.UpdateNEURepository(); err != nil {
+		return fmt.Errorf("error updating repository: %v", err)
 	}
 
 	return nil
