@@ -70,19 +70,24 @@ func GetWeapons(allItems []models.ProcessedItem) weaponsResult {
 	weapons := GetCategory(allItems, "weapon")
 
 	countsOfID := make(map[string]int)
-
-	for i := range weapons {
-		weapon := &weapons[i]
-		id := GetId(*weapon)
-
+	for _, weapon := range weapons {
+		id := GetId(weapon)
 		countsOfID[id]++
+	}
 
-		if countsOfID[id] > 2 {
-			weapons = append(weapons[:i], weapons[i+1:]...)
-			i--
-			continue
+	var filteredWeapons []models.ProcessedItem
+	itemCounts := make(map[string]int)
+
+	for _, weapon := range weapons {
+		id := GetId(weapon)
+		itemCounts[id]++
+
+		if itemCounts[id] <= 2 {
+			filteredWeapons = append(filteredWeapons, weapon)
 		}
 	}
+
+	weapons = filteredWeapons
 
 	swords := GetCategory(allItems, "sword")
 	var highestPriorityWeapon *models.ProcessedItem
