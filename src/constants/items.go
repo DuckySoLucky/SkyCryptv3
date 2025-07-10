@@ -1,5 +1,7 @@
 package constants
 
+import "skycrypt/src/models"
+
 var POTION_COLORS = map[int]string{
 	0:  "375cc4", // None
 	1:  "cb5ba9", // Regeneration
@@ -353,3 +355,5 @@ var ENCHANTMENT_LADDERS = map[string]EnchantmentLadder{
 		Ladder: []int{100, 500, 1500, 5000, 15000, 50000, 150000, 500000, 1000000},
 	},
 }
+
+var ITEMS = map[string]models.ProcessedHypixelItem{}

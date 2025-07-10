@@ -3,12 +3,18 @@ package src
 import (
 	"fmt"
 	"log"
+	"os"
 	notenoughupdates "skycrypt/src/NotEnoughUpdates"
+	"skycrypt/src/api"
 	redis "skycrypt/src/db"
 	"skycrypt/src/handlers"
 	"skycrypt/src/routes"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cache"
+	"github.com/gofiber/fiber/v2/middleware/compress"
+	"github.com/gofiber/fiber/v2/middleware/etag"
 	"github.com/joho/godotenv"
 )
 
@@ -21,6 +27,10 @@ func SetupApplication() error {
 	err = godotenv.Load()
 	if err != nil {
 		log.Fatal("error loading .env file")
+	}
+
+	if err := api.LoadSkyBlockItems(); err != nil {
+		return fmt.Errorf("error loading SkyBlock items: %v", err)
 	}
 
 	if err := notenoughupdates.InitializeNEURepository(); err != nil {
@@ -40,20 +50,36 @@ func SetupApplication() error {
 }
 
 func SetupRoutes(app *fiber.App) {
+	app.Use(compress.New(compress.Config{
+		Level: compress.LevelBestSpeed,
+	}))
 
-	app.Get("/api/uuid/:username", routes.UUIDHandler)
-	app.Get("/api/username/:uuid", routes.UsernameHandler)
+	if os.Getenv("DEV") == "false" {
+		fmt.Println("[ENVIROMENT] Running in production mode")
+		app.Use(etag.New())
+		app.Use("/api", cache.New(cache.Config{
+			Expiration:   5 * time.Minute,
+			CacheControl: true,
+		}))
+	}
 
-	app.Get("/api/profiles/:uuid", routes.ProfilesHandler)
-	app.Get("/api/player/:uuid", routes.PlayerHandler)
-	app.Get("/api/museum/:profileId", routes.MuseumHandler)
+	api := app.Group("/api")
 
-	app.Get("/api/stats/:uuid/:profileId", routes.StatsHandler)
-	app.Get("/api/stats/:uuid", routes.StatsHandler)
-	app.Get("/api/inventory/:uuid", routes.InventoryHandler)
-	app.Get("/api/inventory/:uuid/:profileId", routes.InventoryHandler)
+	api.Get("/uuid/:username", routes.UUIDHandler)
+	api.Get("/username/:uuid", routes.UsernameHandler)
 
-	app.Get("/api/gear/:uuid/:profileId", routes.GearHandler)
+	api.Get("/profiles/:uuid", routes.ProfilesHandler)
+	api.Get("/player/:uuid", routes.PlayerHandler)
+	api.Get("/museum/:profileId", routes.MuseumHandler)
 
+	api.Get("/stats/:uuid/:profileId", routes.StatsHandler)
+	api.Get("/stats/:uuid", routes.StatsHandler)
+
+	api.Get("/inventory/:uuid/:profileId", routes.InventoryHandler)
+
+	api.Get("/gear/:uuid/:profileId", routes.GearHandler)
+	api.Get("/accessories/:uuid/:profileId", routes.AccessoriesHandler)
+
+	// Root route
 	app.Get("/", handlers.HelloHandler)
 }

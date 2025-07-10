@@ -20,18 +20,20 @@ type Tag struct {
 type ExtraAttributes struct {
 	// OriginTag        string         `nbt:"originTag" json:"originTag,omitempty"`
 	// Enchantments     map[string]int `nbt:"enchantments" json:"enchantments,omitempty"`
-	ID                string         `nbt:"id" json:"id,omitempty"`
-	UUID              string         `nbt:"uuid" json:"uuid,omitempty"`
-	Timestamp         any            `nbt:"timestamp" json:"timestamp,omitempty"`
-	Recombobulated    int            `nbt:"rarity_upgrades" json:"rarity_upgrades,omitempty"`
-	Enchantments      map[string]int `nbt:"enchantments" json:"enchantments,omitempty"`
-	Gems              map[string]any `nbt:"gems" json:"gems,omitempty"`
-	HecatombSRuns     *int           `nbt:"hecatomb_s_runs" json:"hecatomb_s_runs,omitempty"`
-	ChampionCombatXP  *float64       `nbt:"champion_combat_xp" json:"champion_combat_xp,omitempty"`
-	FarmedCultivating *int           `nbt:"farmed_cultivating" json:"farmed_cultivating,omitempty"`
-	ExpertiseKills    *int           `nbt:"expertise_kills" json:"expertise_kills,omitempty"`
-	CompactBlocks     *int           `nbt:"compact_blocks" json:"compact_blocks,omitempty"`
-	Modifier          string         `nbt:"modifier" json:"modifier,omitempty"`
+	ID                 string         `nbt:"id" json:"id,omitempty"`
+	UUID               string         `nbt:"uuid" json:"uuid,omitempty"`
+	Timestamp          any            `nbt:"timestamp" json:"timestamp,omitempty"`
+	Recombobulated     int            `nbt:"rarity_upgrades" json:"rarity_upgrades,omitempty"`
+	Enchantments       map[string]int `nbt:"enchantments" json:"enchantments,omitempty"`
+	Gems               map[string]any `nbt:"gems" json:"gems,omitempty"`
+	HecatombSRuns      *int           `nbt:"hecatomb_s_runs" json:"hecatomb_s_runs,omitempty"`
+	ChampionCombatXP   *float64       `nbt:"champion_combat_xp" json:"champion_combat_xp,omitempty"`
+	FarmedCultivating  *int           `nbt:"farmed_cultivating" json:"farmed_cultivating,omitempty"`
+	ExpertiseKills     *int           `nbt:"expertise_kills" json:"expertise_kills,omitempty"`
+	CompactBlocks      *int           `nbt:"compact_blocks" json:"compact_blocks,omitempty"`
+	Modifier           string         `nbt:"modifier" json:"modifier,omitempty"`
+	Model              string         `nbt:"model" json:"model,omitempty"`
+	TalismanEnrichment string         `nbt:"talisman_enrichment" json:"talisman_enrichment,omitempty"`
 }
 
 type Display struct {
@@ -73,4 +75,5 @@ type ProcessedItem struct {
 	Categories     []string        `json:"categories,omitempty"`
 	ContainsItems  []ProcessedItem `json:"containsItems,omitempty"`
 	Source         string          `json:"source,omitempty"`
+	Id             string          `json:"id,omitempty"`
 }

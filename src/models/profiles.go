@@ -16,16 +16,18 @@ type Profile struct {
 }
 
 type Member struct {
-	PlayerData     *playerData     `json:"player_data"`
-	CoopInvitation *coopInvitation `json:"coop_invitation"`
-	Profile        *profileData    `json:"profile"`
-	JacobsContest  *jacobsContest  `json:"jacobs_contest,omitempty"`
-	PetsData       *petsData       `json:"pets_data,omitempty"`
-	Leveling       *leveling       `json:"leveling,omitempty"`
-	Currencies     *currencies     `json:"currencies,omitempty"`
-	FairySouls     *fairySouls     `json:"fairy_soul,omitempty"`
-	Inventory      *inventory      `json:"inventory,omitempty"`
-	Rift           *rift           `json:"rift,omitempty"`
+	PlayerData          *playerData          `json:"player_data"`
+	CoopInvitation      *coopInvitation      `json:"coop_invitation"`
+	Profile             *profileData         `json:"profile"`
+	JacobsContest       *jacobsContest       `json:"jacobs_contest,omitempty"`
+	PetsData            *petsData            `json:"pets_data,omitempty"`
+	Leveling            *leveling            `json:"leveling,omitempty"`
+	Currencies          *currencies          `json:"currencies,omitempty"`
+	FairySouls          *fairySouls          `json:"fairy_soul,omitempty"`
+	Inventory           *inventory           `json:"inventory,omitempty"`
+	Rift                *rift                `json:"rift,omitempty"`
+	AccessoryBagStorage *accessoryBagStorage `json:"accessory_bag_storage,omitempty"`
+	CrimsonIsle         *crimsonIsleData     `json:"nether_island_player_data,omitempty"`
 }
 
 type coopInvitation struct {
@@ -118,6 +120,7 @@ type bagContents struct {
 
 type rift struct {
 	Inventory riftInventory `json:"inventory,omitempty"`
+	Access    *riftAccess   `json:"access,omitempty"`
 }
 
 type riftInventory struct {
@@ -125,4 +128,20 @@ type riftInventory struct {
 	Armor      encodedInventory `json:"inv_armor"`
 	Enderchest encodedInventory `json:"ender_chest_contents"`
 	Equipment  encodedInventory `json:"equipment_contents"`
+}
+
+type riftAccess struct {
+	ConsumedPrism bool `json:"consumed_prism,omitempty"`
+}
+
+type accessoryBagStorage struct {
+	SelectedPower string `json:"selected_power,omitempty"`
+}
+
+type crimsonIsleData struct {
+	Abiphone *abiphone `json:"abiphone,omitempty"`
+}
+
+type abiphone struct {
+	ActiveContacts []string `json:"active_contacts,omitempty"`
 }

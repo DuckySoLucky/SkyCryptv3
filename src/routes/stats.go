@@ -3,9 +3,7 @@ package routes
 import (
 	"fmt"
 	"skycrypt/src/api"
-	"skycrypt/src/models"
 	"skycrypt/src/stats"
-	"sync"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -27,36 +25,17 @@ func StatsHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	var (
-		profiles    *models.HypixelProfilesResponse
-		player      *models.Player
-		profilesErr error
-		playerErr   error
-		wg          sync.WaitGroup
-	)
-
-	wg.Add(2)
-	go func() {
-		defer wg.Done()
-		profiles, profilesErr = api.GetProfiles(mowojang.UUID)
-	}()
-
-	go func() {
-		defer wg.Done()
-		player, playerErr = api.GetPlayer(mowojang.UUID)
-	}()
-
-	wg.Wait()
-
-	if profilesErr != nil {
+	profiles, err := api.GetProfiles(mowojang.UUID)
+	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": fmt.Sprintf("Failed to get profile: %v", profilesErr),
+			"error": fmt.Sprintf("Failed to get profile: %v", err),
 		})
 	}
 
-	if playerErr != nil {
+	player, err := api.GetPlayer(mowojang.UUID)
+	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": fmt.Sprintf("Failed to get player: %v", playerErr),
+			"error": fmt.Sprintf("Failed to get player: %v", err),
 		})
 	}
 
@@ -67,36 +46,17 @@ func StatsHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	var (
-		profileMuseum *map[string]models.Museum
-		members       []*models.MemberStats
-		museumErr     error
-		membersErr    error
-	)
-
-	wg.Add(2)
-
-	go func() {
-		defer wg.Done()
-		profileMuseum, museumErr = api.GetMuseum(profile.ProfileID)
-	}()
-
-	go func() {
-		defer wg.Done()
-		members, membersErr = stats.FormatMembers(profile)
-	}()
-
-	wg.Wait()
-
-	if museumErr != nil {
+	profileMuseum, err := api.GetMuseum(profile.ProfileID)
+	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": fmt.Sprintf("Failed to get museum: %v", museumErr),
+			"error": fmt.Sprintf("Failed to get museum: %v", err),
 		})
 	}
 
-	if membersErr != nil {
+	members, err := stats.FormatMembers(profile)
+	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": fmt.Sprintf("Failed to format members: %v", membersErr),
+			"error": fmt.Sprintf("Failed to format members: %v", err),
 		})
 	}
 

@@ -1,0 +1,289 @@
+package stats
+
+import (
+	"skycrypt/src/constants"
+	"skycrypt/src/models"
+	stats "skycrypt/src/stats/items"
+	"slices"
+)
+
+func hasAccessory(accessories *[]InsertAccessory, id string, rarity string, ignoreRarity bool) bool {
+	for _, accessory := range *accessories {
+		if accessory.Id == id {
+			if ignoreRarity {
+				return true
+			}
+
+			return slices.Index(constants.RARITIES, accessory.Rarity) >= slices.Index(constants.RARITIES, rarity)
+		}
+	}
+
+	return false
+}
+
+func getAccessory(accessories *[]InsertAccessory, id string) (*InsertAccessory, bool) {
+	for _, accessory := range *accessories {
+		if accessory.Id == id {
+			return &accessory, true
+		}
+	}
+
+	return &InsertAccessory{}, false
+}
+
+func getEnrichments(accessories []InsertAccessory) map[string]int {
+	output := make(map[string]int)
+	for _, item := range accessories {
+		specialAccessory, exists := constants.SPECIAL_ACCESSORIES[item.Id]
+		if slices.Index(constants.RARITIES, item.Rarity) < slices.Index(constants.RARITIES, "legendary") || (exists && !specialAccessory.AllowsEnrichment) || item.IsInactive {
+			continue
+		}
+
+		enrichmentKey := item.Tag.ExtraAttributes.TalismanEnrichment
+		if enrichmentKey == "" {
+			enrichmentKey = "missing"
+		}
+
+		enrichment := constants.ENRICHMENT_TO_STAT[enrichmentKey]
+		if enrichment == "" {
+			enrichment = enrichmentKey
+		}
+
+		output[enrichment]++
+	}
+
+	return output
+}
+
+func GetRecombobulatedCount(accessories []InsertAccessory) int {
+	count := 0
+	for _, accessory := range accessories {
+		if accessory.Tag.ExtraAttributes.Recombobulated > 0 {
+			count++
+		}
+	}
+
+	return count
+}
+
+type GetMagicalPowerOutput struct {
+	Total       int `json:"total"`
+	Accessories int `json:"accessories"`
+	Abiphone    int `json:"abiphone"`
+	RiftPrism   int `json:"riftPrism"`
+	Hegemony    struct {
+		Rarity string `json:"rarity"`
+		Amount int    `json:"amount"`
+	} `json:"hegemony"`
+	Rarities map[string]struct {
+		Rarity int `json:"rarity"`
+		Amount int `json:"magicalPower"`
+	} `json:"rarities"`
+}
+
+func GetMagicalPower(rarity string, id string) int {
+	if id == "HEGEMONY_ARTIFACT" {
+		return (2 * constants.MAGICAL_POWER[rarity])
+	}
+
+	if id == "RIFT_PRISM" {
+		return 11
+	}
+
+	return constants.MAGICAL_POWER[rarity]
+}
+
+func getMagicalPowerData(accessories *[]InsertAccessory, userProfile *models.Member) GetMagicalPowerOutput {
+	output := GetMagicalPowerOutput{
+		Rarities: make(map[string]struct {
+			Rarity int `json:"rarity"`
+			Amount int `json:"magicalPower"`
+		}),
+	}
+
+	for _, accessory := range *accessories {
+		if accessory.IsInactive {
+			continue
+		}
+
+		magicalPower := GetMagicalPower(accessory.Rarity, accessory.Id)
+
+		rarity := output.Rarities[accessory.Rarity]
+		rarity.Amount += magicalPower
+		rarity.Rarity++
+		output.Rarities[accessory.Rarity] = rarity
+
+		output.Accessories += magicalPower
+		output.Total += magicalPower
+
+		switch accessory.Id {
+		case "ABICASE":
+			abiphoneContacts := len(userProfile.CrimsonIsle.Abiphone.ActiveContacts)
+			output.Abiphone += int(abiphoneContacts / 2)
+			output.Total += int(abiphoneContacts / 2)
+
+		case "HEGEMONY_ARTIFACT":
+			output.Hegemony.Rarity = accessory.Rarity
+			output.Hegemony.Amount += magicalPower
+		}
+	}
+
+	if userProfile.Rift.Access.ConsumedPrism {
+		output.RiftPrism += 11
+		output.Total += 11
+	}
+
+	return output
+}
+
+func getMissing(accessories []InsertAccessory, accessoryIds []AccessoryIds) missingOutput {
+	ACCESSORIES := constants.GetAllAccessories()
+	unique := make([]InsertAccessory, 0)
+	for _, acc := range ACCESSORIES {
+		unique = append(unique, InsertAccessory{
+			Id:     acc.SkyBlockID,
+			Rarity: acc.Rarity,
+		})
+	}
+
+	for _, item := range unique {
+		var aliases, exists = constants.ACCESSORY_ALIASES[item.Id]
+		if !exists {
+			continue
+		}
+
+		for _, duplicate := range aliases {
+			if hasAccessory(&accessories, duplicate, "", true) {
+				accessory, found := getAccessory(&accessories, duplicate)
+				if found {
+					accessory.Id = item.Id
+				}
+			}
+		}
+	}
+
+	missing := make([]InsertAccessory, 0)
+	for _, accessory := range unique {
+		if !hasAccessory(&accessories, accessory.Id, accessory.Rarity, false) {
+			missing = append(missing, accessory)
+		}
+	}
+
+	filteredMissing := make([]InsertAccessory, 0)
+	for _, missingAccessory := range missing {
+		upgrades := constants.GetUpgradeList(missingAccessory.Id)
+		if len(upgrades) == 0 {
+			filteredMissing = append(filteredMissing, missingAccessory)
+			continue
+		}
+
+		shouldKeep := true
+		for _, upgrade := range upgrades {
+			if hasAccessory(&accessories, upgrade, missingAccessory.Rarity, false) {
+				shouldKeep = false
+				break
+			}
+		}
+
+		if shouldKeep {
+			filteredMissing = append(filteredMissing, missingAccessory)
+		}
+	}
+
+	upgrades := make([]models.ProcessedItem, 0)
+	other := make([]models.ProcessedItem, 0)
+	for _, missingAccessory := range filteredMissing {
+		accessory := constants.ITEMS[missingAccessory.Id]
+		object := models.ProcessedItem{
+			Texture:     accessory.Texture,
+			DisplayName: accessory.Name,
+			Rarity:      accessory.Rarity,
+			Id:          missingAccessory.Id,
+		}
+
+		upgradeList := constants.GetUpgradeList(missingAccessory.Id)
+		specialAccessory, isSpecial := constants.SPECIAL_ACCESSORIES[missingAccessory.Id]
+
+		if (len(upgradeList) > 0 && upgradeList[0] != missingAccessory.Id) || (isSpecial && len(specialAccessory.Rarities) > 0) {
+			upgrades = append(upgrades, object)
+		} else {
+			other = append(other, object)
+		}
+	}
+
+	return missingOutput{
+		Upgrades:     upgrades,
+		Other:        other,
+		AccessoryIds: accessoryIds,
+	}
+}
+
+type missingOutput struct {
+	Upgrades     []models.ProcessedItem `json:"upgrades"`
+	Other        []models.ProcessedItem `json:"other"`
+	AccessoryIds []AccessoryIds         `json:"accessoryIds"`
+}
+
+func GetMissingAccessories(accessories AccessoriesOutput, userProfile *models.Member) getMissingAccessoresOutput {
+	if len(accessories.AccessoryIds) == 0 && accessories.Accessories == nil {
+		return getMissingAccessoresOutput{}
+	}
+
+	missingAccessories := getMissing(accessories.Accessories, accessories.AccessoryIds)
+	// TODO: Implement prices
+
+	var activeAccessories []InsertAccessory
+	for _, accessory := range accessories.Accessories {
+		if !accessory.IsInactive {
+			activeAccessories = append(activeAccessories, accessory)
+		}
+	}
+
+	processedItems := make([]models.ProcessedItem, len(accessories.Accessories))
+	for i, accessory := range accessories.Accessories {
+		processedItems[i] = accessory.ProcessedItem
+	}
+
+	output := getMissingAccessoresOutput{
+		Stats:               stats.GetStatsFromItems(processedItems),
+		Enrichments:         getEnrichments(accessories.Accessories),
+		Unique:              len(activeAccessories),
+		Total:               constants.GetUniqueAccessoriesCount(),
+		Recombobulated:      GetRecombobulatedCount(activeAccessories),
+		TotalRecombobulated: constants.GetRecombableAccessoriesCount(),
+		SelectedPower:       userProfile.AccessoryBagStorage.SelectedPower,
+		MagicalPower:        getMagicalPowerData(&activeAccessories, userProfile),
+		Accessories:         accessories.Accessories,
+		Upgrades:            missingAccessories.Upgrades,
+		Missing:             missingAccessories.Other,
+	}
+
+	includesRiftPrism := false
+	for _, accessory := range accessories.AccessoryIds {
+		if accessory.Id == "RIFT_PRISM" {
+			includesRiftPrism = true
+			break
+		}
+	}
+
+	if includesRiftPrism {
+		output.Unique++
+	}
+
+	return output
+
+}
+
+type getMissingAccessoresOutput struct {
+	Stats               map[string]float64     `json:"stats"`
+	Enrichments         map[string]int         `json:"enrichments"`
+	Unique              int                    `json:"unique"`
+	Total               int                    `json:"total"`
+	Recombobulated      int                    `json:"recombobulated"`
+	TotalRecombobulated int                    `json:"total_recombobulated"`
+	SelectedPower       string                 `json:"selected_power"`
+	MagicalPower        GetMagicalPowerOutput  `json:"magicalPower"`
+	Accessories         []InsertAccessory      `json:"accessories"`
+	Missing             []models.ProcessedItem `json:"missing"`
+	Upgrades            []models.ProcessedItem `json:"upgrades"`
+}

@@ -1,6 +1,7 @@
 package utility
 
 import (
+	"encoding/base64"
 	"regexp"
 	"skycrypt/src/constants"
 	"strconv"
@@ -148,4 +149,22 @@ func IndexOf(slice []string, item string) int {
 	}
 
 	return -1
+}
+
+func GetSkinHash(base64String string) string {
+	if base64String == "" {
+		return ""
+	}
+
+	data, err := base64.StdEncoding.DecodeString(base64String)
+	if err != nil {
+		return ""
+	}
+
+	parts := strings.Split(string(data), "/")
+	if len(parts) == 0 {
+		return ""
+	}
+
+	return parts[len(parts)-1]
 }

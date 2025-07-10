@@ -8,6 +8,7 @@ import (
 	redis "skycrypt/src/db"
 	"skycrypt/src/models"
 	"skycrypt/src/utility"
+
 	jsoniter "github.com/json-iterator/go"
 )
 
@@ -92,6 +93,10 @@ func GetProfiles(uuid string) (*models.HypixelProfilesResponse, error) {
 	err = json.Unmarshal(body, &response)
 	if err != nil {
 		return &response, fmt.Errorf("error parsing JSON: %v", err)
+	}
+
+	if response.Cause != "" && !response.Success {
+		return &response, fmt.Errorf("error fetching profiles: %s", response.Cause)
 	}
 
 	redis.Set(fmt.Sprintf(`profiles:%s`, uuid), string(body), 5*60) // Cache for 5 minutes
