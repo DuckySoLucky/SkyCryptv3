@@ -31,6 +31,11 @@ func SetupApplication() error {
 		return fmt.Errorf("error updating repository: %v", err)
 	}
 
+	err = notenoughupdates.ParseNEURepository()
+	if err != nil {
+		return fmt.Errorf("error parsing NEU repository: %v", err)
+	}
+
 	return nil
 }
 
