@@ -22,3 +22,20 @@ type PetLevel struct {
 	Progress              float64 `json:"progress,omitempty"`
 	ExperienceForMaxLevel int     `json:"xpMaxLevel,omitempty"`
 }
+
+type OutputPets struct {
+	Pets               []ProcessedPet `json:"pets"`
+	MissingPets        []ProcessedPet `json:"missing"`
+	Amount             int            `json:"amount"`
+	Total              int            `json:"total"`
+	AmountSkins        int            `json:"amount_skins"`
+	TotalSkins         int            `json:"total_skins"`
+	TotalPetExperience int            `json:"totalPetExp"`
+	TotalCandyUsed     int            `json:"totalCandyUsed"`
+	PetScore           PetScore       `json:"petScore,omitempty"`
+}
+
+type PetScore struct {
+	Amount int                `json:"amount"`
+	Stats  map[string]float64 `json:"stats"`
+}

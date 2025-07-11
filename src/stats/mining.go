@@ -12,79 +12,8 @@ import (
 	"strings"
 )
 
-type miningOutput struct {
-	Level                  models.Skill            `json:"level"`
-	PeakOfTheMountain      peakOfTheMountain       `json:"peak_of_the_mountain"`
-	SelectedPickaxeAbility string                  `json:"selected_pickaxe_ability"`
-	Tokens                 hotmTokens              `json:"tokens"`
-	Commissions            commissions             `json:"commissions"`
-	CrystalHollows         crystalHollows          `json:"crystalHollows"`
-	Powder                 powderOutput            `json:"powder"`
-	GlaciteTunnels         glaciteTunnels          `json:"glaciteTunnels"`
-	Forge                  []forgeOutput           `json:"forge"`
-	Tools                  models.SkillToolsResult `json:"tools"`
-}
-
-type peakOfTheMountain struct {
-	Level    int `json:"level"`
-	MaxLevel int `json:"max_level"`
-}
-
-type hotmTokens struct {
-	Total     int `json:"total"`
-	Spent     int `json:"spent"`
-	Available int `json:"available"`
-}
-
-type commissions struct {
-	Milestone   int `json:"milestone"`
-	Completions int `json:"completions"`
-}
-
-type crystalHollows struct {
-	CrystalHollowsLastAccess int64              `json:"crystalHollowsLastAccess"`
-	NucleusRuns              int                `json:"nucleusRuns"`
-	Progress                 crystalNucleusRuns `json:"progress"`
-}
-
-type crystalNucleusRuns struct {
-	Crystals map[string]string `json:"crystals"`
-	Parts    map[string]string `json:"parts"`
-}
-
-type glaciteTunnels struct {
-	MineshaftsEntered int     `json:"mineshaftsEntered"`
-	FossilDust        float64 `json:"fossilDust"`
-	Corpses           Corpses `json:"corpses"`
-	Fossils           Fossils `json:"fossils"`
-}
-
-type Corpses struct {
-	Found   int      `json:"found"`
-	Max     int      `json:"max"`
-	Corpses []Corpse `json:"corpses"`
-}
-
-type Fossils struct {
-	Found   int      `json:"found"`
-	Max     int      `json:"max"`
-	Fossils []Fossil `json:"fossils"`
-}
-
-type Corpse struct {
-	Name    string `json:"name"`
-	Amount  int    `json:"amount"`
-	Texture string `json:"texture_path"`
-}
-
-type Fossil struct {
-	Name    string `json:"name"`
-	Found   bool   `json:"amount"`
-	Texture string `json:"texture_path"`
-}
-
-func getPeakOfTheMountain(userProfile *models.Member) peakOfTheMountain {
-	return peakOfTheMountain{
+func getPeakOfTheMountain(userProfile *models.Member) models.PeakOfTheMountain {
+	return models.PeakOfTheMountain{
 		Level:    userProfile.Mining.Nodes["special_0"],
 		MaxLevel: constants.MAX_PEAK_OF_THE_MOUNTAIN_LEVEL,
 	}
@@ -116,17 +45,17 @@ func calcHotmTokens(hotmTier int, potmTier int) int {
 	return tokens
 }
 
-func getHotmTokens(hotmLevel models.Skill, userProfile *models.Member) hotmTokens {
+func getHotmTokens(hotmLevel models.Skill, userProfile *models.Member) models.HotmTokens {
 	potmTier := userProfile.Mining.Nodes["special_0"]
 	hotmTokensAmount := calcHotmTokens(hotmLevel.Level, potmTier)
-	return hotmTokens{
+	return models.HotmTokens{
 		Total:     hotmTokensAmount,
 		Spent:     userProfile.Mining.TokensSpent,
 		Available: hotmTokensAmount - userProfile.Mining.TokensSpent,
 	}
 }
 
-func getCommissions(userProfile *models.Member, player *models.Player) commissions {
+func getCommissions(userProfile *models.Member, player *models.Player) models.Commissions {
 	var milestone = 0
 	for _, tutorial := range userProfile.Objectives.Tutorial {
 		if strings.HasPrefix(tutorial, "commission_milestone_reward_mining_xp_tier_") {
@@ -145,13 +74,13 @@ func getCommissions(userProfile *models.Member, player *models.Player) commissio
 		}
 	}
 
-	return commissions{
+	return models.Commissions{
 		Milestone:   milestone,
 		Completions: player.Achievements.HotMCommissions,
 	}
 }
 
-func getCrystalHollows(userProfile *models.Member) crystalHollows {
+func getCrystalHollows(userProfile *models.Member) models.CrystalHollows {
 	totalRuns := 0
 	for _, crystalData := range userProfile.Mining.Crystals {
 		if crystalData.TotalPlaced > totalRuns {
@@ -159,10 +88,10 @@ func getCrystalHollows(userProfile *models.Member) crystalHollows {
 		}
 	}
 
-	crystalHollows := crystalHollows{
+	crystalHollows := models.CrystalHollows{
 		CrystalHollowsLastAccess: userProfile.Mining.GreaterMinesLastAccess,
 		NucleusRuns:              totalRuns,
-		Progress: crystalNucleusRuns{
+		Progress: models.CrystalNucleusRuns{
 			Crystals: make(map[string]string),
 			Parts:    make(map[string]string),
 		},
@@ -192,19 +121,7 @@ func getCrystalHollows(userProfile *models.Member) crystalHollows {
 	return crystalHollows
 }
 
-type powderAmount struct {
-	Spent     int `json:"spent"`
-	Total     int `json:"total"`
-	Available int `json:"available"`
-}
-
-type powderOutput struct {
-	Mithril  powderAmount `json:"mithril"`
-	Gemstone powderAmount `json:"gemstone"`
-	Glacite  powderAmount `json:"glacite"`
-}
-
-func getPowderAmount(userProfile *models.Member, powderType string) powderAmount {
+func getPowderAmount(userProfile *models.Member, powderType string) models.PowderAmount {
 	spent := 0
 	total := 0
 	available := 0
@@ -224,15 +141,15 @@ func getPowderAmount(userProfile *models.Member, powderType string) powderAmount
 		total = userProfile.Mining.PowderGlaciteTotal
 	}
 
-	return powderAmount{
+	return models.PowderAmount{
 		Spent:     spent,
 		Total:     total,
 		Available: available,
 	}
 }
 
-func getPowder(userProfile *models.Member) powderOutput {
-	return powderOutput{
+func getPowder(userProfile *models.Member) models.PowderOutput {
+	return models.PowderOutput{
 		Mithril:  getPowderAmount(userProfile, "mithril"),
 		Gemstone: getPowderAmount(userProfile, "gemstone"),
 		Glacite:  getPowderAmount(userProfile, "glacite"),
@@ -240,18 +157,8 @@ func getPowder(userProfile *models.Member) powderOutput {
 
 }
 
-// ...existing code...
-type forgeOutput struct {
-	ID           string  `json:"id"`
-	Name         string  `json:"name"`
-	Slot         int     `json:"slot"`
-	StartingTime int64   `json:"startingTime"`
-	EndingTime   int64   `json:"endingTime"`
-	Duration     float64 `json:"duration"`
-}
-
-func getForge(userProfile *models.Member) []forgeOutput {
-	output := []forgeOutput{}
+func getForge(userProfile *models.Member) []models.ForgeOutput {
+	output := []models.ForgeOutput{}
 
 	quickForgeLevel := userProfile.Mining.Nodes["forge_time"]
 	var quickForge float64
@@ -269,7 +176,7 @@ func getForge(userProfile *models.Member) []forgeOutput {
 		forgeConst := constants.FORGE[item.Id]
 		duration := float64(forgeConst.Duration) - float64(forgeConst.Duration)*quickForge
 		endingTime := item.StartTime + int64(float64(forgeConst.Duration)-float64(forgeConst.Duration)*(quickForge/100))
-		output = append(output, forgeOutput{
+		output = append(output, models.ForgeOutput{
 			ID:           item.Id,
 			Name:         forgeConst.Name,
 			Slot:         item.Slot,
@@ -282,18 +189,18 @@ func getForge(userProfile *models.Member) []forgeOutput {
 	return output
 }
 
-func getGlaciteTunnels(userProfile *models.Member) glaciteTunnels {
-	output := glaciteTunnels{
+func getGlaciteTunnels(userProfile *models.Member) models.GlaciteTunnels {
+	output := models.GlaciteTunnels{
 		MineshaftsEntered: userProfile.GlaciteTunnels.MineshaftsEntered,
 		FossilDust:        userProfile.GlaciteTunnels.FossilDust,
-		Corpses:           Corpses{},
-		Fossils:           Fossils{},
+		Corpses:           models.Corpses{},
+		Fossils:           models.Fossils{},
 	}
 
 	found := 0
 	for corpseId, corpseTexture := range constants.CORPSES {
 		found += userProfile.GlaciteTunnels.CorpsesLooted[corpseId]
-		corpse := Corpse{
+		corpse := models.Corpse{
 			Amount:  userProfile.GlaciteTunnels.CorpsesLooted[corpseId],
 			Name:    utility.TitleCase(corpseId),
 			Texture: corpseTexture,
@@ -317,7 +224,7 @@ func getGlaciteTunnels(userProfile *models.Member) glaciteTunnels {
 			texture = fmt.Sprintf("/api/item/%s", fossil)
 		}
 
-		fossil := Fossil{
+		fossil := models.Fossil{
 			Name:    utility.TitleCase(fossil),
 			Texture: texture,
 			Found:   isFound,
@@ -332,10 +239,10 @@ func getGlaciteTunnels(userProfile *models.Member) glaciteTunnels {
 	return output
 }
 
-func GetMining(userProfile *models.Member, player *models.Player, items []models.ProcessedItem) miningOutput {
+func GetMining(userProfile *models.Member, player *models.Player, items []models.ProcessedItem) models.MiningOutput {
 	HOTMLevel := stats.GetLevelByXp(int(userProfile.Mining.Experience), &stats.ExtraSkillData{Type: "hotm"})
 
-	return miningOutput{
+	return models.MiningOutput{
 		Level:                  HOTMLevel,
 		PeakOfTheMountain:      getPeakOfTheMountain(userProfile),
 		SelectedPickaxeAbility: getSelectedPickaxeAbility(userProfile),

@@ -382,24 +382,7 @@ func getMissingPets(userProfile *models.Member, pets []models.ProcessedPet, game
 	return getProfilePets(userProfile, &missingPets)
 }
 
-type outputPets struct {
-	Pets               []models.ProcessedPet `json:"pets"`
-	MissingPets        []models.ProcessedPet `json:"missing"`
-	Amount             int                   `json:"amount"`
-	Total              int                   `json:"total"`
-	AmountSkins        int                   `json:"amount_skins"`
-	TotalSkins         int                   `json:"total_skins"`
-	TotalPetExperience int                   `json:"totalPetExp"`
-	TotalCandyUsed     int                   `json:"totalCandyUsed"`
-	PetScore           petScore              `json:"petScore,omitempty"`
-}
-
-type petScore struct {
-	Amount int                `json:"amount"`
-	Stats  map[string]float64 `json:"stats"`
-}
-
-func GetPetScore(pets []models.ProcessedPet) petScore {
+func GetPetScore(pets []models.ProcessedPet) models.PetScore {
 	highestRarity, highestLevel := map[string]int{}, map[string]int{}
 	for _, pet := range pets {
 		if pet.Type == "FRACTURED_MONTEZUMA_SOUL" {
@@ -427,7 +410,7 @@ func GetPetScore(pets []models.ProcessedPet) petScore {
 	for k := range constants.PET_REWARDS {
 		keys = append(keys, k)
 	}
-	
+
 	sort.Ints(keys)
 	bonus := map[string]float64{}
 	for _, key := range keys {
@@ -437,7 +420,7 @@ func GetPetScore(pets []models.ProcessedPet) petScore {
 		}
 	}
 
-	output := petScore{
+	output := models.PetScore{
 		Amount: total,
 		Stats:  bonus,
 	}
@@ -445,7 +428,7 @@ func GetPetScore(pets []models.ProcessedPet) petScore {
 	return output
 }
 
-func GetPets(userProfile *models.Member, profile *models.Profile) (outputPets, error) {
+func GetPets(userProfile *models.Member, profile *models.Profile) (models.OutputPets, error) {
 
 	allPets := []models.Pet{}
 	allPets = append(allPets, userProfile.Pets.Pets...)
@@ -469,7 +452,7 @@ func GetPets(userProfile *models.Member, profile *models.Profile) (outputPets, e
 		}
 	}
 
-	output := outputPets{
+	output := models.OutputPets{
 		Pets:               pets,
 		Amount:             len(petAmount),
 		Total:              len(getMaxPetIds()),
