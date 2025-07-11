@@ -20,7 +20,7 @@ type Member struct {
 	CoopInvitation      *coopInvitation      `json:"coop_invitation"`
 	Profile             *profileData         `json:"profile"`
 	JacobsContest       *jacobsContest       `json:"jacobs_contest,omitempty"`
-	PetsData            *petsData            `json:"pets_data,omitempty"`
+	Pets                *pets                `json:"pets_data,omitempty"`
 	Leveling            *leveling            `json:"leveling,omitempty"`
 	Currencies          *currencies          `json:"currencies,omitempty"`
 	FairySouls          *fairySouls          `json:"fairy_soul,omitempty"`
@@ -67,10 +67,6 @@ type jacobsContest struct {
 
 type perks struct {
 	FarmingLevelCap int `json:"farming_level_cap,omitempty"`
-}
-
-type petsData struct {
-	PetCare *petCare `json:"pet_care,omitempty"`
 }
 
 type petCare struct {
@@ -121,6 +117,7 @@ type bagContents struct {
 type rift struct {
 	Inventory riftInventory `json:"inventory,omitempty"`
 	Access    *riftAccess   `json:"access,omitempty"`
+	DeadCats  *deadCats     `json:"dead_cats,omitempty"`
 }
 
 type riftInventory struct {
@@ -144,4 +141,24 @@ type crimsonIsleData struct {
 
 type abiphone struct {
 	ActiveContacts []string `json:"active_contacts,omitempty"`
+}
+
+type deadCats struct {
+	FoundCats []string `json:"found_cats,omitempty"`
+	Montezuma Pet      `json:"montezuma,omitempty"`
+}
+
+type Pet struct {
+	Type       string  `json:"type,omitempty"`
+	Experience float64 `json:"exp,omitempty"`
+	Active     bool    `json:"active,omitempty"`
+	Rarity     string  `json:"tier,omitempty"`
+	HeldItem   string  `json:"heldItem,omitempty"`
+	CandyUsed  int     `json:"candyUsed,omitempty"`
+	Skin       string  `json:"skin,omitempty"`
+}
+
+type pets struct {
+	PetCare *petCare `json:"pet_care,omitempty"`
+	Pets    []Pet    `json:"pets,omitempty"`
 }

@@ -79,6 +79,7 @@ func SetupRoutes(app *fiber.App) {
 
 	api.Get("/gear/:uuid/:profileId", routes.GearHandler)
 	api.Get("/accessories/:uuid/:profileId", routes.AccessoriesHandler)
+	api.Get("/pets/:uuid/:profileId", routes.PetsHandler)
 
 	// Root route
 	app.Get("/", handlers.HelloHandler)

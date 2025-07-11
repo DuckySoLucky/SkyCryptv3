@@ -2,6 +2,8 @@ package utility
 
 import (
 	"encoding/base64"
+	"fmt"
+	"math"
 	"regexp"
 	"skycrypt/src/constants"
 	"strconv"
@@ -58,6 +60,16 @@ func Max(a, b int) int {
 }
 
 func TitleCase(s string) string {
+	if strings.Contains(s, "_") || strings.Contains(s, "-") {
+		parts := strings.FieldsFunc(s, func(r rune) bool {
+			return r == '_' || r == '-'
+		})
+		for i, part := range parts {
+			parts[i] = cases.Title(language.English).String(part)
+		}
+		return strings.Join(parts, " ")
+	}
+
 	return cases.Title(language.English).String(s)
 }
 
@@ -168,3 +180,103 @@ func GetSkinHash(base64String string) string {
 
 	return parts[len(parts)-1]
 }
+
+func Round(value float64, precision int) float64 {
+	if precision < 0 {
+		return value
+	}
+	pow := math.Pow(10, float64(precision))
+	return math.Round(value*pow) / pow
+}
+
+func ReplaceVariables(template string, variables map[string]float64) string {
+	re := regexp.MustCompile(`\{(\w+)\}`)
+
+	return re.ReplaceAllStringFunc(template, func(match string) string {
+		name := strings.Trim(match, "{}")
+
+		value, exists := variables[name]
+		if !exists {
+			return match
+		}
+
+		// fmt.Printf("Replacing variable %s with value %.2f\n", name, value)
+		if _, err := strconv.ParseFloat(name, 64); err != nil {
+			if intValue, err := strconv.Atoi(fmt.Sprintf("%.0f", value)); err == nil && intValue > 0 {
+				return "+" + fmt.Sprintf("%.0f", value)
+			}
+		}
+
+		return fmt.Sprintf("%.0f", value)
+	})
+}
+
+/*
+SortBy
+CompareInts
+CompareStrings
+CompareInts
+CompareBooleans*/
+
+func CompareInts(a, b int) int {
+	if a < b {
+		return -1
+	} else if a > b {
+		return 1
+	}
+	return 0
+}
+
+func CompareStrings(a, b string) int {
+	if a < b {
+		return -1
+	} else if a > b {
+		return 1
+	}
+	return 0
+}
+
+func CompareBooleans(a, b bool) int {
+	if a == b {
+		return 0
+	} else if a && !b {
+		return 1
+	}
+	return -1
+}
+
+func Filter[T any](slice []T, predicate func(T) bool) []T {
+	var result []T
+	for _, item := range slice {
+		if predicate(item) {
+			result = append(result, item)
+		}
+	}
+	return result
+}
+
+func SortBy[T any](slice []T, compare func(T, T) int) []T {
+	if len(slice) < 2 {
+		return slice
+	}
+
+	for i := 0; i < len(slice)-1; i++ {
+		for j := 0; j < len(slice)-i-1; j++ {
+			if compare(slice[j], slice[j+1]) > 0 {
+				slice[j], slice[j+1] = slice[j+1], slice[j]
+			}
+		}
+	}
+
+	return slice
+}
+
+func Sum(slice []float64) float64 {
+	var total float64
+	for _, value := range slice {
+		total += value
+	}
+	return total
+}
+
+

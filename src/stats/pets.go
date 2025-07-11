@@ -1,0 +1,486 @@
+package stats
+
+import (
+	"fmt"
+	notenoughupdates "skycrypt/src/NotEnoughUpdates"
+	"skycrypt/src/constants"
+	"skycrypt/src/models"
+	"skycrypt/src/utility"
+	"slices"
+	"sort"
+	"strings"
+)
+
+func getMaxPetIds() map[string]int {
+	maxPetIds := make(map[string]int)
+	for petType, petData := range notenoughupdates.NEUConstants.PetNums {
+		if len(petData) == 0 {
+			continue
+		}
+
+		if constants.PET_PARENTS[petType] != "" {
+			petType = constants.PET_PARENTS[petType]
+		}
+
+		maxRarity := 0
+		for rarity := range petData {
+			rarityIndex := slices.Index(constants.RARITIES, strings.ToLower(rarity))
+			if rarityIndex > maxRarity {
+				maxRarity = rarityIndex
+			}
+		}
+
+		maxPetIds[petType] = maxRarity
+	}
+
+	return maxPetIds
+}
+
+func getPetLevel(pet models.Pet) models.PetLevel {
+	petData := notenoughupdates.NEUConstants.Pets
+
+	rarityOffset := petData.CustomPetLeveling[pet.Type].RarityOffset[pet.Rarity]
+	if rarityOffset == nil {
+		rarityOffset = petData.PetRarityOffset[pet.Rarity]
+	}
+
+	if rarityOffset == nil {
+		return models.PetLevel{}
+	}
+
+	maxLevel := petData.CustomPetLeveling[pet.Type].MaxLevel
+	if maxLevel == 0 {
+		maxLevel = 100
+	}
+
+	endIndex := *rarityOffset + maxLevel - 1
+	if endIndex > len(petData.PetLevels) {
+		endIndex = len(petData.PetLevels)
+	}
+	if *rarityOffset >= len(petData.PetLevels) {
+		return models.PetLevel{}
+	}
+
+	baseLevels := petData.PetLevels[*rarityOffset:endIndex]
+	var levels []int
+	levels = append(levels, baseLevels...)
+
+	if customPetData, exists := petData.CustomPetLeveling[pet.Type]; exists && customPetData.PetLevels != nil {
+		levels = append(levels, customPetData.PetLevels...)
+	}
+
+	level := 1
+	xpMaxLevel := 0
+	currentXp := 0
+	for i := 0; i < maxLevel-1; i++ {
+		xpMaxLevel += levels[i]
+		if xpMaxLevel <= int(pet.Experience) {
+			level++
+			currentXp = int(pet.Experience) - xpMaxLevel
+		}
+	}
+
+	xpForNext := 0
+	if level-1 < len(levels) {
+		xpForNext = levels[level-1]
+	}
+
+	progress := 0.0
+	if xpForNext != 0 {
+		progress = float64(currentXp) / float64(xpForNext)
+	}
+
+	return models.PetLevel{
+		Experience:            int(pet.Experience),
+		Level:                 level,
+		CurrentExperience:     currentXp,
+		ExperienceForNext:     xpForNext,
+		Progress:              progress,
+		ExperienceForMaxLevel: xpMaxLevel,
+	}
+
+}
+
+func getPetData(level int, petType string, rarity string) map[string]float64 {
+	petNums := notenoughupdates.NEUConstants.PetNums
+
+	petData, exists := petNums[petType]
+	if !exists {
+		return nil
+	}
+
+	rarityData, exists := petData[rarity]
+	if !exists {
+		return nil
+	}
+
+	lvlMin := rarityData.Level1
+	if lvlMin == nil {
+		return map[string]float64{}
+	}
+
+	lvlMax := rarityData.Level100
+	if lvlMax == nil {
+		return map[string]float64{}
+	}
+
+	statPerLevel := float64(utility.Min(level, 100)-1) / float64(100-1)
+	output := make(map[string]float64)
+
+	allKeys := make(map[string]bool)
+	for key := range lvlMin.StatNums {
+		allKeys[key] = true
+	}
+	for key := range lvlMax.StatNums {
+		allKeys[key] = true
+	}
+
+	for key := range allKeys {
+		var lowStat, highStat float64
+
+		if val, exists := lvlMin.StatNums[key]; exists {
+			lowStat = val
+		}
+
+		if val, exists := lvlMax.StatNums[key]; exists {
+			highStat = val
+		}
+
+		output[key] = utility.Round(lowStat+(highStat-lowStat)*statPerLevel, 2)
+	}
+
+	for i, val := range lvlMin.OtherNums {
+		if i < len(lvlMax.OtherNums) {
+			lowStat := val
+			highStat := lvlMax.OtherNums[i]
+			output[fmt.Sprintf("otherNum_%d", i)] = utility.Round(lowStat+(highStat-lowStat)*statPerLevel, 2)
+		}
+	}
+
+	return output
+}
+
+func getProfilePets(userProfile *models.Member, pets *[]models.Pet) []models.ProcessedPet {
+	output := []models.ProcessedPet{}
+	for _, pet := range *pets {
+		if pet.Rarity == "" {
+			continue
+		}
+
+		if pet.HeldItem == "PET_ITEM_TIER_BOOST" {
+			pet.Rarity = constants.RARITIES[slices.Index(constants.RARITIES, pet.Rarity)+1]
+		}
+
+		outputPet := models.ProcessedPet{
+			Type:      pet.Type,
+			Name:      utility.TitleCase(pet.Type),
+			Rarity:    pet.Rarity,
+			Active:    pet.Active,
+			Price:     0,
+			Level:     getPetLevel(pet),
+			Texture:   "/api/head/bc8ea1f51f253ff5142ca11ae45193a4ad8c3ab5e9c6eec8ba7a4fcb7bac40",
+			Lore:      []string{"§cThis pet is not saved in the repository", "", "§cIf you expected it to be there please send a message in", "§c§l#neu-support §r§con §ldiscord.gg/moulberry"},
+			Stats:     map[string]float64{},
+			CandyUsed: pet.CandyUsed,
+			Skin:      pet.Skin,
+		}
+
+		NEUItemId := fmt.Sprintf("%s;%d", pet.Type, slices.Index(constants.RARITIES, strings.ToLower(pet.Rarity)))
+		NEUItem, err := notenoughupdates.GetItem(NEUItemId)
+		if err != nil {
+			NEUItemId = fmt.Sprintf("%s;%d", pet.Type, slices.Index(constants.RARITIES, strings.ToLower(pet.Rarity))-1)
+			NEUItem, err = notenoughupdates.GetItem(NEUItemId)
+			if err != nil {
+				output = append(output, outputPet)
+				continue
+			}
+		}
+
+		if pet.Skin != "" {
+			skinId := fmt.Sprintf("PET_SKIN_%s", pet.Skin)
+			_ /*skinData*/, err := notenoughupdates.GetItem(skinId)
+			if err == nil {
+				//var textureId = utility.GetSkinHash(skinData.NBT)
+				// outputPet.Texture = fmt.Sprintf("/api/head/%s", textureId)
+				outputPet.Name += " ✦"
+			}
+		} else {
+			//var textureId = utility.GetSkinHash(NEUItem.NBT)
+			// outputPet.Texture = fmt.Sprintf("/api/head/%s", textureId)
+		}
+
+		data := getPetData(outputPet.Level.Level, pet.Type, strings.ToUpper(pet.Rarity))
+		for key, value := range data {
+			if strings.Contains(key, "otherNum") {
+				newKey := strings.ReplaceAll(key, "otherNum_", "")
+				data[newKey] = value
+				delete(data, key)
+				continue
+			}
+
+			if pet.Active {
+				outputPet.Stats[key] = value
+			}
+		}
+
+		outputPet.Lore = []string{}
+		for _, line := range NEUItem.Lore {
+			// ? NOTE: This is a work around for a Montezuma pet, needed otherwise the description will be incorrect
+			if outputPet.Type == "FRACTURED_MONTEZUMA_SOUL" {
+				soulPieces := len(userProfile.Rift.DeadCats.FoundCats)
+				if line == "§7Found: §96/9 Soul Pieces" {
+					outputPet.Lore = append(outputPet.Lore, fmt.Sprintf("§7Found: §9%d/9 Soul Pieces", soulPieces))
+					continue
+				}
+
+				if line == "§7Rift Time: §a+100s" {
+					outputPet.Lore = append(outputPet.Lore, fmt.Sprintf("§7Rift Time: §a+%ds", 10+soulPieces*15))
+					continue
+				}
+
+				if line == "§7Mana Regen: §a+12%" {
+					outputPet.Lore = append(outputPet.Lore, fmt.Sprintf("§7Mana Regen: §a+%d%%", soulPieces*2))
+					continue
+				}
+			}
+
+			if strings.HasPrefix(line, "§7§eRight-click to add this pet to") {
+				break
+			}
+
+			outputPet.Lore = append(outputPet.Lore, utility.ReplaceVariables(line, data))
+		}
+
+		if pet.HeldItem != "" {
+			heldItem, err := notenoughupdates.GetItem(pet.HeldItem)
+			if err != nil {
+				if len(outputPet.Lore) > 0 && strings.TrimSpace(outputPet.Lore[len(outputPet.Lore)-1]) != "" {
+					outputPet.Lore = append(outputPet.Lore, "")
+				}
+
+				outputPet.Lore = append(outputPet.Lore, fmt.Sprintf("§6Held item: %s", utility.TitleCase(pet.HeldItem)))
+				outputPet.Lore = append(outputPet.Lore, "§cCould not find held item in Not Enough Updates repository.")
+
+			}
+
+			spaces := 0
+			outputPet.Lore = append(outputPet.Lore, "", fmt.Sprintf("§6Held Item: %s", heldItem.Name))
+			for _, line := range heldItem.Lore {
+				if strings.Trim(line, " ") == "" {
+					spaces++
+				} else if spaces == 2 {
+					outputPet.Lore = append(outputPet.Lore, line)
+				} else if spaces > 2 {
+					break
+				}
+			}
+		}
+
+		if len(outputPet.Lore) > 0 && strings.TrimSpace(outputPet.Lore[len(outputPet.Lore)-1]) != "" {
+			outputPet.Lore = append(outputPet.Lore, "")
+		}
+
+		if outputPet.Level.Experience >= outputPet.Level.ExperienceForMaxLevel {
+			outputPet.Lore = append(outputPet.Lore, `§bMAX LEVEL`)
+		} else {
+			outputPet.Lore = append(outputPet.Lore, fmt.Sprintf("§7Progress to Level %d: §e%.1f%%", outputPet.Level.Level+1, outputPet.Level.Progress*100))
+			progress := int(outputPet.Level.Progress * 20)
+			numerator := utility.FormatNumber(outputPet.Level.CurrentExperience)
+			denominator := utility.FormatNumber(outputPet.Level.ExperienceForNext)
+			outputPet.Lore = append(outputPet.Lore, fmt.Sprintf("§2%s§f%s §e%s §6/ §e%s", strings.Repeat("─", progress), strings.Repeat("─", 20-progress), numerator, denominator))
+		}
+
+		outputPet.Lore = append(outputPet.Lore,
+			"",
+			"§7Total XP: §e"+utility.FormatNumber(outputPet.Level.Experience)+" §6/ §e"+utility.FormatNumber(outputPet.Level.ExperienceForMaxLevel)+" §6("+fmt.Sprintf("%.2f", (float64(outputPet.Level.Experience)/float64(outputPet.Level.ExperienceForMaxLevel))*100)+"%)",
+			fmt.Sprintf("§7Candy Used: §e%d §6/ §e10", outputPet.CandyUsed),
+		)
+
+		output = append(output, outputPet)
+	}
+
+	output = utility.SortBy(output, func(a, b models.ProcessedPet) int {
+		if a.Active == b.Active {
+			if a.Rarity == b.Rarity {
+				if a.Type == b.Type {
+					return utility.CompareInts(a.Level.Level, b.Level.Level)
+				} else {
+					maxPetA := utility.Filter(output, func(x models.ProcessedPet) bool {
+						return x.Type == a.Type && x.Rarity == a.Rarity
+					})
+					maxPetA = utility.SortBy(maxPetA, func(x, y models.ProcessedPet) int {
+						return utility.CompareInts(y.Level.Level, x.Level.Level)
+					})
+
+					maxPetALevel := 0
+					if len(maxPetA) > 0 {
+						maxPetALevel = maxPetA[0].Level.Level
+					}
+
+					maxPetB := utility.Filter(output, func(x models.ProcessedPet) bool {
+						return x.Type == b.Type && x.Rarity == b.Rarity
+					})
+					maxPetB = utility.SortBy(maxPetB, func(x, y models.ProcessedPet) int {
+						return utility.CompareInts(y.Level.Level, x.Level.Level)
+					})
+
+					maxPetBLevel := 0
+					if len(maxPetB) > 0 {
+						maxPetBLevel = maxPetB[0].Level.Level
+					}
+
+					if maxPetALevel == maxPetBLevel {
+						return utility.CompareStrings(a.Type, b.Type)
+					} else {
+						return utility.CompareInts(maxPetALevel, maxPetBLevel)
+					}
+				}
+			} else {
+				return utility.CompareInts(
+					slices.Index(constants.RARITIES, strings.ToLower(a.Rarity)),
+					slices.Index(constants.RARITIES, strings.ToLower(b.Rarity)),
+				)
+			}
+		} else {
+			return utility.CompareBooleans(a.Active, b.Active)
+		}
+	})
+
+	return output
+}
+
+func getMissingPets(userProfile *models.Member, pets []models.ProcessedPet, gameMode string) []models.ProcessedPet {
+	ownedPetTypes := make(map[string]struct{})
+	for _, pet := range pets {
+		ownedPetTypes[pet.Type] = struct{}{}
+	}
+
+	missingPets := []models.Pet{}
+	maxPetIds := getMaxPetIds()
+	for pet := range notenoughupdates.NEUConstants.PetNums {
+		if _, ok := ownedPetTypes[pet]; ok || (pet == "BINGO" && gameMode != "bingo") {
+			continue
+		}
+
+		rarityIndex := maxPetIds[pet]
+		if rarityIndex == 0 {
+			continue
+		}
+
+		missingPets = append(missingPets, models.Pet{
+			Type:       pet,
+			Active:     false,
+			Experience: 0,
+			Rarity:     strings.ToUpper(constants.RARITIES[rarityIndex]),
+			CandyUsed:  0,
+		})
+
+		level := getPetLevel(missingPets[len(missingPets)-1])
+		missingPets[len(missingPets)-1].Experience = float64(level.ExperienceForMaxLevel)
+	}
+
+	return getProfilePets(userProfile, &missingPets)
+}
+
+type outputPets struct {
+	Pets               []models.ProcessedPet `json:"pets"`
+	MissingPets        []models.ProcessedPet `json:"missing"`
+	Amount             int                   `json:"amount"`
+	Total              int                   `json:"total"`
+	AmountSkins        int                   `json:"amount_skins"`
+	TotalSkins         int                   `json:"total_skins"`
+	TotalPetExperience int                   `json:"totalPetExp"`
+	TotalCandyUsed     int                   `json:"totalCandyUsed"`
+	PetScore           petScore              `json:"petScore,omitempty"`
+}
+
+type petScore struct {
+	Amount int                `json:"amount"`
+	Stats  map[string]float64 `json:"stats"`
+}
+
+func GetPetScore(pets []models.ProcessedPet) petScore {
+	highestRarity, highestLevel := map[string]int{}, map[string]int{}
+	for _, pet := range pets {
+		if pet.Type == "FRACTURED_MONTEZUMA_SOUL" {
+			continue
+		}
+
+		if pet.Level.Experience >= pet.Level.ExperienceForMaxLevel {
+			highestLevel[pet.Type] = 1
+		}
+
+		rarityIndex := slices.Index(constants.RARITIES, strings.ToLower(pet.Rarity))
+		if rarityIndex > highestRarity[pet.Type] {
+			highestRarity[pet.Type] = rarityIndex
+		}
+	}
+
+	rarity := 0
+	for _, r := range highestRarity {
+		rarity += r + 1
+	}
+
+	total := rarity + len(highestLevel)
+
+	keys := make([]int, 0, len(constants.PET_REWARDS))
+	for k := range constants.PET_REWARDS {
+		keys = append(keys, k)
+	}
+	
+	sort.Ints(keys)
+	bonus := map[string]float64{}
+	for _, key := range keys {
+		value := constants.PET_REWARDS[key]
+		if total > key {
+			bonus = value
+		}
+	}
+
+	output := petScore{
+		Amount: total,
+		Stats:  bonus,
+	}
+
+	return output
+}
+
+func GetPets(userProfile *models.Member, profile *models.Profile) (outputPets, error) {
+
+	allPets := []models.Pet{}
+	allPets = append(allPets, userProfile.Pets.Pets...)
+	if userProfile.Rift.DeadCats.Montezuma.Rarity != "" {
+		userProfile.Rift.DeadCats.Montezuma.Active = false
+		allPets = append(allPets, userProfile.Rift.DeadCats.Montezuma)
+	}
+
+	pets := getProfilePets(userProfile, &allPets)
+	petAmount, skinAmount, totalPetExp, totalCandyUsed := map[string]int{}, 0, 0, 0
+	for _, pet := range pets {
+		totalPetExp += pet.Level.Experience
+		petAmount[pet.Type]++
+
+		if pet.Skin != "" {
+			skinAmount++
+		}
+
+		if pet.CandyUsed > 0 {
+			totalCandyUsed += pet.CandyUsed
+		}
+	}
+
+	output := outputPets{
+		Pets:               pets,
+		Amount:             len(petAmount),
+		Total:              len(getMaxPetIds()),
+		AmountSkins:        skinAmount,
+		TotalSkins:         0,
+		TotalPetExperience: totalPetExp,
+		TotalCandyUsed:     totalCandyUsed,
+		PetScore:           GetPetScore(pets),
+	}
+
+	output.MissingPets = getMissingPets(userProfile, output.Pets, profile.GameMode)
+
+	return output, nil
+}
