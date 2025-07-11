@@ -32,6 +32,8 @@ type Member struct {
 	Objectives          *objectives          `json:"objectives,omitempty"`
 	GlaciteTunnels      *glaciteData         `json:"glacite_player_data,omitempty"`
 	Forge               *forge               `json:"forge,omitempty"`
+	Quests              *quests              `json:"quests,omitempty"`
+	Garden              *gardenProfileData   `json:"garden_player_data,omitempty"`
 }
 
 type coopInvitation struct {
@@ -66,7 +68,10 @@ type deletionNotice struct {
 }
 
 type jacobsContest struct {
-	Perks *perks `json:"perks,omitempty"`
+	Perks          *perks                  `json:"perks,omitempty"`
+	UniqueBrackets map[string][]string     `json:"unique_brackets,omitempty"`
+	MedalsInv      map[string]int          `json:"medals_inv,omitempty"`
+	Contests       map[string]JacobContest `json:"contests,omitempty"`
 }
 
 type perks struct {
@@ -224,4 +229,24 @@ type forgeProcess struct {
 	Id        string `json:"id"`
 	StartTime int64  `json:"startTime"`
 	Slot      int    `json:"slot"`
+}
+
+type quests struct {
+	TrapperQuest *trapperQuest `json:"trapper_quest,omitempty"`
+}
+
+type trapperQuest struct {
+	PeltCount int `json:"pelt_count,omitempty"`
+}
+
+type gardenProfileData struct {
+	Copper        int `json:"copper,omitempty"`
+	LarvaConsumed int `json:"larva_consumed,omitempty"`
+}
+
+type JacobContest struct {
+	Collected           int    `json:"collected"`
+	ClaimedPosition     *int   `json:"claimed_position,omitempty"`
+	ClaimedParticipants *int   `json:"claimed_participants,omitempty"`
+	ClaimedMedal        string `json:"claimed_medal"`
 }
