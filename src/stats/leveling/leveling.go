@@ -30,7 +30,7 @@ func getXpTable(skillType string) map[int]int {
 	return constants.DEFAULT_LEVELLING_XP
 }
 
-func GetLevelByXp(xp int, extra *ExtraSkillData) *models.Skill {
+func GetLevelByXp(xp int, extra *ExtraSkillData) models.Skill {
 	if extra == nil {
 		extra = &ExtraSkillData{Type: "default"}
 	}
@@ -59,7 +59,7 @@ func GetLevelByXp(xp int, extra *ExtraSkillData) *models.Skill {
 	}
 
 	// the level ignoring the cap and using only the table
-	uncappedLevel := 0
+	uncappedLevel := 1
 
 	// the amount of xp over the amount required for the level
 	xpCurrent := xp
@@ -145,7 +145,7 @@ func GetLevelByXp(xp int, extra *ExtraSkillData) *models.Skill {
 		}
 	}
 
-	return &models.Skill{
+	return models.Skill{
 		XP:                          xp,
 		Level:                       level,
 		MaxLevel:                    maxLevel,

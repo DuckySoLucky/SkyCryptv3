@@ -37,7 +37,7 @@ func GetSkills(userProfile *models.Member, profile *models.Profile, player *mode
 				Cap:     &capValue,
 			}
 
-			output.Skills[skill] = *stats.GetLevelByXp(int(experience), extra)
+			output.Skills[skill] = stats.GetLevelByXp(int(experience), extra)
 		}
 	} else {
 		experienceMap := map[string]int{
@@ -54,7 +54,7 @@ func GetSkills(userProfile *models.Member, profile *models.Profile, player *mode
 		}
 
 		for skill, level := range experienceMap {
-			output.Skills[skill] = *stats.GetLevelByXp(level, &stats.ExtraSkillData{Type: skill})
+			output.Skills[skill] = stats.GetLevelByXp(level, &stats.ExtraSkillData{Type: skill})
 		}
 	}
 

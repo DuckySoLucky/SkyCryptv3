@@ -82,6 +82,8 @@ func SetupRoutes(app *fiber.App) {
 	api.Get("/inventory/:uuid/:profileId/:inventoryId", routes.InventoryHandler)
 	api.Get("/inventory/:uuid/:profileId/:inventoryId/:search", routes.InventoryHandler)
 
+	api.Get("/skills/:uuid/:profileId", routes.SkillsHandler)
+
 	// Root route
 	app.Get("/", handlers.HelloHandler)
 }

@@ -36,4 +36,5 @@ type achievements struct {
 	SkillFishing    int `json:"skyblock_angler,omitempty"`
 	SkillEnchanting int `json:"skyblock_augmentation,omitempty"`
 	SkillAlchemy    int `json:"skyblock_concoctor,omitempty"`
+	HotMCommissions int `json:"skyblock_hard_working_miner,omitempty"`
 }

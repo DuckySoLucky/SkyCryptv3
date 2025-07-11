@@ -12,7 +12,7 @@ type Profile struct {
 	Selected  bool              `json:"selected"`
 	Members   map[string]Member `json:"members"`
 	GameMode  string            `json:"game_mode,omitempty"`
-	Banking   *banking          `json:"banking,omitempty"`
+	Banking   banking           `json:"banking,omitempty"`
 }
 
 type Member struct {
@@ -28,6 +28,10 @@ type Member struct {
 	Rift                *rift                `json:"rift,omitempty"`
 	AccessoryBagStorage *accessoryBagStorage `json:"accessory_bag_storage,omitempty"`
 	CrimsonIsle         *crimsonIsleData     `json:"nether_island_player_data,omitempty"`
+	Mining              *mining              `json:"mining_core,omitempty"`
+	Objectives          *objectives          `json:"objectives,omitempty"`
+	GlaciteTunnels      *glaciteData         `json:"glacite_player_data,omitempty"`
+	Forge               *forge               `json:"forge,omitempty"`
 }
 
 type coopInvitation struct {
@@ -82,7 +86,7 @@ type currencies struct {
 }
 
 type banking struct {
-	Balance float64 `json:"balance,omitempty"`
+	Balance *float64 `json:"balance,omitempty"`
 }
 
 type fairySouls struct {
@@ -161,4 +165,63 @@ type Pet struct {
 type pets struct {
 	PetCare *petCare `json:"pet_care,omitempty"`
 	Pets    []Pet    `json:"pets,omitempty"`
+}
+
+type mining struct {
+	Nodes                  map[string]int     `json:"nodes,omitempty"`
+	Experience             float64            `json:"experience,omitempty"`
+	GreaterMinesLastAccess int64              `json:"greater_mines_last_access,omitempty"`
+	LastReset              int64              `json:"last_reset,omitempty"`
+	TokensSpent            int                `json:"tokens_spent,omitempty"`
+	SelectedPickaxeAbility string             `json:"selected_pickaxe_ability,omitempty"`
+	PowderMithril          int                `json:"powder_mithril,omitempty"`
+	PowderMithrilTotal     int                `json:"powder_mithril_total,omitempty"`
+	PowderSpentMithril     int                `json:"powder_spent_mithril,omitempty"`
+	PowderGemstone         int                `json:"powder_gemstone,omitempty"`
+	PowderGemstoneTotal    int                `json:"powder_gemstone_total,omitempty"`
+	PowderSpentGemstone    int                `json:"powder_spent_gemstone,omitempty"`
+	PowderGlacite          int                `json:"powder_glacite,omitempty"`
+	PowderGlaciteTotal     int                `json:"powder_glacite_total,omitempty"`
+	PowderSpentGlacite     int                `json:"powder_spent_glacite,omitempty"`
+	Crystals               map[string]crystal `json:"crystals,omitempty"`
+	Biomes                 biomes             `json:"biomes,omitempty"`
+}
+
+type crystal struct {
+	State       string `json:"state,omitempty"`
+	TotalFound  int    `json:"total_found,omitempty"`
+	TotalPlaced int    `json:"total_placed,omitempty"`
+}
+
+type biomes struct {
+	Precursor precursor `json:"precursor,omitempty"`
+}
+
+type precursor struct {
+	PartsDelivered []string `json:"parts_delivered,omitempty"`
+}
+
+type objectives struct {
+	Tutorial []string `json:"tutorial,omitempty"`
+}
+
+type glaciteData struct {
+	FossilsDonated    []string       `json:"fossils_donated,omitempty"`
+	FossilDust        float64        `json:"fossil_dust,omitempty"`
+	CorpsesLooted     map[string]int `json:"corpses_looted,omitempty"`
+	MineshaftsEntered int            `json:"mineshafts_entered,omitempty"`
+}
+
+type forge struct {
+	ForgeProcesses forgeProcesses `json:"forge_processes"`
+}
+
+type forgeProcesses struct {
+	Forge map[string]forgeProcess `json:"forge_1"`
+}
+
+type forgeProcess struct {
+	Id        string `json:"id"`
+	StartTime int64  `json:"startTime"`
+	Slot      int    `json:"slot"`
 }

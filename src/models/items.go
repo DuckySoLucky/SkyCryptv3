@@ -77,3 +77,8 @@ type ProcessedItem struct {
 	Source         string          `json:"source,omitempty"`
 	Id             string          `json:"id,omitempty"`
 }
+
+type SkillToolsResult struct {
+	Tools               []ProcessedItem `json:"tools"`
+	HighestPriorityTool *ProcessedItem  `json:"highest_priority_tool"`
+}

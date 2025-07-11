@@ -101,12 +101,7 @@ func GetWeapons(allItems []models.ProcessedItem) weaponsResult {
 	}
 }
 
-type skillToolsResult struct {
-	Tools               []models.ProcessedItem `json:"tools"`
-	HighestPriorityTool *models.ProcessedItem  `json:"highest_priority_tool"`
-}
-
-func GetSkillTools(skill string, allItems []models.ProcessedItem) skillToolsResult {
+func GetSkillTools(skill string, allItems []models.ProcessedItem) models.SkillToolsResult {
 	toolCategory := skill + "_tool"
 	tools := GetCategory(allItems, toolCategory)
 
@@ -115,7 +110,7 @@ func GetSkillTools(skill string, allItems []models.ProcessedItem) skillToolsResu
 		highestPriorityTool = &tools[0]
 	}
 
-	return skillToolsResult{
+	return models.SkillToolsResult{
 		Tools:               tools,
 		HighestPriorityTool: highestPriorityTool,
 	}

@@ -271,3 +271,4 @@ func Sum(slice []float64) float64 {
 	}
 	return total
 }
+
