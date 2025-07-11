@@ -211,13 +211,6 @@ func ReplaceVariables(template string, variables map[string]float64) string {
 	})
 }
 
-/*
-SortBy
-CompareInts
-CompareStrings
-CompareInts
-CompareBooleans*/
-
 func CompareInts(a, b int) int {
 	if a < b {
 		return -1
@@ -278,5 +271,3 @@ func Sum(slice []float64) float64 {
 	}
 	return total
 }
-
-
