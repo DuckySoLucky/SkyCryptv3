@@ -64,6 +64,8 @@ func ProcessItem(item *models.Item, source string) models.ProcessedItem {
 		} else if timestamp, ok := item.Tag.ExtraAttributes.Timestamp.(string); ok {
 			parsedTimestamp := utility.ParseTimestamp(timestamp)
 			processedItem.Lore = append(processedItem.Lore, "", fmt.Sprintf("§7Obtained: §c{TIMESTAMP:%d}", parsedTimestamp))
+		} else if timestamp, ok := item.Tag.ExtraAttributes.Timestamp.(int64); ok {
+			processedItem.Lore = append(processedItem.Lore, "", fmt.Sprintf("§7Obtained: §c{TIMESTAMP:%d}", timestamp))
 		} else {
 			fmt.Printf("Unexpected type for timestamp: %T, %s\n", item.Tag.ExtraAttributes.Timestamp, item.Tag.ExtraAttributes.Timestamp)
 		}
