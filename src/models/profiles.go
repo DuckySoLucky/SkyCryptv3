@@ -1,5 +1,7 @@
 package models
 
+import "encoding/json"
+
 type HypixelProfilesResponse struct {
 	Success  bool      `json:"success"`
 	Cause    string    `json:"cause,omitempty"`
@@ -34,6 +36,8 @@ type Member struct {
 	Forge               *forge               `json:"forge,omitempty"`
 	Quests              *quests              `json:"quests,omitempty"`
 	Garden              *gardenProfileData   `json:"garden_player_data,omitempty"`
+	PlayerStats         *playerStats         `json:"player_stats,omitempty"`
+	TrophyFish          *memberTrophyFish    `json:"trophy_fish,omitempty"`
 }
 
 type coopInvitation struct {
@@ -249,4 +253,60 @@ type JacobContest struct {
 	ClaimedPosition     *int   `json:"claimed_position,omitempty"`
 	ClaimedParticipants *int   `json:"claimed_participants,omitempty"`
 	ClaimedMedal        string `json:"claimed_medal"`
+}
+
+type playerStats struct {
+	Kills       map[string]float64 `json:"kills,omitempty"`
+	Deaths      map[string]float64 `json:"deaths,omitempty"`
+	ItemsFished struct {
+		Total         float64 `json:"total,omitempty"`
+		Normal        float64 `json:"normal,omitempty"`
+		Treasure      float64 `json:"treasure,omitempty"`
+		LargeTreasure float64 `json:"large_treasure,omitempty"`
+		TrophyFish    float64 `json:"trophy_fish,omitempty"`
+	} `json:"items_fished"`
+	ShredderRod struct {
+		Fished float64 `json:"fished,omitempty"`
+		Bait   float64 `json:"bait,omitempty"`
+	} `json:"shredder_rod"`
+	Pets struct {
+		Milestone struct {
+			SeaCreaturesKilled float64 `json:"sea_creatures_killed,omitempty"`
+		} `json:"milestone,omitempty"`
+	} `json:"pets,omitempty"`
+}
+
+type memberTrophyFish struct {
+	Rewards     []int          `json:"rewards"`
+	TotalCaught int            `json:"total_caught"`
+	Extra       map[string]int `json:"-"`
+}
+
+func (t *memberTrophyFish) UnmarshalJSON(data []byte) error {
+	var raw map[string]json.RawMessage
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+
+	t.Extra = make(map[string]int)
+
+	for key, value := range raw {
+		switch key {
+		case "rewards":
+			if err := json.Unmarshal(value, &t.Rewards); err != nil {
+				return err
+			}
+		case "total_caught":
+			if err := json.Unmarshal(value, &t.TotalCaught); err != nil {
+				return err
+			}
+		default:
+			var num int
+			if err := json.Unmarshal(value, &num); err == nil {
+				t.Extra[key] = num
+			}
+		}
+	}
+
+	return nil
 }

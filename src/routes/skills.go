@@ -78,5 +78,6 @@ func SkillsHandler(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"mining":  stats.GetMining(userProfile, player, allItems),
 		"farming": stats.GetFarming(userProfile, allItems),
+		"fishing": stats.GetFishing(userProfile, allItems),
 	})
 }
