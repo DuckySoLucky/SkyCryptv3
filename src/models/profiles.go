@@ -1,6 +1,9 @@
 package models
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 type HypixelProfilesResponse struct {
 	Success  bool      `json:"success"`
@@ -38,6 +41,7 @@ type Member struct {
 	Garden              *gardenProfileData   `json:"garden_player_data,omitempty"`
 	PlayerStats         *playerStats         `json:"player_stats,omitempty"`
 	TrophyFish          *memberTrophyFish    `json:"trophy_fish,omitempty"`
+	Experimentation     *experimentationData `json:"experimentation,omitempty"`
 }
 
 type coopInvitation struct {
@@ -281,32 +285,60 @@ type memberTrophyFish struct {
 	TotalCaught int            `json:"total_caught"`
 	Extra       map[string]int `json:"-"`
 }
+type ExperimentationGame struct {
+	LastAttempt int64            `json:"last_attempt,omitempty"`
+	LastClaimed int64            `json:"last_claimed,omitempty"`
+	BonusClicks int              `json:"bonus_clicks,omitempty"`
+	Claimed     bool             `json:"claimed,omitempty"`
+	Attempts    map[int]int      `json:"-"`
+	Claims      map[int]int      `json:"-"`
+	BestScores  map[int]int      `json:"-"`
+	Raw         map[string]int64 `json:"-"`
+}
 
-func (t *memberTrophyFish) UnmarshalJSON(data []byte) error {
-	var raw map[string]json.RawMessage
+func (e *ExperimentationGame) UnmarshalJSON(data []byte) error {
+	type Alias ExperimentationGame
+	aux := &struct {
+		*Alias
+	}{Alias: (*Alias)(e)}
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+	e.Attempts = make(map[int]int)
+	e.Claims = make(map[int]int)
+	e.BestScores = make(map[int]int)
+	e.Raw = make(map[string]int64)
+
+	var raw map[string]interface{}
 	if err := json.Unmarshal(data, &raw); err != nil {
 		return err
 	}
-
-	t.Extra = make(map[string]int)
-
-	for key, value := range raw {
-		switch key {
-		case "rewards":
-			if err := json.Unmarshal(value, &t.Rewards); err != nil {
-				return err
-			}
-		case "total_caught":
-			if err := json.Unmarshal(value, &t.TotalCaught); err != nil {
-				return err
-			}
-		default:
-			var num int
-			if err := json.Unmarshal(value, &num); err == nil {
-				t.Extra[key] = num
-			}
+	for k, v := range raw {
+		switch {
+		case len(k) > 9 && k[:9] == "attempts_":
+			var idx int
+			fmt.Sscanf(k, "attempts_%d", &idx)
+			e.Attempts[idx] = int(v.(float64))
+		case len(k) > 7 && k[:7] == "claims_":
+			var idx int
+			fmt.Sscanf(k, "claims_%d", &idx)
+			e.Claims[idx] = int(v.(float64))
+		case len(k) > 11 && k[:11] == "best_score_":
+			var idx int
+			fmt.Sscanf(k, "best_score_%d", &idx)
+			e.BestScores[idx] = int(v.(float64))
 		}
 	}
-
 	return nil
+}
+
+type experimentationData struct {
+	Simon                 *ExperimentationGame `json:"simon,omitempty"`
+	Pairings              *ExperimentationGame `json:"pairings,omitempty"`
+	Numbers               *ExperimentationGame `json:"numbers,omitempty"`
+	ClaimsResets          int64                `json:"claims_resets,omitempty"`
+	ClaimsResetsTimestamp int64                `json:"claims_resets_timestamp,omitempty"`
+	SerumsDrank           int                  `json:"serums_drank,omitempty"`
+	ClaimedRetroactiveRng bool                 `json:"claimed_retroactive_rng,omitempty"`
+	ChargeTrackTimestamp  int64                `json:"charge_track_timestamp,omitempty"`
 }

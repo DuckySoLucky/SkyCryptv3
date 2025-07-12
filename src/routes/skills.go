@@ -76,8 +76,9 @@ func SkillsHandler(c *fiber.Ctx) error {
 	fmt.Printf("Returning /api/skills/%s in %s\n", profileId, time.Since(timeNow))
 
 	return c.JSON(fiber.Map{
-		"mining":  stats.GetMining(userProfile, player, allItems),
-		"farming": stats.GetFarming(userProfile, allItems),
-		"fishing": stats.GetFishing(userProfile, allItems),
+		"mining":     stats.GetMining(userProfile, player, allItems),
+		"farming":    stats.GetFarming(userProfile, allItems),
+		"fishing":    stats.GetFishing(userProfile, allItems),
+		"enchantign": stats.GetEnchanting(userProfile),
 	})
 }
