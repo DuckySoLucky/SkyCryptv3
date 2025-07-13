@@ -84,6 +84,8 @@ func SetupRoutes(app *fiber.App) {
 
 	api.Get("/skills/:uuid/:profileId", routes.SkillsHandler)
 
+	api.Get("/dungeons/:uuid/:profileId", routes.DungeonsHandler)
+
 	// Root route
 	app.Get("/", handlers.HelloHandler)
 }

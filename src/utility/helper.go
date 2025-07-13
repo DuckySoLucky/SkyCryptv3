@@ -272,3 +272,10 @@ func Sum(slice []float64) float64 {
 	return total
 }
 
+func RoundFloat(value float64, precision int) float64 {
+	if precision < 0 {
+		return value
+	}
+	pow := math.Pow(10, float64(precision))
+	return math.Round(value*pow) / pow
+}

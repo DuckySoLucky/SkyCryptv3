@@ -42,6 +42,7 @@ type Member struct {
 	PlayerStats         *playerStats         `json:"player_stats,omitempty"`
 	TrophyFish          *memberTrophyFish    `json:"trophy_fish,omitempty"`
 	Experimentation     *experimentationData `json:"experimentation,omitempty"`
+	Dungeons            *Dungeons            `json:"dungeons,omitempty"`
 }
 
 type coopInvitation struct {
@@ -341,4 +342,53 @@ type experimentationData struct {
 	SerumsDrank           int                  `json:"serums_drank,omitempty"`
 	ClaimedRetroactiveRng bool                 `json:"claimed_retroactive_rng,omitempty"`
 	ChargeTrackTimestamp  int64                `json:"charge_track_timestamp,omitempty"`
+}
+
+type Dungeons struct {
+	DungeonTypes         map[string]DungeonData `json:"dungeon_types,omitempty"`
+	Classes              map[string]playerClass `json:"player_classes,omitempty"`
+	SelectedDungeonClass string                 `json:"selected_dungeon_class,omitempty"`
+	Secrets              float64                `json:"secrets,omitempty"`
+}
+
+type playerClass struct {
+	Experience float64 `json:"experience,omitempty"`
+}
+
+type DungeonData struct {
+	Experience float64 `json:"experience,omitempty"`
+
+	HighestTierCompleted int                   `json:"highest_tier_completed,omitempty"`
+	TimesPlayed          map[string]float64    `json:"times_played,omitempty"`
+	TierCompletions      map[string]float64    `json:"tier_completions,omitempty"`
+	MilestoneCompletions map[string]float64    `json:"milestone_completions,omitempty"`
+	MobsKilled           map[string]float64    `json:"mobs_killed,omitempty"`
+	MostMobsKilled       map[string]float64    `json:"most_mobs_killed,omitempty"`
+	WatcherKills         map[string]float64    `json:"watcher_kills,omitempty"`
+	MostDamageBerserk    map[string]float64    `json:"most_damage_berserk,omitempty"`
+	MostDamageMage       map[string]float64    `json:"most_damage_mage,omitempty"`
+	MostDamageHealer     map[string]float64    `json:"most_damage_healer,omitempty"`
+	MostDamageArcher     map[string]float64    `json:"most_damage_archer,omitempty"`
+	MostDamageTank       map[string]float64    `json:"most_damage_tank,omitempty"`
+	MostHealing          map[string]float64    `json:"most_healing,omitempty"`
+	FastestTime          map[string]float64    `json:"fastest_time,omitempty"`
+	FastestTimeS         map[string]float64    `json:"fastest_time_s,omitempty"`
+	FastestTimeSPlus     map[string]float64    `json:"fastest_time_s_plus,omitempty"`
+	BestScore            map[string]float64    `json:"best_score,omitempty"`
+	BestRuns             map[string]*[]BestRun `json:"best_runs,omitempty"`
+}
+
+type BestRun struct {
+	Timestamp        int64   `json:"timestamp"`
+	ScoreExploration int     `json:"score_exploration"`
+	ScoreSpeed       int     `json:"score_speed"`
+	ScoreSkill       int     `json:"score_skill"`
+	ScoreBonus       int     `json:"score_bonus"`
+	DungeonClass     string  `json:"dungeon_class"`
+	ElapsedTime      int64   `json:"elapsed_time"`
+	DamageDealt      float64 `json:"damage_dealt"`
+	Deaths           int     `json:"deaths"`
+	MobsKilled       int     `json:"mobs_killed"`
+	SecretsFound     int     `json:"secrets_found"`
+	DamageMitigated  float64 `json:"damage_mitigated"`
 }
