@@ -279,3 +279,27 @@ func RoundFloat(value float64, precision int) float64 {
 	pow := math.Pow(10, float64(precision))
 	return math.Round(value*pow) / pow
 }
+
+func SortInts(slice []int) []int {
+	if len(slice) < 2 {
+		return slice
+	}
+
+	for i := 0; i < len(slice)-1; i++ {
+		for j := 0; j < len(slice)-i-1; j++ {
+			if slice[j] > slice[j+1] {
+				slice[j], slice[j+1] = slice[j+1], slice[j]
+			}
+		}
+	}
+
+	return slice
+}
+
+func SumInt(slice []int) int {
+	total := 0
+	for _, value := range slice {
+		total += value
+	}
+	return total
+}

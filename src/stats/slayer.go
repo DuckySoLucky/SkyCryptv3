@@ -6,26 +6,7 @@ import (
 	"skycrypt/src/models"
 )
 
-type SlayersOutput struct {
-	Data                  map[string]SlayerData `json:"data"`
-	TotalSlayerExperience int                   `json:"totalSlayerExp"`
-	Stats                 map[string]float64    `json:"stats"`
-}
 
-type SlayerData struct {
-	Name    string         `json:"name"`
-	Texture string         `json:"texture"`
-	Kills   map[string]int `json:"kills"`
-	Level   SlayerLevel    `json:"level"`
-}
-
-type SlayerLevel struct {
-	Experience        int  `json:"xp"`
-	ExperienceForNext int  `json:"xpForNext"`
-	Level             int  `json:"level"`
-	MaxLevel          int  `json:"maxLevel"`
-	Maxed             bool `json:"maxed"`
-}
 
 func getSlayerKills(slayerData models.SlayerBoss) map[string]int {
 	tiers := []int{
@@ -49,9 +30,9 @@ func getSlayerKills(slayerData models.SlayerBoss) map[string]int {
 	return kills
 }
 
-func getSlayerLevel(experience int, slayerId string) SlayerLevel {
+func getSlayerLevel(experience int, slayerId string) models.SlayerLevel {
 	if constants.SLAYER_INFO[slayerId].Levelling == nil {
-		return SlayerLevel{
+		return models.SlayerLevel{
 			Experience:        0,
 			ExperienceForNext: 0,
 			Level:             0,
@@ -77,7 +58,7 @@ func getSlayerLevel(experience int, slayerId string) SlayerLevel {
 		experienceForNext = 0
 	}
 
-	return SlayerLevel{
+	return models.SlayerLevel{
 		Experience:        experience,
 		ExperienceForNext: experienceForNext,
 		Level:             level,
@@ -86,14 +67,14 @@ func getSlayerLevel(experience int, slayerId string) SlayerLevel {
 	}
 }
 
-func GetSlayers(userProfile *models.Member) SlayersOutput {
-	output := SlayersOutput{
-		Data: make(map[string]SlayerData),
+func GetSlayers(userProfile *models.Member) models.SlayersOutput {
+	output := models.SlayersOutput{
+		Data: make(map[string]models.SlayerData),
 	}
 
 	totalExperience := 0
 	for slayerId, slayerData := range userProfile.Slayes.SlayerBosses {
-		output.Data[slayerId] = SlayerData{
+		output.Data[slayerId] = models.SlayerData{
 			Name:    constants.SLAYER_INFO[slayerId].Name,
 			Texture: constants.SLAYER_INFO[slayerId].Head,
 			Kills:   getSlayerKills(slayerData),

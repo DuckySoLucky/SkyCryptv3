@@ -12,12 +12,13 @@ type HypixelProfilesResponse struct {
 }
 
 type Profile struct {
-	ProfileID string            `json:"profile_id"`
-	CuteName  string            `json:"cute_name"`
-	Selected  bool              `json:"selected"`
-	Members   map[string]Member `json:"members"`
-	GameMode  string            `json:"game_mode,omitempty"`
-	Banking   banking           `json:"banking,omitempty"`
+	ProfileID         string             `json:"profile_id"`
+	CuteName          string             `json:"cute_name"`
+	Selected          bool               `json:"selected"`
+	Members           map[string]Member  `json:"members"`
+	GameMode          string             `json:"game_mode,omitempty"`
+	Banking           banking            `json:"banking,omitempty"`
+	CommunityUpgrades *communityUpgrades `json:"community_upgrades,omitempty"`
 }
 
 type Member struct {
@@ -52,6 +53,7 @@ type coopInvitation struct {
 
 type playerData struct {
 	Experience *experience `json:"experience"`
+	Minions    []string    `json:"crafted_generators"`
 }
 
 type experience struct {
@@ -410,4 +412,13 @@ type SlayerBoss struct {
 	BossAttemptsTier3 int     `json:"boss_attempts_tier_3,omitempty"`
 	BossAttemptsTier4 int     `json:"boss_attempts_tier_4,omitempty"`
 	Experience        float64 `json:"xp,omitempty"`
+}
+
+type communityUpgrades struct {
+	UpgradeStates []communityUpgradeState `json:"upgrade_states,omitempty"`
+}
+
+type communityUpgradeState struct {
+	Upgrade string `json:"upgrade,omitempty"`
+	Tier    int    `json:"tier,omitempty"`
 }
