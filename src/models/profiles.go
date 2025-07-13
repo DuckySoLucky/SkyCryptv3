@@ -43,6 +43,7 @@ type Member struct {
 	TrophyFish          *memberTrophyFish    `json:"trophy_fish,omitempty"`
 	Experimentation     *experimentationData `json:"experimentation,omitempty"`
 	Dungeons            *Dungeons            `json:"dungeons,omitempty"`
+	Slayes              *slayer              `json:"slayer,omitempty"`
 }
 
 type coopInvitation struct {
@@ -391,4 +392,22 @@ type BestRun struct {
 	MobsKilled       int     `json:"mobs_killed"`
 	SecretsFound     int     `json:"secrets_found"`
 	DamageMitigated  float64 `json:"damage_mitigated"`
+}
+
+type slayer struct {
+	SlayerBosses map[string]SlayerBoss `json:"slayer_bosses,omitempty"`
+}
+
+type SlayerBoss struct {
+	BossKillsTier0    int     `json:"boss_kills_tier_0,omitempty"`
+	BossKillsTier1    int     `json:"boss_kills_tier_1,omitempty"`
+	BossKillsTier2    int     `json:"boss_kills_tier_2,omitempty"`
+	BossKillsTier3    int     `json:"boss_kills_tier_3,omitempty"`
+	BossKillsTier4    int     `json:"boss_kills_tier_4,omitempty"`
+	BossAttemptsTier0 int     `json:"boss_attempts_tier_0,omitempty"`
+	BossAttemptsTier1 int     `json:"boss_attempts_tier_1,omitempty"`
+	BossAttemptsTier2 int     `json:"boss_attempts_tier_2,omitempty"`
+	BossAttemptsTier3 int     `json:"boss_attempts_tier_3,omitempty"`
+	BossAttemptsTier4 int     `json:"boss_attempts_tier_4,omitempty"`
+	Experience        float64 `json:"xp,omitempty"`
 }
