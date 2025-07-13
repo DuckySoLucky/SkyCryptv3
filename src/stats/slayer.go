@@ -6,8 +6,6 @@ import (
 	"skycrypt/src/models"
 )
 
-
-
 func getSlayerKills(slayerData models.SlayerBoss) map[string]int {
 	tiers := []int{
 		slayerData.BossKillsTier0,
@@ -73,7 +71,7 @@ func GetSlayers(userProfile *models.Member) models.SlayersOutput {
 	}
 
 	totalExperience := 0
-	for slayerId, slayerData := range userProfile.Slayes.SlayerBosses {
+	for slayerId, slayerData := range userProfile.Slayer.SlayerBosses {
 		output.Data[slayerId] = models.SlayerData{
 			Name:    constants.SLAYER_INFO[slayerId].Name,
 			Texture: constants.SLAYER_INFO[slayerId].Head,
@@ -97,7 +95,7 @@ func GetSlayers(userProfile *models.Member) models.SlayersOutput {
 			if _, exists := output.Stats[stat]; !exists {
 				output.Stats[stat] = 0
 			}
-			
+
 			output.Stats[stat] += value
 		}
 	}

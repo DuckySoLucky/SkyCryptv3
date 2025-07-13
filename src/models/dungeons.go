@@ -70,3 +70,9 @@ type SecretsOutput struct {
 	Found         int     `json:"found"`
 	SecretsPerRun float64 `json:"secrets_per_run"`
 }
+
+type FloorCompletionsOutput struct {
+	Normal map[string]int `json:"normal"`
+	Master map[string]int `json:"master"`
+	Total  map[string]int `json:"total"`
+}

@@ -324,3 +324,17 @@ func SumInt(slice []int) int {
 	}
 	return total
 }
+
+func SortSlice[T any](slice []T, less func(i, j int) bool) {
+	if len(slice) < 2 {
+		return
+	}
+
+	for i := 0; i < len(slice)-1; i++ {
+		for j := 0; j < len(slice)-i-1; j++ {
+			if less(j+1, j) {
+				slice[j], slice[j+1] = slice[j+1], slice[j]
+			}
+		}
+	}
+}

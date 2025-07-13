@@ -45,8 +45,9 @@ type Member struct {
 	TrophyFish          *memberTrophyFish    `json:"trophy_fish,omitempty"`
 	Experimentation     *experimentationData `json:"experimentation,omitempty"`
 	Dungeons            *Dungeons            `json:"dungeons,omitempty"`
-	Slayes              *slayer              `json:"slayer,omitempty"`
+	Slayer              *slayer              `json:"slayer,omitempty"`
 	Bestiary            *bestiary            `json:"bestiary,omitempty"`
+	Collections         *map[string]int      `json:"collection,omitempty"`
 }
 
 type coopInvitation struct {
@@ -159,7 +160,8 @@ type accessoryBagStorage struct {
 }
 
 type crimsonIsleData struct {
-	Abiphone *abiphone `json:"abiphone,omitempty"`
+	Abiphone *abiphone       `json:"abiphone,omitempty"`
+	Kuudra   *map[string]int `json:"kuudra_completed_tiers,omitempty"`
 }
 
 type abiphone struct {

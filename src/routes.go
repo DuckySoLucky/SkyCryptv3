@@ -46,6 +46,8 @@ func SetupApplication() error {
 		return fmt.Errorf("error parsing NEU repository: %v", err)
 	}
 
+	fmt.Print("[SKYCRYPT] SkyCrypt initialized successfully\n")
+
 	return nil
 }
 
@@ -91,6 +93,8 @@ func SetupRoutes(app *fiber.App) {
 	api.Get("/minions/:uuid/:profileId", routes.MinionsHandler)
 
 	api.Get("/bestiary/:uuid/:profileId", routes.BestiaryHandler)
+
+	api.Get("/collections/:uuid/:profileId", routes.CollectionsHandler)
 
 	// Root route
 	app.Get("/", handlers.HelloHandler)

@@ -173,6 +173,43 @@ func getClassData(userProfile *models.Member) models.ClassData {
 	return output
 }
 
+func GetFloorCompletions(userProfile *models.Member) *models.FloorCompletionsOutput {
+	normalCompletions := userProfile.Dungeons.DungeonTypes["catacombs"].TierCompletions
+	masterCompletions := userProfile.Dungeons.DungeonTypes["master_catacombs"].TierCompletions
+	if normalCompletions == nil && masterCompletions == nil {
+		return &models.FloorCompletionsOutput{
+			Normal: map[string]int{"1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0},
+			Master: map[string]int{"1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0},
+			Total:  map[string]int{"1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0},
+		}
+	}
+
+	normal := make(map[string]int)
+	for key, value := range normalCompletions {
+		if key != "0" && key != "total" {
+			normal[key] = int(value)
+		}
+	}
+
+	master := make(map[string]int)
+	for key, value := range masterCompletions {
+		if key != "0" && key != "total" {
+			master[key] = int(value) * 2 // Master completions count as double
+		}
+	}
+
+	total := make(map[string]int)
+	for key := range normal {
+		total[key] = normal[key] + master[key]
+	}
+
+	return &models.FloorCompletionsOutput{
+		Normal: normal,
+		Master: master,
+		Total:  total,
+	}
+}
+
 func GetDungeons(userProfile *models.Member) models.DungeonsOutput {
 	catacombs := userProfile.Dungeons.DungeonTypes["catacombs"]
 	masterCatacombs := userProfile.Dungeons.DungeonTypes["master_catacombs"]
