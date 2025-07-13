@@ -9,21 +9,14 @@ import (
 	"strings"
 )
 
-type armorResult struct {
-	Armor     []models.ProcessedItem `json:"armor"`
-	Stats     map[string]float64     `json:"stats"`
-	SetName   *string                `json:"set_name,omitempty"`
-	SetRarity *string                `json:"set_rarity,omitempty"`
-}
-
 func isInvalidItem(a models.ProcessedItem) bool {
 	return len(GetId(a)) == 0
 }
 
-func GetArmor(armor []models.ProcessedItem) armorResult {
+func GetArmor(armor []models.ProcessedItem) models.ArmorResult {
 	// If all armor pieces have no ID, return empty result
 	if utility.Every(armor, isInvalidItem) {
-		return armorResult{
+		return models.ArmorResult{
 			Armor: []models.ProcessedItem{},
 			Stats: map[string]float64{},
 		}
@@ -43,7 +36,7 @@ func GetArmor(armor []models.ProcessedItem) armorResult {
 		copy(reversedArmor, armor)
 		slices.Reverse(reversedArmor)
 
-		result := armorResult{
+		result := models.ArmorResult{
 			Armor: reversedArmor,
 			Stats: GetStatsFromItems(armor),
 		}
@@ -165,7 +158,7 @@ func GetArmor(armor []models.ProcessedItem) armorResult {
 		copy(reversedArmor, armor)
 		slices.Reverse(reversedArmor)
 
-		result := armorResult{
+		result := models.ArmorResult{
 			Armor: reversedArmor,
 			Stats: GetStatsFromItems(armor),
 		}
@@ -184,7 +177,7 @@ func GetArmor(armor []models.ProcessedItem) armorResult {
 	copy(reversedArmor, armor)
 	slices.Reverse(reversedArmor)
 
-	return armorResult{
+	return models.ArmorResult{
 		Armor: reversedArmor,
 		Stats: GetStatsFromItems(armor),
 	}

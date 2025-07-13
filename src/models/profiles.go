@@ -103,6 +103,7 @@ type leveling struct {
 
 type currencies struct {
 	CoinPurse float64 `json:"coin_purse,omitempty"`
+	MotesPurse float64 `json:"motes_purse,omitempty"`
 }
 
 type banking struct {
@@ -139,9 +140,34 @@ type bagContents struct {
 }
 
 type rift struct {
-	Inventory riftInventory `json:"inventory,omitempty"`
-	Access    *riftAccess   `json:"access,omitempty"`
-	DeadCats  *deadCats     `json:"dead_cats,omitempty"`
+	Inventory  riftInventory   `json:"inventory,omitempty"`
+	Access     *riftAccess     `json:"access,omitempty"`
+	DeadCats   *deadCats       `json:"dead_cats,omitempty"`
+	Enigma     *riftEnigma     `json:"enigma,omitempty"`
+	Castle     *riftCastle     `json:"castle,omitempty"`
+	Gallery    *riftGallery    `json:"gallery,omitempty"`
+	WitherCage *riftWitherCage `json:"wither_cage,omitempty"`
+}
+
+type riftWitherCage struct {
+	KilledEyes []string `json:"killed_eyes,omitempty"`
+}
+
+type riftGallery struct {
+	SecuredTrophies []riftSecuredTrophy `json:"secured_trophies,omitempty"`
+}
+
+type riftSecuredTrophy struct {
+	Type      string `json:"type,omitempty"`
+	Timestamp int64  `json:"timestamp,omitempty"`
+}
+
+type riftCastle struct {
+	GrubberStacks int `json:"grubber_stacks,omitempty"`
+}
+
+type riftEnigma struct {
+	FoundSouls []string `json:"found_souls,omitempty"`
 }
 
 type riftInventory struct {
@@ -290,6 +316,13 @@ type playerStats struct {
 			SeaCreaturesKilled float64 `json:"sea_creatures_killed,omitempty"`
 		} `json:"milestone,omitempty"`
 	} `json:"pets,omitempty"`
+	Rift *riftPlayerData `json:"rift,omitempty"`
+}
+
+type riftPlayerData struct {
+	Visits                 float64 `json:"visits,omitempty"`
+	LifetimeMotesCollected float64 `json:"lifetime_motes_earned,omitempty"`
+	MotesOrbPickup         float64 `json:"motes_orb_pickup,omitempty"`
 }
 
 type memberTrophyFish struct {

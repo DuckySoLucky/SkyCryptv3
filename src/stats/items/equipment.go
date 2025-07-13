@@ -6,14 +6,9 @@ import (
 	"slices"
 )
 
-type equipmentResult struct {
-	Equipment []models.ProcessedItem `json:"equipment"`
-	Stats     map[string]float64     `json:"stats"`
-}
-
-func GetEquipment(equipment []models.ProcessedItem) equipmentResult {
+func GetEquipment(equipment []models.ProcessedItem) models.EquipmentResult {
 	if utility.Every(equipment, isInvalidItem) {
-		return equipmentResult{
+		return models.EquipmentResult{
 			Equipment: []models.ProcessedItem{},
 			Stats:     map[string]float64{},
 		}
@@ -23,8 +18,9 @@ func GetEquipment(equipment []models.ProcessedItem) equipmentResult {
 	copy(reversedEquipment, equipment)
 	slices.Reverse(reversedEquipment)
 
-	return equipmentResult{
+	return models.EquipmentResult{
 		Equipment: reversedEquipment,
 		Stats:     GetStatsFromItems(equipment),
 	}
+
 }

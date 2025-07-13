@@ -62,6 +62,10 @@ func GetStatsFromItems(items []models.ProcessedItem) ItemStats {
 	stats := make(ItemStats)
 
 	for _, item := range items {
+		if item.Rarity == "" {
+			continue
+		}
+
 		itemStats := GetStatsFromItem(item)
 		for stat, value := range itemStats {
 			if _, exists := stats[stat]; !exists {

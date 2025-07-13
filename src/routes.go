@@ -98,6 +98,8 @@ func SetupRoutes(app *fiber.App) {
 
 	api.Get("/crimson_isle/:uuid/:profileId", routes.CrimsonIsleHandler)
 
+	api.Get("/rift/:uuid/:profileId", routes.RiftHandler)
+
 	// Root route
 	app.Get("/", handlers.HelloHandler)
 }
