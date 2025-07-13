@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 )
 
 type HypixelProfilesResponse struct {
@@ -45,6 +46,7 @@ type Member struct {
 	Experimentation     *experimentationData `json:"experimentation,omitempty"`
 	Dungeons            *Dungeons            `json:"dungeons,omitempty"`
 	Slayes              *slayer              `json:"slayer,omitempty"`
+	Bestiary            *bestiary            `json:"bestiary,omitempty"`
 }
 
 type coopInvitation struct {
@@ -421,4 +423,46 @@ type communityUpgrades struct {
 type communityUpgradeState struct {
 	Upgrade string `json:"upgrade,omitempty"`
 	Tier    int    `json:"tier,omitempty"`
+}
+type bestiary struct {
+	Kills map[string]int `json:"kills,omitempty"`
+}
+
+func (b *bestiary) UnmarshalJSON(data []byte) error {
+	type Alias bestiary
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(b),
+	}
+	if err := json.Unmarshal(data, &aux); err != nil {
+		if !(json.Unmarshal(data, &map[string]interface{}{}) == nil && (err.Error() == "json: cannot unmarshal string into Go struct field .Alias.kills of type int" || err.Error() == "json: cannot unmarshal string into Go struct field .Alias.deaths of type int")) {
+			return err
+		}
+	}
+
+	var raw map[string]interface{}
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+
+	b.Kills = make(map[string]int)
+	if killsRaw, ok := raw["kills"]; ok {
+		if killsMap, ok := killsRaw.(map[string]interface{}); ok {
+			for k, v := range killsMap {
+				switch val := v.(type) {
+				case float64:
+					b.Kills[k] = int(val)
+				case int:
+					b.Kills[k] = val
+				case string:
+					if i, err := strconv.Atoi(val); err == nil {
+						b.Kills[k] = i
+					}
+				}
+			}
+		}
+	}
+
+	return nil
 }

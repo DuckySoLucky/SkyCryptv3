@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	neu "skycrypt/src/models/NEU"
+	neustats "skycrypt/src/stats/neu"
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
@@ -60,6 +61,21 @@ func ParseNEURepository() error {
 			}
 
 			NEUConstants.Pets = pets
+		} else if constant.Name() == "bestiary.json" {
+			filePath := fmt.Sprintf("%s/%s", constantsPath, constant.Name())
+			data, err := os.ReadFile(filePath)
+			if err != nil {
+				return fmt.Errorf("failed to read file %s: %w", filePath, err)
+			}
+
+			var bestiaryConstants neu.NEUBestiaryRaw
+			var json = jsoniter.ConfigCompatibleWithStandardLibrary
+			err = json.Unmarshal(data, &bestiaryConstants)
+			if err != nil {
+				return fmt.Errorf("failed to unmarshal JSON from %s: %w", filePath, err)
+			}
+
+			NEUConstants.Bestiary = neustats.FormatBestiaryConstants(bestiaryConstants)
 		}
 	}
 

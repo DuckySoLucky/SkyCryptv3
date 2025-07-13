@@ -2,6 +2,7 @@ package utility
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"math"
 	"regexp"
@@ -168,12 +169,32 @@ func GetSkinHash(base64String string) string {
 		return ""
 	}
 
-	data, err := base64.StdEncoding.DecodeString(base64String)
+	data, err := base64.RawStdEncoding.DecodeString(base64String)
 	if err != nil {
+		data, err = base64.StdEncoding.DecodeString(base64String)
+		if err != nil {
+			return ""
+		}
+	}
+
+	var jsonData struct {
+		Textures struct {
+			SKIN struct {
+				URL string `json:"url"`
+			} `json:"SKIN"`
+		} `json:"textures"`
+	}
+
+	if err := json.Unmarshal(data, &jsonData); err != nil {
 		return ""
 	}
 
-	parts := strings.Split(string(data), "/")
+	url := jsonData.Textures.SKIN.URL
+	if url == "" {
+		return ""
+	}
+
+	parts := strings.Split(url, "/")
 	if len(parts) == 0 {
 		return ""
 	}

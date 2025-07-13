@@ -13,6 +13,7 @@ type NEUItem struct {
 }
 
 type NEUConstant struct {
-	PetNums neu.PetNums `json:"petnums,omitempty"`
-	Pets    neu.Pets    `json:"pets,omitempty"`
+	PetNums  neu.PetNums           `json:"petnums,omitempty"`
+	Pets     neu.Pets              `json:"pets,omitempty"`
+	Bestiary neu.BestiaryConstants `json:"bestiary,omitempty"`
 }

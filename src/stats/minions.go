@@ -8,38 +8,7 @@ import (
 	"strings"
 )
 
-type MinionsOutput struct {
-	Minions      map[string]MinionCategory `json:"minions"`
-	TotalMinions int                       `json:"totalMinions"`
-	MaxedMinions int                       `json:"maxedMinions"`
-	TotalTiers   int                       `json:"totalTiers"`
-	MaxedTiers   int                       `json:"maxedTiers"`
-	MinionSlots  *MinionSlotsOutput        `json:"minionSlots"`
-}
-
-type MinionCategory struct {
-	Minions      map[string]Minion `json:"minions"`
-	Texture      string            `json:"texture"`
-	TotalMinions int               `json:"totalMinions"`
-	MaxedMinions int               `json:"maxedMinions"`
-	TotalTiers   int               `json:"totalTiers"`
-	MaxedTiers   int               `json:"maxedTiers"`
-}
-
-type Minion struct {
-	Name    string `json:"name"`
-	Texture string `json:"texture"`
-	MaxTier int    `json:"maxTier"`
-	Tiers   []int  `json:"tiers"`
-}
-
-type MinionSlotsOutput struct {
-	BonusSlots int `json:"bonusSlots"`
-	Current    int `json:"current"`
-	Next       int `json:"next"`
-}
-
-func getMinionSlots(profile *models.Profile, tiers int) *MinionSlotsOutput {
+func getMinionSlots(profile *models.Profile, tiers int) *models.MinionSlotsOutput {
 	keys := make([]int, 0, len(constants.MINION_SLOTS))
 	for k := range constants.MINION_SLOTS {
 		keys = append(keys, k)
@@ -64,7 +33,7 @@ func getMinionSlots(profile *models.Profile, tiers int) *MinionSlotsOutput {
 		}
 	}
 
-	return &MinionSlotsOutput{
+	return &models.MinionSlotsOutput{
 		BonusSlots: bonusSlots,
 		Current:    constants.MINION_SLOTS[highestKey],
 		Next:       nextTier - tiers,
@@ -95,16 +64,16 @@ func getCraftedMinions(profile *models.Profile) map[string][]int {
 	return craftedMinions
 }
 
-func GetMinions(profile *models.Profile) MinionsOutput {
+func GetMinions(profile *models.Profile) models.MinionsOutput {
 	craftedMinions := getCraftedMinions(profile)
 
-	output := MinionsOutput{
-		Minions: make(map[string]MinionCategory),
+	output := models.MinionsOutput{
+		Minions: make(map[string]models.MinionCategory),
 	}
 
 	for categoryId, categoryData := range constants.MINIONS {
-		category := MinionCategory{
-			Minions:      make(map[string]Minion),
+		category := models.MinionCategory{
+			Minions:      make(map[string]models.Minion),
 			Texture:      constants.MINION_CATEGORY_ICONS[categoryId],
 			TotalMinions: 0,
 			MaxedMinions: 0,
@@ -124,7 +93,7 @@ func GetMinions(profile *models.Profile) MinionsOutput {
 				maxTier = 11 // Default max tier if not specified
 			}
 
-			category.Minions[minionId] = Minion{
+			category.Minions[minionId] = models.Minion{
 				Name:    name,
 				Texture: minionData.Texture,
 				MaxTier: maxTier,

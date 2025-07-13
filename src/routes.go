@@ -90,6 +90,8 @@ func SetupRoutes(app *fiber.App) {
 
 	api.Get("/minions/:uuid/:profileId", routes.MinionsHandler)
 
+	api.Get("/bestiary/:uuid/:profileId", routes.BestiaryHandler)
+
 	// Root route
 	app.Get("/", handlers.HelloHandler)
 }
