@@ -8,37 +8,8 @@ import (
 	"strconv"
 )
 
-type BestiaryOutput struct {
-	Level             float64                           `json:"level"`
-	MaxLevel          float64                           `json:"maxLevel"`
-	FamiliesUnlocked  int                               `json:"familiesUnlocked"`
-	FamiliesCompleted int                               `json:"familiesCompleted"`
-	FamilyTiers       int                               `json:"familyTiers"`
-	MaxFamilyTiers    int                               `json:"maxFamilyTiers"`
-	TotalFamilies     int                               `json:"totalFamilies"`
-	Categories        map[string]BestiaryCategoryOutput `json:"categories"`
-}
-
-type BestiaryCategoryOutput struct {
-	Name         string              `json:"name"`
-	Texture      string              `json:"texture"`
-	Mobs         []BestiaryMobOutput `json:"mobs"`
-	MobsUnlocked int                 `json:"mobsUnlocked"`
-	MobsMaxed    int                 `json:"mobsMaxed"`
-}
-
-type BestiaryMobOutput struct {
-	Name          string `json:"name"`
-	Texture       string `json:"texture"`
-	Kills         int    `json:"kills"`
-	NextTierKills int    `json:"nextTierKills"`
-	MaxKills      int    `json:"maxKills"`
-	Tier          int    `json:"tier"`
-	MaxTier       int    `json:"maxTier"`
-}
-
-func getCategoryMobs(userProfile *models.Member, mobs []neu.BestiaryMob) []BestiaryMobOutput {
-	mobOutputs := make([]BestiaryMobOutput, 0)
+func getCategoryMobs(userProfile *models.Member, mobs []neu.BestiaryMob) []models.BestiaryMobOutput {
+	mobOutputs := make([]models.BestiaryMobOutput, 0)
 
 	bestiaryKills := userProfile.Bestiary.Kills
 	brackets := notenoughupdates.NEUConstants.Bestiary.Brackets
@@ -71,7 +42,7 @@ func getCategoryMobs(userProfile *models.Member, mobs []neu.BestiaryMob) []Besti
 			}
 		}
 
-		mobOutput := BestiaryMobOutput{
+		mobOutput := models.BestiaryMobOutput{
 			Name:          mobData.Name,
 			Texture:       mobData.Texture,
 			Kills:         kills,
@@ -87,9 +58,9 @@ func getCategoryMobs(userProfile *models.Member, mobs []neu.BestiaryMob) []Besti
 	return mobOutputs
 }
 
-func GetBestiary(userProfile *models.Member) *BestiaryOutput {
-	output := &BestiaryOutput{
-		Categories:        make(map[string]BestiaryCategoryOutput),
+func GetBestiary(userProfile *models.Member) *models.BestiaryOutput {
+	output := &models.BestiaryOutput{
+		Categories:        make(map[string]models.BestiaryCategoryOutput),
 		FamiliesCompleted: 0,
 		FamiliesUnlocked:  0,
 		FamilyTiers:       0,
@@ -98,7 +69,7 @@ func GetBestiary(userProfile *models.Member) *BestiaryOutput {
 	}
 
 	for categoryId, categoryData := range notenoughupdates.NEUConstants.Bestiary.Islands {
-		categoryData := BestiaryCategoryOutput{
+		categoryData := models.BestiaryCategoryOutput{
 			Name:    categoryData.Name,
 			Texture: categoryData.Texture,
 			Mobs:    getCategoryMobs(userProfile, categoryData.Mobs),

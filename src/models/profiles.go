@@ -160,8 +160,12 @@ type accessoryBagStorage struct {
 }
 
 type crimsonIsleData struct {
-	Abiphone *abiphone       `json:"abiphone,omitempty"`
-	Kuudra   *map[string]int `json:"kuudra_completed_tiers,omitempty"`
+	Abiphone            *abiphone       `json:"abiphone,omitempty"`
+	Kuudra              *map[string]int `json:"kuudra_completed_tiers,omitempty"`
+	Dojo                *map[string]int `json:"dojo,omitempty"`
+	SelectedFaction     string          `json:"selected_faction,omitempty"`
+	MagesReputation     float64         `json:"mages_reputation,omitempty"`
+	BarbarianReputation float64         `json:"barbarians_reputation,omitempty"`
 }
 
 type abiphone struct {

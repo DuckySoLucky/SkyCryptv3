@@ -7,15 +7,8 @@ import (
 	"strings"
 )
 
-type RankOutput struct {
-	RankText  string `json:"rankText"`
-	RankColor string `json:"rankColor"`
-	PlusText  string `json:"plusText"`
-	PlusColor string `json:"plusColor"`
-}
-
-func GetRank(player *models.Player) *RankOutput {
-	output := RankOutput{
+func GetRank(player *models.Player) *models.RankOutput {
+	output := models.RankOutput{
 		RankText:  "",
 		RankColor: "",
 		PlusText:  "",

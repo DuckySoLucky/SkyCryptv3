@@ -1,6 +1,7 @@
 package stats
 
 import (
+	"fmt"
 	"skycrypt/src/constants"
 	"skycrypt/src/models"
 	"strings"
@@ -21,4 +22,80 @@ func GetKuudraCompletions(userProfile *models.Member) int {
 	}
 
 	return kills
+}
+
+func getKuudra(userProfile *models.Member) models.CrimsonIsleKuudra {
+	tiers, totalKills := []models.CrimsonIsleKuudraTier{}, 0
+	for kuudraId := range constants.KUUDRA_TIERS {
+		if kuudraId == "total" || strings.HasPrefix(kuudraId, "highest") {
+			continue
+		}
+
+		tier := models.CrimsonIsleKuudraTier{
+			Name:    constants.KUUDRA_TIERS[kuudraId].Name,
+			Id:      kuudraId,
+			Texture: constants.KUUDRA_TIERS[kuudraId].Texture,
+			Kills:   (*userProfile.CrimsonIsle.Kuudra)[kuudraId],
+		}
+
+		totalKills += tier.Kills
+		tiers = append(tiers, tier)
+	}
+
+	return models.CrimsonIsleKuudra{
+		TotalKills: totalKills,
+		Tiers:      tiers,
+	}
+}
+
+func getDojoRank(points int) string {
+	if points >= 1000 {
+		return "S"
+	} else if points >= 800 {
+		return "A"
+	} else if points >= 600 {
+		return "B"
+	} else if points >= 400 {
+		return "C"
+	} else if points >= 200 {
+		return "D"
+	}
+
+	return "F"
+}
+
+func getDojo(userProfile *models.Member) models.CrimsonIsleDojo {
+	totalPoints, challenges := 0, []models.CrimsonIsleDojoChallenge{}
+	for challengeId, challengeData := range constants.DOJO {
+		points := (*userProfile.CrimsonIsle.Dojo)[fmt.Sprintf("dojo_points_%s", challengeId)]
+		time := (*userProfile.CrimsonIsle.Dojo)[fmt.Sprintf("dojo_time_%s", challengeId)]
+		challenge := models.CrimsonIsleDojoChallenge{
+			Name:    challengeData.Name,
+			Id:      challengeId,
+			Texture: challengeData.Texture,
+			Points:  points,
+			Time:    time,
+			Rank:    getDojoRank(points),
+		}
+
+		totalPoints += points
+		challenges = append(challenges, challenge)
+	}
+
+	return models.CrimsonIsleDojo{
+		TotalPoints: totalPoints,
+		Challenges:  challenges,
+	}
+}
+
+func GetCrimsonIsle(userProfile *models.Member) *models.CrimsonIsleOutput {
+	return &models.CrimsonIsleOutput{
+		Factions: models.CrimsonIsleFactions{
+			SelectedFaction:     userProfile.CrimsonIsle.SelectedFaction,
+			BarbarianReputation: int(userProfile.CrimsonIsle.BarbarianReputation),
+			MagesReputation:     int(userProfile.CrimsonIsle.MagesReputation),
+		},
+		Kuudra: getKuudra(userProfile),
+		Dojo:   getDojo(userProfile),
+	}
 }

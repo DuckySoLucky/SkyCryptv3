@@ -7,46 +7,11 @@ import (
 	"skycrypt/src/utility"
 )
 
-type CollectionsOutput struct {
-	Categories       map[string]CollectionCategory `json:"categories"`
-	TotalCollections int                           `json:"totalCollections"`
-	MaxedCollections int                           `json:"maxedCollections"`
-}
-
-type CollectionCategory struct {
-	Name       string                   `json:"name"`
-	Texture    string                   `json:"texture"`
-	Items      []CollectionCategoryItem `json:"items"`
-	TotalTiers int                      `json:"totalTiers"`
-	MaxedTiers int                      `json:"maxedTiers"`
-}
-
-type CollectionCategoryItem struct {
-	Name        string                         `json:"name"`
-	Id          string                         `json:"id"`
-	Texture     string                         `json:"texture"`
-	Amount      int                            `json:"amount"`
-	TotalAmount int                            `json:"totalAmount"`
-	Tier        int                            `json:"tier"`
-	MaxTier     int                            `json:"maxTier"`
-	Amounts     []CollectionCategoryItemAmount `json:"amounts"`
-}
-
-type CollectionCategoryItemAmount struct {
-	Username string `json:"username"`
-	Amount   int    `json:"amount"`
-}
-
-type BossCollectionsFloorData struct {
-	floorId int
-	item    CollectionCategoryItem
-}
-
-func getBossCollections(userProfile *models.Member) CollectionCategory {
-	bossCollections := []CollectionCategoryItem{}
+func getBossCollections(userProfile *models.Member) models.CollectionCategory {
+	bossCollections := []models.CollectionCategoryItem{}
 
 	dungeons := GetFloorCompletions(userProfile)
-	var floorItems []BossCollectionsFloorData
+	var floorItems []models.BossCollectionsFloorData
 
 	for floor, amount := range dungeons.Total {
 		if floor == "total" {
@@ -62,7 +27,7 @@ func getBossCollections(userProfile *models.Member) CollectionCategory {
 			}
 		}
 
-		item := CollectionCategoryItem{
+		item := models.CollectionCategoryItem{
 			Name:        boss.Name,
 			Id:          floor,
 			Texture:     boss.Texture,
@@ -70,7 +35,7 @@ func getBossCollections(userProfile *models.Member) CollectionCategory {
 			TotalAmount: amount,
 			Tier:        tier,
 			MaxTier:     len(boss.Collections),
-			Amounts: []CollectionCategoryItemAmount{
+			Amounts: []models.CollectionCategoryItemAmount{
 				{
 					Username: "Normal",
 					Amount:   dungeons.Normal[floor],
@@ -82,9 +47,9 @@ func getBossCollections(userProfile *models.Member) CollectionCategory {
 			},
 		}
 		floorId, _ := utility.ParseInt(floor)
-		floorItems = append(floorItems, BossCollectionsFloorData{
-			floorId: floorId,
-			item:    item,
+		floorItems = append(floorItems, models.BossCollectionsFloorData{
+			FloorId: floorId,
+			Item:    item,
 		})
 
 	}
@@ -98,7 +63,7 @@ func getBossCollections(userProfile *models.Member) CollectionCategory {
 		}
 	}
 
-	kuudraAmounts := []CollectionCategoryItemAmount{}
+	kuudraAmounts := []models.CollectionCategoryItemAmount{}
 	for tier := range constants.KUUDRA_COMPLETIONS_MULTIPLIER {
 		amounts := userProfile.CrimsonIsle.Kuudra
 		if amounts == nil {
@@ -109,15 +74,15 @@ func getBossCollections(userProfile *models.Member) CollectionCategory {
 			tier = "basic"
 		}
 
-		kuudraAmounts = append(kuudraAmounts, CollectionCategoryItemAmount{
+		kuudraAmounts = append(kuudraAmounts, models.CollectionCategoryItemAmount{
 			Username: utility.TitleCase(tier),
 			Amount:   (*amounts)[tier],
 		})
 	}
 
-	floorItems = append(floorItems, BossCollectionsFloorData{
-		floorId: 8,
-		item: CollectionCategoryItem{
+	floorItems = append(floorItems, models.BossCollectionsFloorData{
+		FloorId: 8,
+		Item: models.CollectionCategoryItem{
 			Name:        KUUDRA_CONSTANTS.Name,
 			Id:          "kuudra",
 			Texture:     KUUDRA_CONSTANTS.Texture,
@@ -130,18 +95,18 @@ func getBossCollections(userProfile *models.Member) CollectionCategory {
 	})
 
 	utility.SortSlice(floorItems, func(i, j int) bool {
-		return floorItems[i].floorId < floorItems[j].floorId
+		return floorItems[i].FloorId < floorItems[j].FloorId
 	})
 
 	maxedTiers := 0
 	for _, fd := range floorItems {
-		bossCollections = append(bossCollections, fd.item)
-		if fd.item.MaxTier == fd.item.Tier {
+		bossCollections = append(bossCollections, fd.Item)
+		if fd.Item.MaxTier == fd.Item.Tier {
 			maxedTiers++
 		}
 	}
 
-	return CollectionCategory{
+	return models.CollectionCategory{
 		Name:       "Boss",
 		Texture:    "/api/item/SKULL_ITEM:1",
 		Items:      bossCollections,
@@ -150,7 +115,7 @@ func getBossCollections(userProfile *models.Member) CollectionCategory {
 	}
 }
 
-func GetCollections(userProfile *models.Member, profile *models.Profile) CollectionsOutput {
+func GetCollections(userProfile *models.Member, profile *models.Profile) models.CollectionsOutput {
 	usernames := map[string]string{}
 	for memberId := range profile.Members {
 		username, err := api.GetUsername(memberId)
@@ -161,27 +126,27 @@ func GetCollections(userProfile *models.Member, profile *models.Profile) Collect
 		usernames[memberId] = username
 	}
 
-	output := CollectionsOutput{
-		Categories: map[string]CollectionCategory{},
+	output := models.CollectionsOutput{
+		Categories: map[string]models.CollectionCategory{},
 	}
 
 	output.Categories["BOSSES"] = getBossCollections(userProfile)
 	for categoryId, categoryData := range constants.COLLECTIONS {
-		category := CollectionCategory{
+		category := models.CollectionCategory{
 			Name:    categoryData.Name,
 			Texture: categoryData.Texture,
-			Items:   []CollectionCategoryItem{},
+			Items:   []models.CollectionCategoryItem{},
 		}
 
 		for _, itemData := range categoryData.Collections {
 			amount := (*userProfile.Collections)[itemData.Id]
 
-			totalAmount, amounts := 0, []CollectionCategoryItemAmount{}
+			totalAmount, amounts := 0, []models.CollectionCategoryItemAmount{}
 			for memberId, memberData := range profile.Members {
 				memberAmount := (*memberData.Collections)[itemData.Id]
 				totalAmount += memberAmount
 				if memberAmount > 0 {
-					amounts = append(amounts, CollectionCategoryItemAmount{
+					amounts = append(amounts, models.CollectionCategoryItemAmount{
 						Username: usernames[memberId],
 						Amount:   memberAmount,
 					})
@@ -195,7 +160,7 @@ func GetCollections(userProfile *models.Member, profile *models.Profile) Collect
 				}
 			}
 
-			item := CollectionCategoryItem{
+			item := models.CollectionCategoryItem{
 				Name:        itemData.Name,
 				Id:          itemData.Id,
 				Texture:     itemData.Texture,

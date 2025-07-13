@@ -10,39 +10,27 @@ import (
 	"strings"
 )
 
-type InsertAccessory struct {
-	models.ProcessedItem
-	Id         string `json:"id"`
-	Rarity     string `json:"rarity"`
-	IsInactive bool   `json:"isInactive,omitempty"`
-}
-
-type AccessoryIds struct {
-	Id     string `json:"id"`
-	Rarity string `json:"rarity"`
-}
-
-func GetAccessories(useProfile *models.Member, items map[string][]models.Item) getMissingAccessoresOutput {
+func GetAccessories(useProfile *models.Member, items map[string][]models.Item) models.GetMissingAccessoresOutput {
 	if items == nil {
-		return getMissingAccessoresOutput{}
+		return models.GetMissingAccessoresOutput{}
 	}
 
 	talismanBag := items["talisman_bag"]
-	accessoryIds := make([]AccessoryIds, 0)
-	accessories := make([]InsertAccessory, 0)
+	accessoryIds := make([]models.AccessoryIds, 0)
+	accessories := make([]models.InsertAccessory, 0)
 	for _, item := range stats.ProcessItems(&talismanBag, "talisman_bag") {
 		id := stats.GetId(item)
 		if len(id) == 0 {
 			continue
 		}
 
-		newAccessory := InsertAccessory{
+		newAccessory := models.InsertAccessory{
 			ProcessedItem: item,
 			Id:            id,
 			Rarity:        item.Rarity,
 		}
 
-		newAccessoryId := AccessoryIds{
+		newAccessoryId := models.AccessoryIds{
 			Id:     id,
 			Rarity: item.Rarity,
 		}
@@ -75,7 +63,7 @@ func GetAccessories(useProfile *models.Member, items map[string][]models.Item) g
 				}
 
 				item.Lore = append(item.Lore, "", "§7Inactive: §cNot in accessory bag")
-				newAccessory := InsertAccessory{
+				newAccessory := models.InsertAccessory{
 					ProcessedItem: item,
 					Id:            id,
 					Rarity:        item.Rarity,
@@ -87,7 +75,7 @@ func GetAccessories(useProfile *models.Member, items map[string][]models.Item) g
 		}
 	}
 
-	var activeAccessories []InsertAccessory
+	var activeAccessories []models.InsertAccessory
 	for _, a := range accessories {
 		if !a.IsInactive {
 			activeAccessories = append(activeAccessories, a)
@@ -99,7 +87,7 @@ func GetAccessories(useProfile *models.Member, items map[string][]models.Item) g
 		id := accessory.Id
 		rarity := accessory.Rarity
 
-		var duplicates []InsertAccessory
+		var duplicates []models.InsertAccessory
 		for _, a := range accessories {
 			if constants.GetBaseIdFromAlias(a.Id) == constants.GetBaseIdFromAlias(id) {
 				duplicates = append(duplicates, a)
@@ -178,11 +166,11 @@ func GetAccessories(useProfile *models.Member, items map[string][]models.Item) g
 	}
 
 	if useProfile.Rift.Access.ConsumedPrism {
-		accessoryIds = append(accessoryIds, AccessoryIds{Id: "RIFT_PRISM", Rarity: "rare"})
+		accessoryIds = append(accessoryIds, models.AccessoryIds{Id: "RIFT_PRISM", Rarity: "rare"})
 	}
 
 	sort.Sort(itemSorter(accessories))
-	output := AccessoriesOutput{
+	output := models.AccessoriesOutput{
 		Accessories:  accessories,
 		AccessoryIds: accessoryIds,
 	}
@@ -190,12 +178,7 @@ func GetAccessories(useProfile *models.Member, items map[string][]models.Item) g
 	return GetMissingAccessories(output, useProfile)
 }
 
-type AccessoriesOutput struct {
-	Accessories  []InsertAccessory `json:"accessories"`
-	AccessoryIds []AccessoryIds    `json:"accessoryIds"`
-}
-
-type itemSorter []InsertAccessory
+type itemSorter []models.InsertAccessory
 
 func (s itemSorter) Len() int {
 	return len(s)

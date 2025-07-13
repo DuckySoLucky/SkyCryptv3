@@ -7,7 +7,7 @@ import (
 	"slices"
 )
 
-func hasAccessory(accessories *[]InsertAccessory, id string, rarity string, ignoreRarity bool) bool {
+func hasAccessory(accessories *[]models.InsertAccessory, id string, rarity string, ignoreRarity bool) bool {
 	for _, accessory := range *accessories {
 		if accessory.Id == id {
 			if ignoreRarity {
@@ -21,17 +21,17 @@ func hasAccessory(accessories *[]InsertAccessory, id string, rarity string, igno
 	return false
 }
 
-func getAccessory(accessories *[]InsertAccessory, id string) (*InsertAccessory, bool) {
+func getAccessory(accessories *[]models.InsertAccessory, id string) (*models.InsertAccessory, bool) {
 	for _, accessory := range *accessories {
 		if accessory.Id == id {
 			return &accessory, true
 		}
 	}
 
-	return &InsertAccessory{}, false
+	return &models.InsertAccessory{}, false
 }
 
-func getEnrichments(accessories []InsertAccessory) map[string]int {
+func getEnrichments(accessories []models.InsertAccessory) map[string]int {
 	output := make(map[string]int)
 	for _, item := range accessories {
 		specialAccessory, exists := constants.SPECIAL_ACCESSORIES[item.Id]
@@ -55,7 +55,7 @@ func getEnrichments(accessories []InsertAccessory) map[string]int {
 	return output
 }
 
-func GetRecombobulatedCount(accessories []InsertAccessory) int {
+func GetRecombobulatedCount(accessories []models.InsertAccessory) int {
 	count := 0
 	for _, accessory := range accessories {
 		if accessory.Tag.ExtraAttributes.Recombobulated > 0 {
@@ -64,21 +64,6 @@ func GetRecombobulatedCount(accessories []InsertAccessory) int {
 	}
 
 	return count
-}
-
-type GetMagicalPowerOutput struct {
-	Total       int `json:"total"`
-	Accessories int `json:"accessories"`
-	Abiphone    int `json:"abiphone"`
-	RiftPrism   int `json:"riftPrism"`
-	Hegemony    struct {
-		Rarity string `json:"rarity"`
-		Amount int    `json:"amount"`
-	} `json:"hegemony"`
-	Rarities map[string]struct {
-		Rarity int `json:"rarity"`
-		Amount int `json:"magicalPower"`
-	} `json:"rarities"`
 }
 
 func GetMagicalPower(rarity string, id string) int {
@@ -93,8 +78,8 @@ func GetMagicalPower(rarity string, id string) int {
 	return constants.MAGICAL_POWER[rarity]
 }
 
-func getMagicalPowerData(accessories *[]InsertAccessory, userProfile *models.Member) GetMagicalPowerOutput {
-	output := GetMagicalPowerOutput{
+func getMagicalPowerData(accessories *[]models.InsertAccessory, userProfile *models.Member) models.GetMagicalPowerOutput {
+	output := models.GetMagicalPowerOutput{
 		Rarities: make(map[string]struct {
 			Rarity int `json:"rarity"`
 			Amount int `json:"magicalPower"`
@@ -136,11 +121,11 @@ func getMagicalPowerData(accessories *[]InsertAccessory, userProfile *models.Mem
 	return output
 }
 
-func getMissing(accessories []InsertAccessory, accessoryIds []AccessoryIds) missingOutput {
+func getMissing(accessories []models.InsertAccessory, accessoryIds []models.AccessoryIds) models.MissingOutput {
 	ACCESSORIES := constants.GetAllAccessories()
-	unique := make([]InsertAccessory, 0)
+	unique := make([]models.InsertAccessory, 0)
 	for _, acc := range ACCESSORIES {
-		unique = append(unique, InsertAccessory{
+		unique = append(unique, models.InsertAccessory{
 			Id:     acc.SkyBlockID,
 			Rarity: acc.Rarity,
 		})
@@ -162,14 +147,14 @@ func getMissing(accessories []InsertAccessory, accessoryIds []AccessoryIds) miss
 		}
 	}
 
-	missing := make([]InsertAccessory, 0)
+	missing := make([]models.InsertAccessory, 0)
 	for _, accessory := range unique {
 		if !hasAccessory(&accessories, accessory.Id, accessory.Rarity, false) {
 			missing = append(missing, accessory)
 		}
 	}
 
-	filteredMissing := make([]InsertAccessory, 0)
+	filteredMissing := make([]models.InsertAccessory, 0)
 	for _, missingAccessory := range missing {
 		upgrades := constants.GetUpgradeList(missingAccessory.Id)
 		if len(upgrades) == 0 {
@@ -211,28 +196,22 @@ func getMissing(accessories []InsertAccessory, accessoryIds []AccessoryIds) miss
 		}
 	}
 
-	return missingOutput{
+	return models.MissingOutput{
 		Upgrades:     upgrades,
 		Other:        other,
 		AccessoryIds: accessoryIds,
 	}
 }
 
-type missingOutput struct {
-	Upgrades     []models.ProcessedItem `json:"upgrades"`
-	Other        []models.ProcessedItem `json:"other"`
-	AccessoryIds []AccessoryIds         `json:"accessoryIds"`
-}
-
-func GetMissingAccessories(accessories AccessoriesOutput, userProfile *models.Member) getMissingAccessoresOutput {
+func GetMissingAccessories(accessories models.AccessoriesOutput, userProfile *models.Member) models.GetMissingAccessoresOutput {
 	if len(accessories.AccessoryIds) == 0 && accessories.Accessories == nil {
-		return getMissingAccessoresOutput{}
+		return models.GetMissingAccessoresOutput{}
 	}
 
 	missingAccessories := getMissing(accessories.Accessories, accessories.AccessoryIds)
 	// TODO: Implement prices
 
-	var activeAccessories []InsertAccessory
+	var activeAccessories []models.InsertAccessory
 	for _, accessory := range accessories.Accessories {
 		if !accessory.IsInactive {
 			activeAccessories = append(activeAccessories, accessory)
@@ -244,7 +223,7 @@ func GetMissingAccessories(accessories AccessoriesOutput, userProfile *models.Me
 		processedItems[i] = accessory.ProcessedItem
 	}
 
-	output := getMissingAccessoresOutput{
+	output := models.GetMissingAccessoresOutput{
 		Stats:               stats.GetStatsFromItems(processedItems),
 		Enrichments:         getEnrichments(accessories.Accessories),
 		Unique:              len(activeAccessories),
@@ -272,18 +251,4 @@ func GetMissingAccessories(accessories AccessoriesOutput, userProfile *models.Me
 
 	return output
 
-}
-
-type getMissingAccessoresOutput struct {
-	Stats               map[string]float64     `json:"stats"`
-	Enrichments         map[string]int         `json:"enrichments"`
-	Unique              int                    `json:"unique"`
-	Total               int                    `json:"total"`
-	Recombobulated      int                    `json:"recombobulated"`
-	TotalRecombobulated int                    `json:"total_recombobulated"`
-	SelectedPower       string                 `json:"selected_power"`
-	MagicalPower        GetMagicalPowerOutput  `json:"magicalPower"`
-	Accessories         []InsertAccessory      `json:"accessories"`
-	Missing             []models.ProcessedItem `json:"missing"`
-	Upgrades            []models.ProcessedItem `json:"upgrades"`
 }
