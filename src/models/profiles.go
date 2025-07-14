@@ -23,31 +23,50 @@ type Profile struct {
 }
 
 type Member struct {
-	PlayerData          *playerData          `json:"player_data"`
-	CoopInvitation      *coopInvitation      `json:"coop_invitation"`
-	Profile             *profileData         `json:"profile"`
-	JacobsContest       *jacobsContest       `json:"jacobs_contest,omitempty"`
-	Pets                *pets                `json:"pets_data,omitempty"`
-	Leveling            *leveling            `json:"leveling,omitempty"`
-	Currencies          *currencies          `json:"currencies,omitempty"`
-	FairySouls          *fairySouls          `json:"fairy_soul,omitempty"`
-	Inventory           *inventory           `json:"inventory,omitempty"`
-	Rift                *rift                `json:"rift,omitempty"`
-	AccessoryBagStorage *accessoryBagStorage `json:"accessory_bag_storage,omitempty"`
-	CrimsonIsle         *crimsonIsleData     `json:"nether_island_player_data,omitempty"`
-	Mining              *mining              `json:"mining_core,omitempty"`
-	Objectives          *objectives          `json:"objectives,omitempty"`
-	GlaciteTunnels      *glaciteData         `json:"glacite_player_data,omitempty"`
-	Forge               *forge               `json:"forge,omitempty"`
-	Quests              *quests              `json:"quests,omitempty"`
-	Garden              *gardenProfileData   `json:"garden_player_data,omitempty"`
-	PlayerStats         *playerStats         `json:"player_stats,omitempty"`
-	TrophyFish          *memberTrophyFish    `json:"trophy_fish,omitempty"`
-	Experimentation     *experimentationData `json:"experimentation,omitempty"`
-	Dungeons            *Dungeons            `json:"dungeons,omitempty"`
-	Slayer              *slayer              `json:"slayer,omitempty"`
-	Bestiary            *bestiary            `json:"bestiary,omitempty"`
-	Collections         *map[string]int      `json:"collection,omitempty"`
+	PlayerData          *playerData             `json:"player_data"`
+	CoopInvitation      *coopInvitation         `json:"coop_invitation"`
+	Profile             *profileData            `json:"profile"`
+	JacobsContest       *jacobsContest          `json:"jacobs_contest,omitempty"`
+	Pets                *pets                   `json:"pets_data,omitempty"`
+	Leveling            *leveling               `json:"leveling,omitempty"`
+	Currencies          *currencies             `json:"currencies,omitempty"`
+	FairySouls          *fairySouls             `json:"fairy_soul,omitempty"`
+	Inventory           *inventory              `json:"inventory,omitempty"`
+	Rift                *rift                   `json:"rift,omitempty"`
+	AccessoryBagStorage *accessoryBagStorage    `json:"accessory_bag_storage,omitempty"`
+	CrimsonIsle         *crimsonIsleData        `json:"nether_island_player_data,omitempty"`
+	Mining              *mining                 `json:"mining_core,omitempty"`
+	Objectives          *objectives             `json:"objectives,omitempty"`
+	GlaciteTunnels      *glaciteData            `json:"glacite_player_data,omitempty"`
+	Forge               *forge                  `json:"forge,omitempty"`
+	Quests              *quests                 `json:"quests,omitempty"`
+	Garden              *gardenProfileData      `json:"garden_player_data,omitempty"`
+	PlayerStats         *playerStats            `json:"player_stats,omitempty"`
+	TrophyFish          *memberTrophyFish       `json:"trophy_fish,omitempty"`
+	Experimentation     *experimentationData    `json:"experimentation,omitempty"`
+	Dungeons            *Dungeons               `json:"dungeons,omitempty"`
+	Slayer              *slayer                 `json:"slayer,omitempty"`
+	Bestiary            *bestiary               `json:"bestiary,omitempty"`
+	Collections         *map[string]int         `json:"collection,omitempty"`
+	ItemData            *itemData               `json:"item_data,omitempty"`
+	WinterPlayerData    *winterPlayerIslandData `json:"winter_player_data,omitempty"`
+}
+
+type winterPlayerIslandData struct {
+	RefinedJyrreUses int `json:"refined_bottle_of_jyrre_uses,omitempty"`
+}
+
+type itemData struct {
+	Soulflow               float64 `json:"soulflow,omitempty"`
+	TeleporterPillConsumed bool    `json:"teleporter_pill_consumed,omitempty"`
+}
+
+type races struct {
+	ForagingRaceBestTime float64            `json:"foraging_race_best_time"`
+	EndRaceBestTime      float64            `json:"end_race_best_time"`
+	ChickenRaceBestTime2 float64            `json:"chicken_race_best_time_2"`
+	DungeonHub           map[string]float64 `json:"dungeon_hub"`
+	RiftRaceBestTime     float64            `json:"rift_race_best_time"`
 }
 
 type coopInvitation struct {
@@ -55,8 +74,9 @@ type coopInvitation struct {
 }
 
 type playerData struct {
-	Experience *experience `json:"experience"`
-	Minions    []string    `json:"crafted_generators"`
+	Experience         *experience `json:"experience"`
+	Minions            []string    `json:"crafted_generators"`
+	ReaperPeppersEaten int         `json:"reaper_peppers_eaten,omitempty"`
 }
 
 type experience struct {
@@ -73,9 +93,10 @@ type experience struct {
 }
 
 type profileData struct {
-	DeletionNotice *deletionNotice `json:"deletion_notice"`
-	FirstJoin      int64           `json:"first_join,omitempty"`
-	BankAccount    float64         `json:"bank_account,omitempty"`
+	DeletionNotice      *deletionNotice `json:"deletion_notice"`
+	FirstJoin           int64           `json:"first_join,omitempty"`
+	BankAccount         float64         `json:"bank_account,omitempty"`
+	PersonalBankUpgrade int             `json:"personal_bank_upgrade,omitempty"`
 }
 
 type deletionNotice struct {
@@ -102,8 +123,13 @@ type leveling struct {
 }
 
 type currencies struct {
-	CoinPurse float64 `json:"coin_purse,omitempty"`
-	MotesPurse float64 `json:"motes_purse,omitempty"`
+	CoinPurse  float64            `json:"coin_purse,omitempty"`
+	MotesPurse float64            `json:"motes_purse,omitempty"`
+	Essence    map[string]essence `json:"essence,omitempty"`
+}
+
+type essence struct {
+	Current int `json:"current,omitempty"`
 }
 
 type banking struct {
@@ -314,9 +340,60 @@ type playerStats struct {
 	Pets struct {
 		Milestone struct {
 			SeaCreaturesKilled float64 `json:"sea_creatures_killed,omitempty"`
+			OresMined          float64 `json:"ores_mined,omitempty"`
 		} `json:"milestone,omitempty"`
 	} `json:"pets,omitempty"`
-	Rift *riftPlayerData `json:"rift,omitempty"`
+	Rift                  *riftPlayerData   `json:"rift,omitempty"`
+	Races                 *races            `json:"races,omitempty"`
+	Gifts                 *gifts            `json:"gifts"`
+	WinterIslandData      *winterIslandData `json:"winter"`
+	EndIsland             *endIsland        `json:"end_island"`
+	HighestCriticalDamage float64           `json:"highest_critical_damage"`
+	Mythos                *mythos           `json:"mythos"`
+	Auctions              auctions          `json:"auctions"`
+}
+
+type auctions struct {
+	Bids        float64            `json:"bids"`
+	HighestBid  float64            `json:"highest_bid"`
+	Won         float64            `json:"won"`
+	TotalBought map[string]float64 `json:"total_bought"`
+	GoldSpent   float64            `json:"gold_spent"`
+	Created     float64            `json:"created"`
+	Fees        float64            `json:"fees"`
+	TotalSold   map[string]float64 `json:"total_sold"`
+	GoldEarned  float64            `json:"gold_earned"`
+	NoBids      float64            `json:"no_bids"`
+}
+
+type mythos struct {
+	Kills                 float64            `json:"kills"`
+	BurrowsDugNext        map[string]float64 `json:"burrows_dug_next"`
+	BurrowsDugCombat      map[string]float64 `json:"burrows_dug_combat"`
+	BurrowsDugTreasure    map[string]float64 `json:"burrows_dug_treasure"`
+	BurrowsChainsComplete map[string]float64 `json:"burrows_chains_complete"`
+}
+
+type endIsland struct {
+	DragonFight DragonFight `json:"dragon_fight"`
+}
+
+type DragonFight struct {
+	EnderCrystalsDestroyed float64            `json:"ender_crystals_destroyed"`
+	MostDamage             map[string]float64 `json:"most_damage"`
+	FastestKill            map[string]float64 `json:"fastest_kill"`
+}
+
+type winterIslandData struct {
+	MostSnowballsHit     float64 `json:"most_snowballs_hit"`
+	MostDamageDealt      float64 `json:"most_damage_dealt"`
+	MostMagmaDamageDealt float64 `json:"most_magma_damage_dealt"`
+	MostCannonballsHit   float64 `json:"most_cannonballs_hit"`
+}
+
+type gifts struct {
+	Given    float64 `json:"total_given"`
+	Received float64 `json:"total_received"`
 }
 
 type riftPlayerData struct {

@@ -28,13 +28,12 @@ func getSecrets(data *models.Dungeons) models.SecretsOutput {
 	}
 }
 
-func getDungeonStats(data *models.Dungeons) models.DungeonStatsOutput {
+func getDungeonStats(userProfile *models.Member) models.DungeonStatsOutput {
 	return models.DungeonStatsOutput{
-		Secrets:                  getSecrets(data),
-		HighestFloorBeatenNormal: data.DungeonTypes["catacombs"].HighestTierCompleted,
-		HighestFloorBeatenMaster: data.DungeonTypes["master_catacombs"].HighestTierCompleted,
-		// TODO: Fix once bestiary is implemented
-		BloodMobKills: 0,
+		Secrets:                  getSecrets(userProfile.Dungeons),
+		HighestFloorBeatenNormal: userProfile.Dungeons.DungeonTypes["catacombs"].HighestTierCompleted,
+		HighestFloorBeatenMaster: userProfile.Dungeons.DungeonTypes["master_catacombs"].HighestTierCompleted,
+		BloodMobKills:            GetBestiaryFamily(userProfile, "Undead").Kills,
 	}
 }
 
@@ -219,7 +218,7 @@ func GetDungeons(userProfile *models.Member) models.DungeonsOutput {
 		Classes:         getClassData(userProfile),
 		Catacombs:       formatCatacombsFloor(&catacombs, "catacombs"),
 		MasterCatacombs: formatCatacombsFloor(&masterCatacombs, "master_catacombs"),
-		Stats:           getDungeonStats(userProfile.Dungeons),
+		Stats:           getDungeonStats(userProfile),
 	}
 
 	return output

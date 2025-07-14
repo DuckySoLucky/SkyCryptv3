@@ -116,5 +116,7 @@ func ProcessItem(item *models.Item, source string) models.ProcessedItem {
 		processedItem.ContainsItems = ProcessItems(&item.ContainsItems, source)
 	}
 
+	// TODO: add cake bag & legacy backpack support
+
 	return processedItem
 }

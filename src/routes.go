@@ -100,6 +100,8 @@ func SetupRoutes(app *fiber.App) {
 
 	api.Get("/rift/:uuid/:profileId", routes.RiftHandler)
 
+	api.Get("/misc/:uuid/:profileId", routes.MiscHandler)
+
 	// Root route
 	app.Get("/", handlers.HelloHandler)
 }

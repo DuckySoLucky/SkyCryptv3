@@ -8,6 +8,24 @@ import (
 	"strconv"
 )
 
+func GetBestiaryFamily(userProfile *models.Member, mobName string) *models.BestiaryMobOutput {
+	bestiaryConstants := notenoughupdates.NEUConstants.Bestiary.Islands
+	bestiary := userProfile.Bestiary.Kills
+
+	for _, category := range bestiaryConstants {
+		for _, mob := range category.Mobs {
+			if mob.Name == mobName {
+				mobOutput := models.BestiaryMobOutput{
+					Kills: bestiary[mob.Name], // All we care about is kills (Dungeons)
+				}
+				return &mobOutput
+			}
+		}
+	}
+
+	return nil
+}
+
 func getCategoryMobs(userProfile *models.Member, mobs []neu.BestiaryMob) []models.BestiaryMobOutput {
 	mobOutputs := make([]models.BestiaryMobOutput, 0)
 
