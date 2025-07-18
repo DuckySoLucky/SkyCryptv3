@@ -28,3 +28,5 @@ go.work.sum
 # .idea/
 # .vscode/
 
+# cache
+cache/

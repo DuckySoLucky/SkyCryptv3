@@ -67,13 +67,16 @@ func SetupRoutes(app *fiber.App) {
 
 	api := app.Group("/api")
 
+	// USERNAME AND UUID RESOLVING
 	api.Get("/uuid/:username", routes.UUIDHandler)
 	api.Get("/username/:uuid", routes.UsernameHandler)
 
+	// HYPIXEL API ENDPOINTS
 	api.Get("/profiles/:uuid", routes.ProfilesHandler)
 	api.Get("/player/:uuid", routes.PlayerHandler)
 	api.Get("/museum/:profileId", routes.MuseumHandler)
 
+	// STATS ENDPOINTS
 	api.Get("/stats/:uuid/:profileId", routes.StatsHandler)
 	api.Get("/stats/:uuid", routes.StatsHandler)
 
@@ -101,6 +104,9 @@ func SetupRoutes(app *fiber.App) {
 	api.Get("/rift/:uuid/:profileId", routes.RiftHandler)
 
 	api.Get("/misc/:uuid/:profileId", routes.MiscHandler)
+
+	// RENDERING ENDPOINTS
+	api.Get("/head/:textureId", routes.HeadHandlers)
 
 	// Root route
 	app.Get("/", handlers.HelloHandler)
