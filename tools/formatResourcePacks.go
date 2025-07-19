@@ -132,10 +132,7 @@ func main() {
 					})
 				}
 
-				fmt.Println(path)
-
-				outPath := strings.TrimSuffix(path, filepath.Ext(path)) + "_animated.png"
-				outFile, err := os.Create(outPath)
+				outFile, err := os.Create(path)
 				if err != nil {
 					fmt.Printf("Failed to create APNG %s: %v\n", path, err)
 					return nil
@@ -146,7 +143,7 @@ func main() {
 					return nil
 				}
 
-				fmt.Printf("Created APNG: %s\n", outPath)
+				fmt.Printf("Created APNG: %s\n", path)
 			}
 
 			return nil
