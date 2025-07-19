@@ -10,6 +10,8 @@ import (
 	"skycrypt/src/models"
 	"skycrypt/src/utility"
 	"strings"
+
+	"golang.org/x/exp/slices"
 )
 
 func GetTexturePath(texturePath string, textureString string) string {
@@ -52,9 +54,7 @@ func GetTexture(item models.TextureItem) string {
 			fmt.Printf("[CUSTOM_RESOURCES] No textures found for vanilla item: %s %+v\n", textureId, VANILLA_ITEM_MAP[textureId])
 			return ""
 		} else {
-
 			fmt.Printf("[CUSTOM_RESOURCES] Missing vanilla item: %s\n", textureId)
-			fmt.Printf("Data: %+v\n", VANILLA_ITEM_MAP[textureId])
 		}
 
 		return ""
@@ -210,6 +210,15 @@ func GetTexture(item models.TextureItem) string {
 var VANILLA_ITEM_MAP = map[string]models.ItemTexture{}
 var ITEM_MAP = map[string][]models.ItemTexture{}
 
+var ALLOWED_PARENTS = []string{
+	"minecraft:item/handheld",
+	"cittofirmgenerated:item/skyblock/item",
+	"minecraft:item/fishing_rod",
+	"cittofirmgenerated:item/skyblock/vacuum",
+	"cittofirmgenerated:item/skyblock/gun",
+	"cittofirmgenerated:item/metal_detector",
+}
+
 func init() {
 	assetsRoot := "assets"
 	packDirs, err := os.ReadDir(assetsRoot)
@@ -258,7 +267,7 @@ func init() {
 					return nil
 				}
 
-				if model.Parent != "minecraft:item/handheld" && model.Parent != "cittofirmgenerated:item/skyblock/item" {
+				if !slices.Contains(ALLOWED_PARENTS, model.Parent) {
 					return nil
 				}
 
