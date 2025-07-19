@@ -20,6 +20,10 @@ func GetTexturePath(texturePath string, textureString string) string {
 	if texturePath == "Vanilla" {
 		formattedPath = fmt.Sprintf("%s/assets/firmskyblock/models/item/%s", texturePath, textureId)
 	} else {
+		if after, ok := strings.CutPrefix(textureId, "firmskyblock:item"); ok {
+			textureId = after
+		}
+
 		formattedPath = fmt.Sprintf("%s/assets/cittofirmgenerated/textures/item/%s.png", texturePath, textureId)
 	}
 
@@ -277,7 +281,17 @@ func init() {
 					ITEM_MAP[itemName] = []models.ItemTexture{}
 				}
 
-				model.Textures["layer0"] = GetTexturePath(packDir.Name(), model.Textures["layer0"])
+				for i := range model.Overrides {
+					if model.Overrides[i].Texture != "" {
+						model.Overrides[i].Texture = GetTexturePath(packDir.Name(), model.Overrides[i].Texture)
+					}
+				}
+
+				for key, texture := range model.Textures {
+					if texture != "" {
+						model.Textures[key] = GetTexturePath(packDir.Name(), texture)
+					}
+				}
 
 				ITEM_MAP[itemName] = append(ITEM_MAP[itemName], model)
 				return nil
