@@ -1,14 +1,27 @@
-package tools
+package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"image"
+	_ "image/png"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/kettek/apng"
 )
 
-func init() {
+type McMeta struct {
+	Animation McMetaAnimation `json:"animation"`
+}
+
+type McMetaAnimation struct {
+	Frametime int `json:"frametime"`
+}
+
+func main() {
 	assetsRoot := "assets"
 	packDirs, err := os.ReadDir(assetsRoot)
 	if err != nil {
@@ -39,7 +52,7 @@ func init() {
 				return nil
 			}
 
-			if !strings.Contains(path, "/models/item/") {
+			if !strings.Contains(path, "/textures/item/") {
 				return nil
 			}
 
@@ -47,23 +60,96 @@ func init() {
 				return nil
 			}
 
-			/*
-				var model models.VanillaTexture
-				if err := json.Unmarshal(data, &model); err != nil {
-					fmt.Printf("Failed to parse %s: %v\n", path, err)
+			if strings.HasSuffix(path, ".mcmeta") {
+				return nil
+			}
+
+			file, err := os.Open(path)
+			if err != nil {
+				fmt.Printf("Failed to open %s: %v\n", path, err)
+				return nil
+			}
+			defer file.Close()
+
+			img, _, err := image.Decode(file)
+			if err != nil {
+				fmt.Printf("Failed to decode %s: %v\n", path, err)
+				return nil
+			}
+
+			width := img.Bounds().Dx()
+			height := img.Bounds().Dy()
+			if width != height && height%width == 0 {
+				mcmetaPath := path + ".mcmeta"
+				if _, err := os.Stat(mcmetaPath); os.IsNotExist(err) {
 					return nil
 				}
 
-				textureId := fmt.Sprintf("%s:%d", model.VanillaId, model.Damage)
-				fileName := strings.ReplaceAll(filepath.Base(path), ".json", ".png")
-				VANILLA_ITEM_MAP[textureId] = models.ItemTexture{
-					Parent:    "item/generated",
-					Textures:  map[string]string{"layer0": GetTexturePath(packDir.Name(), fileName)},
-					Overrides: []models.Override{},
+				mcmetaData, err := os.ReadFile(mcmetaPath)
+				if err != nil {
+					fmt.Printf("Failed to read %s: %v\n", mcmetaPath, err)
+					return nil
 				}
-			*/
-			return nil
 
+				var mcMeta McMeta
+				if err := json.Unmarshal(mcmetaData, &mcMeta); err != nil {
+					fmt.Printf("Failed to parse %s: %v\n", mcmetaPath, err)
+					return nil
+				}
+
+				frameCount := height / width
+				frames := make([]image.Image, frameCount)
+				for i := 0; i < frameCount; i++ {
+					frameRect := image.Rect(0, i*width, width, (i+1)*width)
+					subImg := img.(interface {
+						SubImage(r image.Rectangle) image.Image
+					}).SubImage(frameRect)
+					frames[i] = subImg
+				}
+
+				delay := uint16(mcMeta.Animation.Frametime * 50 / 10) // APNG delay is in 1/100s
+
+				delays := make([]uint16, frameCount)
+				for i := 0; i < frameCount; i++ {
+					frameRect := image.Rect(0, i*width, width, (i+1)*width)
+					subImg := img.(interface {
+						SubImage(r image.Rectangle) image.Image
+					}).SubImage(frameRect)
+					frames[i] = subImg
+					delays[i] = delay
+				}
+
+				apngImg := apng.APNG{}
+				for i := 0; i < frameCount; i++ {
+					frameRect := image.Rect(0, i*width, width, (i+1)*width)
+					subImg := img.(interface {
+						SubImage(r image.Rectangle) image.Image
+					}).SubImage(frameRect)
+					apngImg.Frames = append(apngImg.Frames, apng.Frame{
+						Image:            subImg,
+						DelayNumerator:   delay,
+						DelayDenominator: 100,
+					})
+				}
+
+				fmt.Println(path)
+
+				outPath := strings.TrimSuffix(path, filepath.Ext(path)) + "_animated.png"
+				outFile, err := os.Create(outPath)
+				if err != nil {
+					fmt.Printf("Failed to create APNG %s: %v\n", path, err)
+					return nil
+				}
+				defer outFile.Close()
+				if err := apng.Encode(outFile, apngImg); err != nil {
+					fmt.Printf("Failed to encode APNG %s: %v\n", path, err)
+					return nil
+				}
+
+				fmt.Printf("Created APNG: %s\n", outPath)
+			}
+
+			return nil
 		})
 	}
 }
