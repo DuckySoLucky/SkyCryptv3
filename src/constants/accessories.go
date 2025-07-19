@@ -45,7 +45,7 @@ func getAccessories() {
 	}
 
 	ACCESSORIES = output
-	fmt.Printf("[ACCESSORIES] Loaded %d accessories\n", len(ACCESSORIES))
+	//fmt.Printf("[ACCESSORIES] Loaded %d accessories\n", len(ACCESSORIES))
 }
 
 var AccessoryUpgrades = [][]string{

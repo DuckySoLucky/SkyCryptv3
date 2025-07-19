@@ -46,7 +46,7 @@ func SetupApplication() error {
 		return fmt.Errorf("error parsing NEU repository: %v", err)
 	}
 
-	fmt.Print("[SKYCRYPT] SkyCrypt initialized successfully\n")
+	// fmt.Print("[SKYCRYPT] SkyCrypt initialized successfully\n")
 
 	return nil
 }
@@ -55,6 +55,9 @@ func SetupRoutes(app *fiber.App) {
 	app.Use(compress.New(compress.Config{
 		Level: compress.LevelBestSpeed,
 	}))
+
+	// Assets folder
+	app.Static("/assets", "/home/duckysolucky/Desktop/SkyCryptv3/assets")
 
 	if os.Getenv("DEV") == "false" {
 		fmt.Println("[ENVIROMENT] Running in production mode")
@@ -110,4 +113,5 @@ func SetupRoutes(app *fiber.App) {
 
 	// Root route
 	app.Get("/", handlers.HelloHandler)
+
 }

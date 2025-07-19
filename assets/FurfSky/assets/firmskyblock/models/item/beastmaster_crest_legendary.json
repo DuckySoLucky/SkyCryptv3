@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/beastmaster_crest_legendary"
+  },
+  "parent": "cittofirmgenerated:item/skyblock/item"
+}

@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/agaricus_cap_bunch"
+  },
+  "parent": "cittofirmgenerated:item/skyblock/item"
+}

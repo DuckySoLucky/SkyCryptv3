@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/bat_firework"
+  },
+  "parent": "minecraft:item/handheld"
+}

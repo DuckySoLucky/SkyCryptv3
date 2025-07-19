@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/wither_helmet"
+  },
+  "parent": "cittofirmgenerated:item/skyblock/item"
+}

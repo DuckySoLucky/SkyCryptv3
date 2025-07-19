@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/beacon_ii"
+  },
+  "parent": "cittofirmgenerated:item/skyblock/item"
+}

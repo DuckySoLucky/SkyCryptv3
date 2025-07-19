@@ -1,0 +1,13 @@
+{
+  "screen": [
+    "firmskyblock:slayer",
+    "firmskyblock:slayer_bz",
+    "firmskyblock:slayer_recipes"
+  ],
+  "model": "cittofirmgenerated:ui/hybrid_files/revenant_horror",
+  "predicate": {
+    "firmament:display_name": {
+      "regex": ".*Revenant Horror.*"
+    }
+  }
+}

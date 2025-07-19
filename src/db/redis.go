@@ -35,7 +35,7 @@ func InitRedis(addr string, password string, db int) error {
 		return fmt.Errorf("could not connect to Redis: %v", err)
 	}
 
-	fmt.Print("Redis connected successfully\n")
+	// fmt.Print("Redis connected successfully\n")
 	return nil
 }
 

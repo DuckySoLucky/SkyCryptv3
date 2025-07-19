@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/bigger_teeth"
+  },
+  "parent": "minecraft:item/handheld"
+}

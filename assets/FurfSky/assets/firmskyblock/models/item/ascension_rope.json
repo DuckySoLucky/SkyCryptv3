@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/ascension_rope"
+  },
+  "parent": "cittofirmgenerated:item/skyblock/item"
+}

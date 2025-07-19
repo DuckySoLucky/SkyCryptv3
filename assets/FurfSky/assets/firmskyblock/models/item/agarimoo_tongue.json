@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/agarimoo_tongue"
+  },
+  "parent": "minecraft:item/handheld"
+}

@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/abiphone_xi_ultra_style"
+  },
+  "parent": "cittofirmgenerated:item/skyblock/phone"
+}

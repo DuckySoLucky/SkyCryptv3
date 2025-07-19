@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/arrow_swapper"
+  },
+  "parent": "cittofirmgenerated:item/skyblock/item"
+}

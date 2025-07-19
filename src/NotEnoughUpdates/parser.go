@@ -5,20 +5,19 @@ import (
 	"os"
 	neu "skycrypt/src/models/NEU"
 	neustats "skycrypt/src/stats/neu"
-	"time"
 
 	jsoniter "github.com/json-iterator/go"
 )
 
 func ParseNEURepository() error {
-	timeNow := time.Now()
+	// timeNow := time.Now()
 
 	constantsPath := "NotEnoughUpdates-REPO/constants"
 	if _, err := os.Stat(constantsPath); os.IsNotExist(err) {
 		return fmt.Errorf("constants directory does not exist: %w", err)
 	}
 
-	fmt.Println("[NOT-ENOUGH-UPDATES] Parsing NEU repository...")
+	//fmt.Println("[NOT-ENOUGH-UPDATES] Parsing NEU repository...")
 
 	constants, err := os.ReadDir(constantsPath)
 	if err != nil {
@@ -27,7 +26,7 @@ func ParseNEURepository() error {
 
 	for _, constant := range constants {
 		if constant.IsDir() {
-			fmt.Printf("[NOT-ENOUGH-UPDATES] Skipping directory: %s\n", constant.Name())
+			// fmt.Printf("[NOT-ENOUGH-UPDATES] Skipping directory: %s\n", constant.Name())
 			continue
 		}
 
@@ -79,7 +78,7 @@ func ParseNEURepository() error {
 		}
 	}
 
-	fmt.Printf("[NOT-ENOUGH-UPDATES] Parsing completed in %s\n", time.Since(timeNow))
+	// fmt.Printf("[NOT-ENOUGH-UPDATES] Parsing completed in %s\n", time.Since(timeNow))
 
 	return nil
 }

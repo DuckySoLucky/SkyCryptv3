@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/antique_remedies"
+  },
+  "parent": "minecraft:item/handheld"
+}

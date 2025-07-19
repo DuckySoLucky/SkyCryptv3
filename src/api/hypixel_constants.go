@@ -9,7 +9,6 @@ import (
 	"skycrypt/src/models"
 	"skycrypt/src/utility"
 	"strings"
-	"time"
 
 	jsoniter "github.com/json-iterator/go"
 )
@@ -133,7 +132,7 @@ func processCollections(collections map[string]models.HypixelCollection) models.
 }
 
 func LoadSkyBlockItems() error {
-	timeNow := time.Now()
+	// timeNow := time.Now()
 	items, err := getSkyBlockItems()
 	if err != nil {
 		return fmt.Errorf("failed to get SkyBlock items: %v", err)
@@ -141,9 +140,9 @@ func LoadSkyBlockItems() error {
 
 	constants.ITEMS = processItems(&items)
 
-	fmt.Printf("[ITEMS] Loaded %d items in %s\n", len(constants.ITEMS), time.Since(timeNow))
+	// Printf("[ITEMS] Loaded %d items in %s\n", len(constants.ITEMS), time.Since(timeNow))
 
-	timeNow = time.Now()
+	// timeNow = time.Now()
 	collections, err := GetSkyBlockCollections()
 	if err != nil {
 		return fmt.Errorf("failed to get SkyBlock collections: %v", err)
@@ -151,7 +150,7 @@ func LoadSkyBlockItems() error {
 
 	constants.COLLECTIONS = processCollections(collections)
 
-	fmt.Printf("[COLLECTIONS] Loaded %d collections in %s\n", len(constants.COLLECTIONS), time.Since(timeNow))
+	// fmt.Printf("[COLLECTIONS] Loaded %d collections in %s\n", len(constants.COLLECTIONS), time.Since(timeNow))
 
 	return nil
 }

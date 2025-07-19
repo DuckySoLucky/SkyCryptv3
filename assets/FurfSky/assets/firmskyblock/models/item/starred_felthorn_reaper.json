@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/felthorn_reaper_fragged"
+  },
+  "parent": "minecraft:item/handheld"
+}

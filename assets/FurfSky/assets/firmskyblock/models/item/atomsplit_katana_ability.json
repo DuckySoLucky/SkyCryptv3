@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/atomsplit_katana_ability"
+  },
+  "parent": "minecraft:item/handheld"
+}

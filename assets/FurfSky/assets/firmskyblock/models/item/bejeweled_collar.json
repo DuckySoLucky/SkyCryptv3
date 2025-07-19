@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/bejeweled_collar"
+  },
+  "parent": "minecraft:item/handheld"
+}

@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/acacia_birdhouse"
+  },
+  "parent": "cittofirmgenerated:item/skyblock/item"
+}

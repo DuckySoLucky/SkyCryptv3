@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/advanced_gardening_hoe"
+  },
+  "parent": "minecraft:item/handheld"
+}

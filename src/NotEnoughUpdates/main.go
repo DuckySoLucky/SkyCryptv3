@@ -31,7 +31,7 @@ func InitializeNEURepository() error {
 
 		fmt.Println("[NOT-ENOUGH-UPDATES] Repository cloned successfully")
 	} else {
-		fmt.Println("[NOT-ENOUGH-UPDATES] Repository already exists")
+		// fmt.Println("[NOT-ENOUGH-UPDATES] Repository already exists")
 	}
 
 	return nil
@@ -48,7 +48,7 @@ func UpdateNEURepository() error {
 		return fmt.Errorf("failed to get worktree: %w", err)
 	}
 
-	fmt.Println("[NOT-ENOUGH-UPDATES] Pulling latest changes...")
+	// fmt.Println("[NOT-ENOUGH-UPDATES] Pulling latest changes...")
 
 	err = workTree.Pull(&git.PullOptions{
 		RemoteName: "origin",
@@ -57,7 +57,7 @@ func UpdateNEURepository() error {
 
 	if err != nil {
 		if err == git.NoErrAlreadyUpToDate {
-			fmt.Println("[NOT-ENOUGH-UPDATES] Already up to date")
+			// fmt.Println("[NOT-ENOUGH-UPDATES] Already up to date")
 			return nil
 		}
 		return fmt.Errorf("failed to pull: %w", err)

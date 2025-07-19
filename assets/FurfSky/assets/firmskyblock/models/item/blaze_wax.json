@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/blaze_wax"
+  },
+  "parent": "cittofirmgenerated:item/skyblock/item"
+}

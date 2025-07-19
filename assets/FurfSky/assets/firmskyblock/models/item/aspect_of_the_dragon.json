@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/aspect_of_the_dragons"
+  },
+  "parent": "minecraft:item/handheld"
+}

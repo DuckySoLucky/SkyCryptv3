@@ -17,6 +17,14 @@ type Tag struct {
 	SkullOwner      *SkullOwner     `nbt:"SkullOwner" json:"SkullOwner,omitempty"`
 }
 
+func (t *Tag) ToMap() TextureItemExtraAttributes {
+	return TextureItemExtraAttributes{
+		ExtraAttributes: t.ExtraAttributes.ToMap(),
+		Display:         t.Display,
+		SkullOwner:      t.SkullOwner,
+	}
+}
+
 type ExtraAttributes struct {
 	// OriginTag        string         `nbt:"originTag" json:"originTag,omitempty"`
 	// Enchantments     map[string]int `nbt:"enchantments" json:"enchantments,omitempty"`
@@ -34,6 +42,25 @@ type ExtraAttributes struct {
 	Modifier           string         `nbt:"modifier" json:"modifier,omitempty"`
 	Model              string         `nbt:"model" json:"model,omitempty"`
 	TalismanEnrichment string         `nbt:"talisman_enrichment" json:"talisman_enrichment,omitempty"`
+}
+
+func (t *ExtraAttributes) ToMap() map[string]interface{} {
+	return map[string]interface{}{
+		"id":                  t.ID,
+		"uuid":                t.UUID,
+		"timestamp":           t.Timestamp,
+		"recombobulated":      t.Recombobulated,
+		"enchantments":        t.Enchantments,
+		"gems":                t.Gems,
+		"hecatomb_s_runs":     t.HecatombSRuns,
+		"champion_combat_xp":  t.ChampionCombatXP,
+		"farmed_cultivating":  t.FarmedCultivating,
+		"expertise_kills":     t.ExpertiseKills,
+		"compact_blocks":      t.CompactBlocks,
+		"modifier":            t.Modifier,
+		"model":               t.Model,
+		"talisman_enrichment": t.TalismanEnrichment,
+	}
 }
 
 type Display struct {

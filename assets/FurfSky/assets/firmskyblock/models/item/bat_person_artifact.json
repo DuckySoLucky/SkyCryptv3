@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/bat_person_artifact"
+  },
+  "parent": "cittofirmgenerated:item/skyblock/item"
+}

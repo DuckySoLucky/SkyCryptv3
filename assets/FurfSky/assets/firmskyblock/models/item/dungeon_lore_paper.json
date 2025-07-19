@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/journal_entry"
+  },
+  "parent": "minecraft:item/handheld"
+}

@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/giant_sword"
+  },
+  "parent": "cittofirmgenerated:item/skyblock/big_sword"
+}

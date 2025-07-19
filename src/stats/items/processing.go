@@ -3,6 +3,7 @@ package stats
 import (
 	"fmt"
 	"skycrypt/src/constants"
+	"skycrypt/src/lib"
 	"skycrypt/src/models"
 	"skycrypt/src/utility"
 )
@@ -108,8 +109,17 @@ func ProcessItem(item *models.Item, source string) models.ProcessedItem {
 	}
 
 	if processedItem.Texture == "" {
-		// TODO: Once pack support is implemented, this should be removed
-		processedItem.Texture = "http://sky.shiiyu.moe/api/item/" + item.Tag.ExtraAttributes.ID
+		TextureItem := models.TextureItem{
+			Count:  item.Count,
+			Damage: item.Damage,
+			ID:     item.ID,
+			Tag:    item.Tag.ToMap(),
+		}
+
+		processedItem.Texture = lib.GetTexture(TextureItem)
+		if processedItem.Texture == "" {
+			fmt.Printf("[CUSTOM_RESOURCES] Found no textures for item: %s\n", item.Tag.ExtraAttributes.ID)
+		}
 	}
 
 	if item.ContainsItems != nil {

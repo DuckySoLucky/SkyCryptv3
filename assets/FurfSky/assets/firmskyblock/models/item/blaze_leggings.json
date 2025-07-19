@@ -1,0 +1,7 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/blaze_leggings",
+    "layer1": "cittofirmgenerated:item/blaze_leggings"
+  },
+  "parent": "cittofirmgenerated:item/skyblock/item"
+}

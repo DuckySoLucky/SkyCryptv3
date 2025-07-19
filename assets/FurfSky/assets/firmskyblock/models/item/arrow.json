@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/flint_arrow"
+  },
+  "parent": "minecraft:item/handheld"
+}

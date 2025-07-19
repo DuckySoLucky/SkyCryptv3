@@ -1,0 +1,7 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/berserker_chestplate",
+    "layer1": "cittofirmgenerated:item/berserker_chestplate"
+  },
+  "parent": "cittofirmgenerated:item/skyblock/item"
+}

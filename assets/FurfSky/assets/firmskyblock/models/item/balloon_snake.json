@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/balloon_snake"
+  },
+  "parent": "cittofirmgenerated:item/skyblock/item"
+}

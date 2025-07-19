@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/blade_of_the_volcano"
+  },
+  "parent": "minecraft:item/handheld"
+}

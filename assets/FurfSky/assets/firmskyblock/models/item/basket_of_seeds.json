@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/basket_of_seeds"
+  },
+  "parent": "cittofirmgenerated:item/skyblock/item"
+}

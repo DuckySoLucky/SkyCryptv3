@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "cittofirmgenerated:item/bouncy_arrow"
+  },
+  "parent": "minecraft:item/handheld"
+}
