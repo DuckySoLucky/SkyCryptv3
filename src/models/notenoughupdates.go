@@ -8,6 +8,16 @@ type NEUItem struct {
 	Damage      int      `json:"damage,omitempty"`
 	Lore        []string `json:"lore,omitempty"`
 	NEUId       string   `json:"internalname,omitempty"`
+	NBT         Tag      `json:"nbttag"`
+	Wiki        []string `json:"info,omitempty"`
+}
+
+type RawNEUItem struct {
+	MinecraftId string   `json:"itemid,omitempty"`
+	Name        string   `json:"displayname,omitempty"`
+	Damage      int      `json:"damage,omitempty"`
+	Lore        []string `json:"lore,omitempty"`
+	NEUId       string   `json:"internalname,omitempty"`
 	NBT         string   `json:"nbttag"`
 	Wiki        []string `json:"info,omitempty"`
 }

@@ -103,7 +103,6 @@ func getPetLevel(pet models.Pet) models.PetLevel {
 
 func getPetData(level int, petType string, rarity string) map[string]float64 {
 	petNums := notenoughupdates.NEUConstants.PetNums
-
 	petData, exists := petNums[petType]
 	if !exists {
 		return nil
@@ -168,7 +167,7 @@ func getProfilePets(userProfile *models.Member, pets *[]models.Pet) []models.Pro
 		}
 
 		if pet.HeldItem == "PET_ITEM_TIER_BOOST" {
-			pet.Rarity = constants.RARITIES[slices.Index(constants.RARITIES, pet.Rarity)+1]
+			pet.Rarity = constants.RARITIES[slices.Index(constants.RARITIES, strings.ToLower(pet.Rarity))+1]
 		}
 
 		outputPet := models.ProcessedPet{
@@ -185,11 +184,13 @@ func getProfilePets(userProfile *models.Member, pets *[]models.Pet) []models.Pro
 			Skin:      pet.Skin,
 		}
 
+		petDataRarity := strings.ToUpper(pet.Rarity)
 		NEUItemId := fmt.Sprintf("%s;%d", pet.Type, slices.Index(constants.RARITIES, strings.ToLower(pet.Rarity)))
 		NEUItem, err := notenoughupdates.GetItem(NEUItemId)
 		if err != nil {
 			NEUItemId = fmt.Sprintf("%s;%d", pet.Type, slices.Index(constants.RARITIES, strings.ToLower(pet.Rarity))-1)
 			NEUItem, err = notenoughupdates.GetItem(NEUItemId)
+			petDataRarity = constants.RARITIES[slices.Index(constants.RARITIES, strings.ToLower(pet.Rarity))-1]
 			if err != nil {
 				output = append(output, outputPet)
 				continue
@@ -198,18 +199,18 @@ func getProfilePets(userProfile *models.Member, pets *[]models.Pet) []models.Pro
 
 		if pet.Skin != "" {
 			skinId := fmt.Sprintf("PET_SKIN_%s", pet.Skin)
-			_ /*skinData*/, err := notenoughupdates.GetItem(skinId)
-			if err == nil {
-				//var textureId = utility.GetSkinHash(skinData.NBT)
-				// outputPet.Texture = fmt.Sprintf("/api/head/%s", textureId)
+			skinData, err := notenoughupdates.GetItem(skinId)
+			if err == nil && skinData.NBT.SkullOwner != nil && len(skinData.NBT.SkullOwner.Properties.Textures) > 0 {
+				var textureId = utility.GetSkinHash(skinData.NBT.SkullOwner.Properties.Textures[0].Value)
+				outputPet.Texture = fmt.Sprintf("/api/head/%s", textureId)
 				outputPet.Name += " ✦"
 			}
-		} else {
-			//var textureId = utility.GetSkinHash(NEUItem.NBT)
-			// outputPet.Texture = fmt.Sprintf("/api/head/%s", textureId)
+		} else if NEUItem.NBT.SkullOwner != nil && len(NEUItem.NBT.SkullOwner.Properties.Textures) > 0 {
+			var textureId = utility.GetSkinHash(NEUItem.NBT.SkullOwner.Properties.Textures[0].Value)
+			outputPet.Texture = fmt.Sprintf("/api/head/%s", textureId)
 		}
 
-		data := getPetData(outputPet.Level.Level, pet.Type, strings.ToUpper(pet.Rarity))
+		data := getPetData(outputPet.Level.Level, pet.Type, strings.ToUpper(petDataRarity))
 		for key, value := range data {
 			if strings.Contains(key, "otherNum") {
 				newKey := strings.ReplaceAll(key, "otherNum_", "")
@@ -299,51 +300,16 @@ func getProfilePets(userProfile *models.Member, pets *[]models.Pet) []models.Pro
 		output = append(output, outputPet)
 	}
 
-	output = utility.SortBy(output, func(a, b models.ProcessedPet) int {
-		if a.Active == b.Active {
-			if a.Rarity == b.Rarity {
-				if a.Type == b.Type {
-					return utility.CompareInts(a.Level.Level, b.Level.Level)
-				} else {
-					maxPetA := utility.Filter(output, func(x models.ProcessedPet) bool {
-						return x.Type == a.Type && x.Rarity == a.Rarity
-					})
-					maxPetA = utility.SortBy(maxPetA, func(x, y models.ProcessedPet) int {
-						return utility.CompareInts(y.Level.Level, x.Level.Level)
-					})
-
-					maxPetALevel := 0
-					if len(maxPetA) > 0 {
-						maxPetALevel = maxPetA[0].Level.Level
-					}
-
-					maxPetB := utility.Filter(output, func(x models.ProcessedPet) bool {
-						return x.Type == b.Type && x.Rarity == b.Rarity
-					})
-					maxPetB = utility.SortBy(maxPetB, func(x, y models.ProcessedPet) int {
-						return utility.CompareInts(y.Level.Level, x.Level.Level)
-					})
-
-					maxPetBLevel := 0
-					if len(maxPetB) > 0 {
-						maxPetBLevel = maxPetB[0].Level.Level
-					}
-
-					if maxPetALevel == maxPetBLevel {
-						return utility.CompareStrings(a.Type, b.Type)
-					} else {
-						return utility.CompareInts(maxPetALevel, maxPetBLevel)
-					}
-				}
-			} else {
-				return utility.CompareInts(
-					slices.Index(constants.RARITIES, strings.ToLower(a.Rarity)),
-					slices.Index(constants.RARITIES, strings.ToLower(b.Rarity)),
-				)
-			}
-		} else {
-			return utility.CompareBooleans(a.Active, b.Active)
+	sort.Slice(output, func(i, j int) bool {
+		if output[i].Rarity != output[j].Rarity {
+			return slices.Index(constants.RARITIES, strings.ToLower(output[i].Rarity)) < slices.Index(constants.RARITIES, strings.ToLower(output[j].Rarity))
 		}
+
+		if output[i].Level.Level != output[j].Level.Level {
+			return output[i].Level.Level > output[j].Level.Level
+		}
+
+		return output[i].Name < output[j].Name
 	})
 
 	return output

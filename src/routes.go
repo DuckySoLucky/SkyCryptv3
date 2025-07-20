@@ -7,7 +7,6 @@ import (
 	notenoughupdates "skycrypt/src/NotEnoughUpdates"
 	"skycrypt/src/api"
 	redis "skycrypt/src/db"
-	"skycrypt/src/handlers"
 	"skycrypt/src/routes"
 	"time"
 
@@ -110,8 +109,5 @@ func SetupRoutes(app *fiber.App) {
 
 	// RENDERING ENDPOINTS
 	api.Get("/head/:textureId", routes.HeadHandlers)
-
-	// Root route
-	app.Get("/", handlers.HelloHandler)
 
 }
