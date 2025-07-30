@@ -38,7 +38,7 @@ func GetTexture(item models.TextureItem) string {
 		if textureId == "397:3" {
 			if item.Tag.SkullOwner != nil && item.Tag.SkullOwner.Properties.Textures[0].Value != "" {
 				skinHash := utility.GetSkinHash(item.Tag.SkullOwner.Properties.Textures[0].Value)
-				return fmt.Sprintf("/api/head/%s", skinHash)
+				return fmt.Sprintf("http://localhost:8080/api/head/%s", skinHash)
 			}
 
 			return ""

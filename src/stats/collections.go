@@ -108,7 +108,7 @@ func getBossCollections(userProfile *models.Member) models.CollectionCategory {
 
 	return models.CollectionCategory{
 		Name:       "Boss",
-		Texture:    "/api/item/SKULL_ITEM:1",
+		Texture:    "http://localhost:8080/api/item/SKULL_ITEM:1",
 		Items:      bossCollections,
 		TotalTiers: len(bossCollections),
 		MaxedTiers: maxedTiers,

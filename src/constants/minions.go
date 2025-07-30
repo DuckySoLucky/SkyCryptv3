@@ -107,11 +107,11 @@ var MINIONS = map[string]map[string]minionInfo{
 }
 
 var MINION_CATEGORY_ICONS = map[string]string{
-	"farming":  "/api/item/GOLD_HOE",
-	"mining":   "/api/item/STONE_PICKAXE",
-	"combat":   "/api/item/STONE_SWORD",
-	"foraging": "/api/item/SAPLING:3",
-	"fishing":  "/api/item/FISHING_ROD",
+	"farming":  "http://localhost:8080/api/item/GOLD_HOE",
+	"mining":   "http://localhost:8080/api/item/STONE_PICKAXE",
+	"combat":   "http://localhost:8080/api/item/STONE_SWORD",
+	"foraging": "http://localhost:8080/api/item/SAPLING:3",
+	"fishing":  "http://localhost:8080/api/item/FISHING_ROD",
 }
 
 const MinionsMaxSlots = 26

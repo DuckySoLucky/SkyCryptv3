@@ -23,14 +23,14 @@ type riftTimecharm struct {
 }
 
 var RIFT_TIMECHARMS = []riftTimecharm{
-	{Name: "Supreme Timecharm", ID: "wyldly_supreme", Texture: "/api/item/LEAVES:1"},
-	{Name: "mrahcemiT esrevrorriM", ID: "mirrored", Texture: "/api/item/GLASS"},
-	{Name: "Chicken N Egg Timecharm", ID: "chicken_n_egg", Texture: "/api/item/SOUL_SAND"},
-	{Name: "SkyBlock Citizen Timecharm", ID: "citizen", Texture: "/api/item/JUKEBOX"},
-	{Name: "Living Timecharm", ID: "lazy_living", Texture: "/api/item/LAPIS_ORE"},
-	{Name: "Globulate Timecharm", ID: "slime", Texture: "/api/item/SLIME_BLOCK"},
-	{Name: "Vampiric Timecharm", ID: "vampiric", Texture: "/api/item/REDSTONE_BLOCK"},
-	{Name: "Celestial Timecharm", ID: "mountain", Texture: "/api/item/LAPIS_BLOCK"},
+	{Name: "Supreme Timecharm", ID: "wyldly_supreme", Texture: "http://localhost:8080/api/item/LEAVES:1"},
+	{Name: "mrahcemiT esrevrorriM", ID: "mirrored", Texture: "http://localhost:8080/api/item/GLASS"},
+	{Name: "Chicken N Egg Timecharm", ID: "chicken_n_egg", Texture: "http://localhost:8080/api/item/SOUL_SAND"},
+	{Name: "SkyBlock Citizen Timecharm", ID: "citizen", Texture: "http://localhost:8080/api/item/JUKEBOX"},
+	{Name: "Living Timecharm", ID: "lazy_living", Texture: "http://localhost:8080/api/item/LAPIS_ORE"},
+	{Name: "Globulate Timecharm", ID: "slime", Texture: "http://localhost:8080/api/item/SLIME_BLOCK"},
+	{Name: "Vampiric Timecharm", ID: "vampiric", Texture: "http://localhost:8080/api/item/REDSTONE_BLOCK"},
+	{Name: "Celestial Timecharm", ID: "mountain", Texture: "http://localhost:8080/api/item/LAPIS_BLOCK"},
 }
 
 const RIFT_ENIGMA_SOULS = 52

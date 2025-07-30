@@ -219,9 +219,9 @@ func getGlaciteTunnels(userProfile *models.Member) models.GlaciteTunnels {
 			found++
 		}
 
-		texture := fmt.Sprintf("/api/item/%s_FOSSIL", fossil)
+		texture := fmt.Sprintf("http://localhost:8080/api/item/%s_FOSSIL", fossil)
 		if fossil == "HELIX" {
-			texture = fmt.Sprintf("/api/item/%s", fossil)
+			texture = fmt.Sprintf("http://localhost:8080/api/item/%s", fossil)
 		}
 
 		fossil := models.Fossil{

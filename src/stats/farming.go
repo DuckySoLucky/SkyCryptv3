@@ -67,7 +67,7 @@ func GetFarming(userProfile *models.Member, items []models.ProcessedItem) models
 		if output.Contests[cropId] == nil {
 			output.Contests[cropId] = &models.Contest{
 				Name:      constants.CROPS[cropId],
-				Texture:   "/api/item/" + cropId,
+				Texture:   "http://localhost:8080/api/item/" + cropId,
 				Collected: contestData.Collected,
 				Amount:    1,
 				Medals: map[string]int{

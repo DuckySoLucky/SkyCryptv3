@@ -44,30 +44,30 @@ type dojoChallenge struct {
 var DOJO = map[string]dojoChallenge{
 	"mob_kb": {
 		Name:    "Force",
-		Texture: "/api/item/STICK",
+		Texture: "http://localhost:8080/api/item/STICK",
 	},
 	"wall_jump": {
 		Name:    "Stamina",
-		Texture: "/api/item/RABBIT_FOOT",
+		Texture: "http://localhost:8080/api/item/RABBIT_FOOT",
 	},
 	"archer": {
 		Name:    "Mastery",
-		Texture: "/api/item/BOW",
+		Texture: "http://localhost:8080/api/item/BOW",
 	},
 	"sword_swap": {
 		Name:    "Discipline",
-		Texture: "/api/item/DIAMOND_SWORD",
+		Texture: "http://localhost:8080/api/item/DIAMOND_SWORD",
 	},
 	"snake": {
 		Name:    "Swiftness",
-		Texture: "/api/item/LEAD",
+		Texture: "http://localhost:8080/api/item/LEAD",
 	},
 	"lock_head": {
 		Name:    "Control",
-		Texture: "/api/item/ENDER_EYE",
+		Texture: "http://localhost:8080/api/item/ENDER_EYE",
 	},
 	"fireball": {
 		Name:    "Tenacity",
-		Texture: "/api/item/FIRE_CHARGE",
+		Texture: "http://localhost:8080/api/item/FIRE_CHARGE",
 	},
 }

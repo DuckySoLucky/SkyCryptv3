@@ -117,7 +117,7 @@ func processCollections(collections map[string]models.HypixelCollection) models.
 			processedItem := models.ProcessedHypixelCollectionItem{
 				Id:      collectionId,
 				Name:    collectionData.Name,
-				Texture: fmt.Sprintf("/api/item/%s", collectionId),
+				Texture: fmt.Sprintf("http://localhost:8080/api/item/%s", collectionId),
 				MaxTier: collectionData.MaxTiers,
 				Tiers:   collectionData.Tiers,
 			}

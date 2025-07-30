@@ -8,7 +8,7 @@ import (
 
 func GetTexture(mob neu.NEUBestiaryRawMob) string {
 	if mob.Texture == "" {
-		return fmt.Sprintf(`/api/item/%s`, mob.Item)
+		return fmt.Sprintf(`http://localhost:8080/api/item/%s`, mob.Item)
 	}
 
 	return fmt.Sprintf("/api/head/%s", utility.GetSkinHash(mob.Texture))
@@ -16,7 +16,7 @@ func GetTexture(mob neu.NEUBestiaryRawMob) string {
 
 func GetIslandTexture(island neu.NEUBestiaryRawIslandData) string {
 	if island.Icon.Texture == "" {
-		return fmt.Sprintf(`/api/item/%s`, island.Icon.Item)
+		return fmt.Sprintf(`http://localhost:8080/api/item/%s`, island.Icon.Item)
 	}
 
 	return fmt.Sprintf("/api/head/%s", utility.GetSkinHash(island.Icon.Texture))

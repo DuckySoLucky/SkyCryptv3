@@ -5,12 +5,12 @@ import "skycrypt/src/models"
 var COLLECTIONS = models.ProcessedHypixelCollection{}
 
 var COLLECTION_ICONS = map[string]string{
-	"farming":  "/api/item/GOLDEN_HOE",
-	"mining":   "/api/item/STONE_PICKAXE",
-	"combat":   "/api/item/STONE_SWORD",
-	"foraging": "/api/item/JUNGLE_SAPLING",
-	"fishing":  "/api/item/FISHING_ROD",
-	"rift":     "/api/item/MYCELIUM",
+	"farming":  "http://localhost:8080/api/item/GOLDEN_HOE",
+	"mining":   "http://localhost:8080/api/item/STONE_PICKAXE",
+	"combat":   "http://localhost:8080/api/item/STONE_SWORD",
+	"foraging": "http://localhost:8080/api/item/JUNGLE_SAPLING",
+	"fishing":  "http://localhost:8080/api/item/FISHING_ROD",
+	"rift":     "http://localhost:8080/api/item/MYCELIUM",
 }
 
 type bossCollection struct {
