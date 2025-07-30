@@ -70,6 +70,7 @@ func StatsHandler(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"username":          mowojang.Name,
+		"displayName":       mowojang.Name,
 		"uuid":              mowojang.UUID,
 		"profile_id":        profile.ProfileID,
 		"profile_cute_name": profile.CuteName,

@@ -80,16 +80,17 @@ type playerData struct {
 }
 
 type experience struct {
-	SkillFishing    float64 `json:"SKILL_FISHING"`
-	SkillAlchemy    float64 `json:"SKILL_ALCHEMY"`
-	SkillMining     float64 `json:"SKILL_MINING"`
-	SkillFarming    float64 `json:"SKILL_FARMING"`
-	SkillEnchanting float64 `json:"SKILL_ENCHANTING"`
-	SkillTaming     float64 `json:"SKILL_TAMING"`
-	SkillForaging   float64 `json:"SKILL_FORAGING"`
-	SkillSocial     float64 `json:"SKILL_SOCIAL"`
-	SkillCarpentry  float64 `json:"SKILL_CARPENTRY"`
-	SkillCombat     float64 `json:"SKILL_COMBAT"`
+	SkillFishing      float64 `json:"SKILL_FISHING"`
+	SkillAlchemy      float64 `json:"SKILL_ALCHEMY"`
+	SkillMining       float64 `json:"SKILL_MINING"`
+	SkillFarming      float64 `json:"SKILL_FARMING"`
+	SkillEnchanting   float64 `json:"SKILL_ENCHANTING"`
+	SkillTaming       float64 `json:"SKILL_TAMING"`
+	SkillForaging     float64 `json:"SKILL_FORAGING"`
+	SkillSocial       float64 `json:"SKILL_SOCIAL"`
+	SkillCarpentry    float64 `json:"SKILL_CARPENTRY"`
+	SkillCombat       float64 `json:"SKILL_COMBAT"`
+	SkillRunecrafting float64 `json:"SKILL_RUNECRAFTING"`
 }
 
 type profileData struct {
