@@ -146,4 +146,4 @@ profile.cov
 .env
 
 # cache
-cache/
+cache/heads/
