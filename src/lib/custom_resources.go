@@ -58,7 +58,12 @@ func GetTexture(item models.TextureItem) string {
 			fmt.Printf("[CUSTOM_RESOURCES] No textures found for vanilla item: %s %+v\n", textureId, VANILLA_ITEM_MAP[textureId])
 			return ""
 		} else {
-			fmt.Printf("[CUSTOM_RESOURCES] Missing vanilla item: %s\n", textureId)
+			vanillaPath := fmt.Sprintf("assets/Vanilla/assets/firmskyblock/models/item/%s.png", strings.ToLower(item.RawId))
+			if _, err := os.Stat(vanillaPath); err == nil {
+				return "http://localhost:8080/" + vanillaPath
+			}
+
+			fmt.Printf("[CUSTOM_RESOURCES] Texture not found for item: %s\n", textureId)
 		}
 
 		return ""

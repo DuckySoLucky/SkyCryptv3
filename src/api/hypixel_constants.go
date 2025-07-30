@@ -94,7 +94,7 @@ func processItems(items *[]models.HypixelItem) map[string]models.ProcessedHypixe
 			ItemId:            constants.BUKKIT_TO_ID[item.Material],
 			Rarity:            strings.ToLower(item.Rarity),
 			Damage:            item.Damage,
-			Texture:           fmt.Sprintf("http://localhost:8080/api/item/%s", utility.GetSkinHash(item.Skin.Value)),
+			Texture:           utility.GetSkinHash(item.Skin.Value),
 			Category:          strings.ToLower(item.Category),
 			Origin:            item.Origin,
 			RiftTransferrable: item.RiftTransferrable,

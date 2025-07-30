@@ -16,6 +16,7 @@ type TextureItem struct {
 	Damage *int                       `nbt:"Damage" json:"Damage,omitempty"`
 	ID     *int                       `nbt:"id" json:"id,omitempty"`
 	Tag    TextureItemExtraAttributes `nbt:"tag" json:"tag,omitempty"`
+	RawId  string                     `nbt:"raw_id" json:"raw_id,omitempty"`
 }
 
 type TextureItemExtraAttributes struct {

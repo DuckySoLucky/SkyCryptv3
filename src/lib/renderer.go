@@ -403,8 +403,9 @@ func RenderHead(textureId string) []byte {
 func RenderItem(itemID string) ([]byte, error) {
 	damage := 0
 	if strings.Contains(itemID, ":") {
-		itemID = strings.Split(itemID, ":")[0]
-		parsedDmg, err := utility.ParseInt(strings.Split(itemID, ":")[1])
+		splitId := strings.Split(itemID, ":")
+		itemID = splitId[0]
+		parsedDmg, err := utility.ParseInt(splitId[1])
 		if err == nil {
 			damage = parsedDmg
 		}
@@ -419,6 +420,7 @@ func RenderItem(itemID string) ([]byte, error) {
 				"id": itemData.SkyblockID,
 			},
 		},
+		RawId: itemID,
 	}
 
 	if damage != 0 {
@@ -435,6 +437,7 @@ func RenderItem(itemID string) ([]byte, error) {
 		if itemData.Texture == "" {
 			return nil, fmt.Errorf("no texture id for skull")
 		}
+
 		data := RenderHead(itemData.Texture)
 		if data == nil {
 			return nil, fmt.Errorf("failed to render head for skull")
