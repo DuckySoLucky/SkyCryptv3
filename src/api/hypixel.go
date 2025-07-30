@@ -135,7 +135,7 @@ func GetProfile(uuid string, profileId ...string) (*models.Profile, error) {
 	return &models.Profile{}, fmt.Errorf("profile with ID %s not found for UUID %s", targetProfileId, uuid)
 }
 
-func GetMuseum(profileId string) (*map[string]models.Museum, error) {
+func GetMuseum(profileId string) (map[string]*models.Museum, error) {
 	var rawReponse models.HypixelMuseumResponse
 
 	cache, err := redis.Get(fmt.Sprintf(`museum:%s`, profileId))
@@ -143,7 +143,7 @@ func GetMuseum(profileId string) (*map[string]models.Museum, error) {
 		var json = jsoniter.ConfigCompatibleWithStandardLibrary
 		err = json.Unmarshal([]byte(cache), &rawReponse)
 		if err == nil {
-			return &rawReponse.Members, nil
+			return rawReponse.Members, nil
 		}
 	}
 
@@ -165,5 +165,5 @@ func GetMuseum(profileId string) (*map[string]models.Museum, error) {
 	}
 
 	redis.Set(fmt.Sprintf(`museum:%s`, profileId), string(body), 60*30) // Cache for 30 minutes
-	return &rawReponse.Members, nil
+	return rawReponse.Members, nil
 }

@@ -6,9 +6,9 @@ type EncodedItem struct {
 }
 
 type HypixelMuseumResponse struct {
-	Success bool              `json:"success"`
-	Cause   string            `json:"cause,omitempty"`
-	Members map[string]Museum `json:"members"`
+	Success bool               `json:"success"`
+	Cause   string             `json:"cause,omitempty"`
+	Members map[string]*Museum `json:"members"`
 }
 
 type Museum struct {

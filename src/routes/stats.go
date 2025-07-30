@@ -61,7 +61,7 @@ func StatsHandler(c *fiber.Ctx) error {
 	}
 
 	userProfileValue := profile.Members[mowojang.UUID]
-	museum := (*profileMuseum)[mowojang.UUID]
+	museum := profileMuseum[mowojang.UUID]
 	userProfile := &userProfileValue
 
 	stats.GetItems(userProfile, profile.ProfileID)
@@ -85,6 +85,6 @@ func StatsHandler(c *fiber.Ctx) error {
 		"bank":              profile.Banking.Balance,
 		"personalBank":      userProfile.Profile.BankAccount,
 		"fairySouls":        stats.GetFairySouls(userProfile, profile.GameMode),
-		"museum":            museum.Value,
+		"apiSettings":       stats.GetAPISettings(userProfile, profile, museum),
 	})
 }
