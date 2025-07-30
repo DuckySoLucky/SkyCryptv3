@@ -219,8 +219,8 @@ func getProfilePets(userProfile *models.Member, pets *[]models.Pet) []models.Pro
 				continue
 			}
 
-			if pet.Active {
-				outputPet.Stats[key] = value
+			if pet.Active && len(key) > 1 {
+				outputPet.Stats[strings.ToLower(key)] = value
 			}
 		}
 
