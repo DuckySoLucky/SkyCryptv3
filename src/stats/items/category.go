@@ -61,12 +61,7 @@ func GetCategory(allItems []models.ProcessedItem, category string) []models.Proc
 	return output
 }
 
-type weaponsResult struct {
-	Weapons               []models.ProcessedItem `json:"weapons"`
-	HighestPriorityWeapon *models.ProcessedItem  `json:"highest_priority_weapon"`
-}
-
-func GetWeapons(allItems []models.ProcessedItem) weaponsResult {
+func GetWeapons(allItems []models.ProcessedItem) models.WeaponsResult {
 	weapons := GetCategory(allItems, "weapon")
 
 	countsOfID := make(map[string]int)
@@ -95,7 +90,7 @@ func GetWeapons(allItems []models.ProcessedItem) weaponsResult {
 		highestPriorityWeapon = &swords[0]
 	}
 
-	return weaponsResult{
+	return models.WeaponsResult{
 		Weapons:               weapons,
 		HighestPriorityWeapon: highestPriorityWeapon,
 	}

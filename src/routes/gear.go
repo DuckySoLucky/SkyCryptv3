@@ -4,7 +4,9 @@ import (
 	"fmt"
 	redis "skycrypt/src/db"
 	"skycrypt/src/models"
-	stats "skycrypt/src/stats/items"
+	stats "skycrypt/src/stats"
+	statsItems "skycrypt/src/stats/items"
+
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -44,7 +46,7 @@ func GearHandler(c *fiber.Ctx) error {
 			continue
 		}
 
-		processedItems[inventoryId] = stats.ProcessItems(&inventoryData, inventoryId)
+		processedItems[inventoryId] = statsItems.ProcessItems(&inventoryData, inventoryId)
 	}
 
 	allItems := make([]models.ProcessedItem, 0)
@@ -57,9 +59,6 @@ func GearHandler(c *fiber.Ctx) error {
 	fmt.Printf("Returning /api/gear/%s in %s\n", profileId, time.Since(timeNow))
 
 	return c.JSON(fiber.Map{
-		"armor":     stats.GetArmor(processedItems["armor"]),
-		"equipment": stats.GetEquipment(processedItems["equipment"]),
-		"wardrobe":  stats.GetWardrobe(processedItems["wardrobe"]),
-		"weapons":   stats.GetWeapons(allItems),
+		"gear": stats.GetGear(processedItems, allItems),
 	})
 }

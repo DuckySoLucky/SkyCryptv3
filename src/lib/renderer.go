@@ -7,6 +7,7 @@ Originally Inspired by Crafatar: https://github.com/crafatar/crafatar
 package lib
 
 import (
+	"bytes"
 	"fmt"
 	"image"
 	"image/color"
@@ -346,16 +347,10 @@ func To3DHead(img image.Image) *image.RGBA {
 	return out
 }
 
-func RenderHead(textureId string) image.Image {
+func RenderHead(textureId string) []byte {
 	CACHE_PATH := filepath.Join(CACHE_DIR, textureId+".png")
-	if f, err := os.Open(CACHE_PATH); err == nil {
-		defer f.Close()
-		img, err := png.Decode(f)
-		if err == nil {
-			return img
-		} else {
-			log.Println("Error decoding cached head:", err)
-		}
+	if data, err := os.ReadFile(CACHE_PATH); err == nil {
+		return data
 	}
 
 	response, err := http.Get("https://textures.minecraft.net/texture/" + textureId)
@@ -363,7 +358,6 @@ func RenderHead(textureId string) image.Image {
 		log.Println("Error fetching texture:", err)
 		return nil
 	}
-
 	defer response.Body.Close()
 	if response.StatusCode != http.StatusOK {
 		log.Println("Error fetching texture, status code:", response.StatusCode)
@@ -388,24 +382,25 @@ func RenderHead(textureId string) image.Image {
 
 	head := To3DHead(rgbaImg)
 
-	// 755 means you can do anything with the file or directory, and other users can read and execute it but not alter it.
+	var buf bytes.Buffer
+	if err := png.Encode(&buf, head); err != nil {
+		log.Println("Error encoding head to PNG:", err)
+		return nil
+	}
+	data := buf.Bytes()
+
 	if err := os.MkdirAll(CACHE_DIR, 0755); err == nil {
-		if f, err := os.Create(CACHE_PATH); err == nil {
-			defer f.Close()
-			if err := png.Encode(f, head); err != nil {
-				log.Println("Error saving head to cache:", err)
-			}
-		} else {
-			log.Println("Error creating cache file:", err)
+		if err := os.WriteFile(CACHE_PATH, data, 0644); err != nil {
+			log.Println("Error saving head to cache:", err)
 		}
 	} else {
 		log.Println("Error creating cache directory:", err)
 	}
 
-	return head
+	return data
 }
 
-func RenderItem(itemID string) (image.Image, error) {
+func RenderItem(itemID string) ([]byte, error) {
 	damage := 0
 	if strings.Contains(itemID, ":") {
 		itemID = strings.Split(itemID, ":")[0]
@@ -435,19 +430,43 @@ func RenderItem(itemID string) (image.Image, error) {
 		return nil, fmt.Errorf("couldn't find the texture")
 	}
 
+	// If it's a skull, use RenderHead and return its PNG bytes
 	if strings.Contains(output, "/Vanilla/assets/firmskyblock/models/item/skull") {
-		return RenderHead(itemData.Texture), nil
+		if itemData.Texture == "" {
+			return nil, fmt.Errorf("no texture id for skull")
+		}
+		data := RenderHead(itemData.Texture)
+		if data == nil {
+			return nil, fmt.Errorf("failed to render head for skull")
+		}
+		return data, nil
+	}
+
+	// If output is a localhost asset, read from disk (performance optimization)
+	if strings.HasPrefix(output, "http://localhost") || strings.HasPrefix(output, "https://localhost") {
+		assetsIdx := strings.Index(output, "/assets/")
+		if assetsIdx != -1 {
+			localPath := output[assetsIdx+1:] // skip the leading slash
+			if _, err := os.Stat(localPath); err == nil {
+				data, err := os.ReadFile(localPath)
+				if err != nil {
+					return nil, fmt.Errorf("error reading local asset: %v", err)
+				}
+				return data, nil
+			} else {
+				return nil, fmt.Errorf("local asset not found: %s", localPath)
+			}
+		}
+		return nil, fmt.Errorf("invalid localhost asset path: %s", output)
 	}
 
 	response, err := http.Get(output)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching item texture: %v", err)
 	}
-
 	defer response.Body.Close()
 	if response.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("error fetching item texture: %v", err)
-
 	}
 
 	img, err := png.Decode(response.Body)
@@ -455,5 +474,10 @@ func RenderItem(itemID string) (image.Image, error) {
 		return nil, fmt.Errorf("error decoding item texture: %v", err)
 	}
 
-	return img, nil
+	var buf bytes.Buffer
+	if err := png.Encode(&buf, img); err != nil {
+		return nil, fmt.Errorf("error encoding item texture: %v", err)
+	}
+
+	return buf.Bytes(), nil
 }

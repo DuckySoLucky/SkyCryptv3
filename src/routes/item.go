@@ -1,9 +1,7 @@
 package routes
 
 import (
-	"bytes"
 	"fmt"
-	"image/png"
 	"skycrypt/src/constants"
 	"skycrypt/src/lib"
 	"time"
@@ -19,21 +17,13 @@ func ItemHandlers(c *fiber.Ctx) error {
 		return c.JSON(constants.InvalidItemProvidedError)
 	}
 
-	texture, err := lib.RenderItem(textureId)
+	textureBytes, err := lib.RenderItem(textureId)
 	if err != nil {
 		c.Status(500)
 		return c.JSON(constants.InvalidItemProvidedError)
 	}
 
 	c.Type("png")
-
-	var buf bytes.Buffer
-	if err := png.Encode(&buf, texture); err != nil {
-		c.Status(500)
-		return c.SendString("Failed to encode image")
-	}
-
-	fmt.Printf("Returning /api/head/%s in %s\n", textureId, time.Since(timeNow))
-
-	return c.Send(buf.Bytes())
+	fmt.Printf("Returning /api/item/%s in %s\n", textureId, time.Since(timeNow))
+	return c.Send(textureBytes)
 }

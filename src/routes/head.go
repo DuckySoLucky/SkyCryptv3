@@ -1,9 +1,7 @@
 package routes
 
 import (
-	"bytes"
 	"fmt"
-	"image/png"
 	"skycrypt/src/constants"
 	"skycrypt/src/lib"
 	"time"
@@ -19,17 +17,13 @@ func HeadHandlers(c *fiber.Ctx) error {
 		return c.JSON(constants.InvalidItemProvidedError)
 	}
 
-	texture := lib.RenderHead(textureId)
-
-	c.Type("png")
-
-	var buf bytes.Buffer
-	if err := png.Encode(&buf, texture); err != nil {
+	textureBytes := lib.RenderHead(textureId)
+	if textureBytes == nil {
 		c.Status(500)
-		return c.SendString("Failed to encode image")
+		return c.SendString("Failed to render head")
 	}
 
+	c.Type("png")
 	fmt.Printf("Returning /api/head/%s in %s\n", textureId, time.Since(timeNow))
-
-	return c.Send(buf.Bytes())
+	return c.Send(textureBytes)
 }
