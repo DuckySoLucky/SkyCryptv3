@@ -26,6 +26,12 @@ var InvalidProfileIdError = fiber.Map{
 	"message": "Please provide a valid profile ID",
 }
 
+var InvalidItemProvidedError = fiber.Map{
+	"error":   "Invalid item provided",
+	"status":  "error",
+	"message": "Please provide a valid item ID",
+}
+
 var FAIRY_SOULS = map[string]int{
 	"normal":   266,
 	"stranded": 4,

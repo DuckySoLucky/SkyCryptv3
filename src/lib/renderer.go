@@ -7,6 +7,7 @@ Originally Inspired by Crafatar: https://github.com/crafatar/crafatar
 package lib
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"image/draw"
@@ -16,6 +17,10 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"skycrypt/src/constants"
+	"skycrypt/src/models"
+	"skycrypt/src/utility"
+	"strings"
 )
 
 const (
@@ -398,4 +403,57 @@ func RenderHead(textureId string) image.Image {
 	}
 
 	return head
+}
+
+func RenderItem(itemID string) (image.Image, error) {
+	damage := 0
+	if strings.Contains(itemID, ":") {
+		itemID = strings.Split(itemID, ":")[0]
+		parsedDmg, err := utility.ParseInt(strings.Split(itemID, ":")[1])
+		if err == nil {
+			damage = parsedDmg
+		}
+	}
+
+	itemData := constants.ITEMS[itemID]
+	TextureItem := models.TextureItem{
+		Damage: &itemData.Damage,
+		ID:     &itemData.ItemId,
+		Tag: models.TextureItemExtraAttributes{
+			ExtraAttributes: map[string]interface{}{
+				"id": itemData.SkyblockID,
+			},
+		},
+	}
+
+	if damage != 0 {
+		TextureItem.Damage = &damage
+	}
+
+	output := GetTexture(TextureItem)
+	if output == "" {
+		return nil, fmt.Errorf("couldn't find the texture")
+	}
+
+	if strings.Contains(output, "/Vanilla/assets/firmskyblock/models/item/skull") {
+		return RenderHead(itemData.Texture), nil
+	}
+
+	response, err := http.Get(output)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching item texture: %v", err)
+	}
+
+	defer response.Body.Close()
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("error fetching item texture: %v", err)
+
+	}
+
+	img, err := png.Decode(response.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error decoding item texture: %v", err)
+	}
+
+	return img, nil
 }

@@ -110,4 +110,6 @@ func SetupRoutes(app *fiber.App) {
 	// RENDERING ENDPOINTS
 	api.Get("/head/:textureId", routes.HeadHandlers)
 
+	api.Get("/item/:itemId", routes.ItemHandlers)
+
 }

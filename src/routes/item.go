@@ -11,15 +11,19 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func HeadHandlers(c *fiber.Ctx) error {
+func ItemHandlers(c *fiber.Ctx) error {
 	timeNow := time.Now()
-	textureId := c.Params("textureId")
+	textureId := c.Params("itemId")
 	if textureId == "" {
 		c.Status(400)
 		return c.JSON(constants.InvalidItemProvidedError)
 	}
 
-	texture := lib.RenderHead(textureId)
+	texture, err := lib.RenderItem(textureId)
+	if err != nil {
+		c.Status(500)
+		return c.JSON(constants.InvalidItemProvidedError)
+	}
 
 	c.Type("png")
 

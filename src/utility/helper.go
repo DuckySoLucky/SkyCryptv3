@@ -79,6 +79,7 @@ func ParseInt(n string) (int, error) {
 	if err != nil {
 		return 0, err
 	}
+
 	return i, nil
 }
 
