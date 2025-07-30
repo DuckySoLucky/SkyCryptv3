@@ -28,8 +28,8 @@ type OutputPets struct {
 	MissingPets        []ProcessedPet `json:"missing"`
 	Amount             int            `json:"amount"`
 	Total              int            `json:"total"`
-	AmountSkins        int            `json:"amount_skins"`
-	TotalSkins         int            `json:"total_skins"`
+	AmountSkins        int            `json:"amountSkins"`
+	TotalSkins         int            `json:"totalSkins"`
 	TotalPetExperience int            `json:"totalPetExp"`
 	TotalCandyUsed     int            `json:"totalCandyUsed"`
 	PetScore           PetScore       `json:"petScore,omitempty"`

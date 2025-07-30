@@ -28,6 +28,6 @@ func SlayersHandler(c *fiber.Ctx) error {
 	fmt.Printf("Returning /api/slayer/%s in %s\n", profileId, time.Since(timeNow))
 
 	return c.JSON(fiber.Map{
-		"slayers": stats.GetSlayers(userProfile),
+		"slayer": stats.GetSlayers(userProfile),
 	})
 }

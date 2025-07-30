@@ -5,7 +5,7 @@ type RiftOutput struct {
 	Motes      RiftMotesOutput      `json:"motes"`
 	Enigma     RiftEnigmaOutput     `json:"enigma"`
 	Castle     RiftCastleOutput     `json:"castle"`
-	Porhtals   RiftPortalsOutput    `json:"portals"`
+	Porhtals   RiftPortalsOutput    `json:"porhtal"`
 	Timecharms RiftTimecharmsOutput `json:"timecharms"`
 	Armor      ArmorResult          `json:"armor"`
 	Equipment  EquipmentResult      `json:"equipment"`
@@ -28,8 +28,8 @@ type RiftCastleOutput struct {
 }
 
 type RiftPortalsOutput struct {
-	PorhtalsFound int           `json:"portalsFound"`
-	Porhtals      []RiftPorhtal `json:"portals"`
+	PorhtalsFound int           `json:"porhtalsFound"`
+	Porhtals      []RiftPorhtal `json:"porhtals"`
 }
 
 type RiftPorhtal struct {

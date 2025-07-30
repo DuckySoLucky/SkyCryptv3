@@ -9,10 +9,10 @@ type DungeonsOutput struct {
 }
 
 type ClassData struct {
-	SelectedClass            string           `json:"selected_class,omitempty"`
+	SelectedClass            string           `json:"selectedClass,omitempty"`
 	Classes                  map[string]Skill `json:"classes,omitempty"`
-	ClassAverage             float64          `json:"class_average,omitempty"`
-	ClassAverageWithProgress float64          `json:"class_average_with_progress,omitempty"`
+	ClassAverage             float64          `json:"classAverage,omitempty"`
+	ClassAverageWithProgress float64          `json:"classAverageWithProgress,omitempty"`
 	TotalExperience          float64          `json:"totalClassExp,omitempty"`
 }
 
@@ -61,14 +61,14 @@ type MostDamageOutput struct {
 
 type DungeonStatsOutput struct {
 	Secrets                  SecretsOutput `json:"secrets"`
-	HighestFloorBeatenNormal int           `json:"highest_floor_beaten_normal"`
-	HighestFloorBeatenMaster int           `json:"highest_floor_beaten_master"`
-	BloodMobKills            int           `json:"blood_mob_kills"`
+	HighestFloorBeatenNormal int           `json:"highestFloorBeatenNormal"`
+	HighestFloorBeatenMaster int           `json:"highestFloorBeatenMaster"`
+	BloodMobKills            int           `json:"bloodMobKills"`
 }
 
 type SecretsOutput struct {
 	Found         int     `json:"found"`
-	SecretsPerRun float64 `json:"secrets_per_run"`
+	SecretsPerRun float64 `json:"secretsPerRun"`
 }
 
 type FloorCompletionsOutput struct {

@@ -73,7 +73,7 @@ func GetMinions(profile *models.Profile) models.MinionsOutput {
 
 	for categoryId, categoryData := range constants.MINIONS {
 		category := models.MinionCategory{
-			Minions:      make(map[string]models.Minion),
+			Minions:      []models.Minion{},
 			Texture:      constants.MINION_CATEGORY_ICONS[categoryId],
 			TotalMinions: 0,
 			MaxedMinions: 0,
@@ -93,12 +93,12 @@ func GetMinions(profile *models.Profile) models.MinionsOutput {
 				maxTier = 11 // Default max tier if not specified
 			}
 
-			category.Minions[minionId] = models.Minion{
+			category.Minions = append(category.Minions, models.Minion{
 				Name:    name,
 				Texture: minionData.Texture,
 				MaxTier: maxTier,
 				Tiers:   craftedMinions[minionId],
-			}
+			})
 
 			totalTiers += maxTier
 			category.MaxedTiers += len(craftedMinions[minionId])

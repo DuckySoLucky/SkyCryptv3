@@ -7,13 +7,13 @@ type riftEye struct {
 }
 
 var RIFT_EYES = []riftEye{
-	{Name: "The Intruder", Id: "dreadfarm", Texture: "/api/head/17db1923d03c4ef4e9f6e872c5a6ad2578b1aff2b281fbc3ffa7466c825fb9"},
-	{Name: "The Gill-Man", Id: "wizard_tower", Texture: "/api/head/17db1923d03c4ef4e9f6e872c5a6ad2578b1aff2b281fbc3ffa7466c825fb9"},
-	{Name: "The Baba Yaga", Id: "plaza", Texture: "/api/head/17db1923d03c4ef4e9f6e872c5a6ad2578b1aff2b281fbc3ffa7466c825fb9"},
-	{Name: "The Bankster", Id: "fisherman_hut", Texture: "/api/head/17db1923d03c4ef4e9f6e872c5a6ad2578b1aff2b281fbc3ffa7466c825fb9"},
-	{Name: "The Gooey", Id: "colosseum", Texture: "/api/head/17db1923d03c4ef4e9f6e872c5a6ad2578b1aff2b281fbc3ffa7466c825fb9"},
-	{Name: "The Prince", Id: "castle", Texture: "/api/head/17db1923d03c4ef4e9f6e872c5a6ad2578b1aff2b281fbc3ffa7466c825fb9"},
-	{Name: "The 7th Sin", Id: "mountaintop", Texture: "/api/head/17db1923d03c4ef4e9f6e872c5a6ad2578b1aff2b281fbc3ffa7466c825fb9"},
+	{Name: "The Intruder", Id: "dreadfarm", Texture: "http://localhost:8080/api/head/17db1923d03c4ef4e9f6e872c5a6ad2578b1aff2b281fbc3ffa7466c825fb9"},
+	{Name: "The Gill-Man", Id: "wizard_tower", Texture: "http://localhost:8080/api/head/17db1923d03c4ef4e9f6e872c5a6ad2578b1aff2b281fbc3ffa7466c825fb9"},
+	{Name: "The Baba Yaga", Id: "plaza", Texture: "http://localhost:8080/api/head/17db1923d03c4ef4e9f6e872c5a6ad2578b1aff2b281fbc3ffa7466c825fb9"},
+	{Name: "The Bankster", Id: "fisherman_hut", Texture: "http://localhost:8080/api/head/17db1923d03c4ef4e9f6e872c5a6ad2578b1aff2b281fbc3ffa7466c825fb9"},
+	{Name: "The Gooey", Id: "colosseum", Texture: "http://localhost:8080/api/head/17db1923d03c4ef4e9f6e872c5a6ad2578b1aff2b281fbc3ffa7466c825fb9"},
+	{Name: "The Prince", Id: "castle", Texture: "http://localhost:8080/api/head/17db1923d03c4ef4e9f6e872c5a6ad2578b1aff2b281fbc3ffa7466c825fb9"},
+	{Name: "The 7th Sin", Id: "mountaintop", Texture: "http://localhost:8080/api/head/17db1923d03c4ef4e9f6e872c5a6ad2578b1aff2b281fbc3ffa7466c825fb9"},
 }
 
 type riftTimecharm struct {

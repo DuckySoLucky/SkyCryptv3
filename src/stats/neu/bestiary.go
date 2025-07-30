@@ -11,7 +11,7 @@ func GetTexture(mob neu.NEUBestiaryRawMob) string {
 		return fmt.Sprintf(`http://localhost:8080/api/item/%s`, mob.Item)
 	}
 
-	return fmt.Sprintf("/api/head/%s", utility.GetSkinHash(mob.Texture))
+	return fmt.Sprintf("http://localhost:8080/api/head/%s", utility.GetSkinHash(mob.Texture))
 }
 
 func GetIslandTexture(island neu.NEUBestiaryRawIslandData) string {
@@ -19,7 +19,7 @@ func GetIslandTexture(island neu.NEUBestiaryRawIslandData) string {
 		return fmt.Sprintf(`http://localhost:8080/api/item/%s`, island.Icon.Item)
 	}
 
-	return fmt.Sprintf("/api/head/%s", utility.GetSkinHash(island.Icon.Texture))
+	return fmt.Sprintf("http://localhost:8080/api/head/%s", utility.GetSkinHash(island.Icon.Texture))
 }
 
 func FormatBestiaryConstants(bestiaryConstants neu.NEUBestiaryRaw) neu.BestiaryConstants {

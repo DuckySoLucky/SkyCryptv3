@@ -6,16 +6,16 @@ type MinionsOutput struct {
 	MaxedMinions int                       `json:"maxedMinions"`
 	TotalTiers   int                       `json:"totalTiers"`
 	MaxedTiers   int                       `json:"maxedTiers"`
-	MinionSlots  *MinionSlotsOutput        `json:"minionSlots"`
+	MinionSlots  *MinionSlotsOutput        `json:"minionsSlots"`
 }
 
 type MinionCategory struct {
-	Minions      map[string]Minion `json:"minions"`
-	Texture      string            `json:"texture"`
-	TotalMinions int               `json:"totalMinions"`
-	MaxedMinions int               `json:"maxedMinions"`
-	TotalTiers   int               `json:"totalTiers"`
-	MaxedTiers   int               `json:"maxedTiers"`
+	Minions      []Minion `json:"minions"`
+	Texture      string   `json:"texture"`
+	TotalMinions int      `json:"totalMinions"`
+	MaxedMinions int      `json:"maxedMinions"`
+	TotalTiers   int      `json:"totalTiers"`
+	MaxedTiers   int      `json:"maxedTiers"`
 }
 
 type Minion struct {

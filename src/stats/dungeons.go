@@ -161,7 +161,7 @@ func getClassData(userProfile *models.Member) models.ClassData {
 	classLevelSum, classLevelWithProgressSum := 0, 0.0
 	for class, skill := range userProfile.Dungeons.Classes {
 		output.TotalExperience += skill.Experience
-		output.Classes[class] = stats.GetLevelByXp(int(skill.Experience), &stats.ExtraSkillData{Type: "dungeoneering"})
+		output.Classes[class] = stats.GetLevelByXp(int(skill.Experience), &stats.ExtraSkillData{Type: "dungeoneering", Texture: class})
 		classLevelSum += output.Classes[class].Level
 		classLevelWithProgressSum += output.Classes[class].LevelWithProgress
 	}

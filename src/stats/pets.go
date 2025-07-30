@@ -177,7 +177,7 @@ func getProfilePets(userProfile *models.Member, pets *[]models.Pet) []models.Pro
 			Active:    pet.Active,
 			Price:     0,
 			Level:     getPetLevel(pet),
-			Texture:   "/api/head/bc8ea1f51f253ff5142ca11ae45193a4ad8c3ab5e9c6eec8ba7a4fcb7bac40",
+			Texture:   "http://localhost:8080/api/head/bc8ea1f51f253ff5142ca11ae45193a4ad8c3ab5e9c6eec8ba7a4fcb7bac40",
 			Lore:      []string{"§cThis pet is not saved in the repository", "", "§cIf you expected it to be there please send a message in", "§c§l#neu-support §r§con §ldiscord.gg/moulberry"},
 			Stats:     map[string]float64{},
 			CandyUsed: pet.CandyUsed,
@@ -202,12 +202,12 @@ func getProfilePets(userProfile *models.Member, pets *[]models.Pet) []models.Pro
 			skinData, err := notenoughupdates.GetItem(skinId)
 			if err == nil && skinData.NBT.SkullOwner != nil && len(skinData.NBT.SkullOwner.Properties.Textures) > 0 {
 				var textureId = utility.GetSkinHash(skinData.NBT.SkullOwner.Properties.Textures[0].Value)
-				outputPet.Texture = fmt.Sprintf("/api/head/%s", textureId)
+				outputPet.Texture = fmt.Sprintf("http://localhost:8080/api/head/%s", textureId)
 				outputPet.Name += " ✦"
 			}
 		} else if NEUItem.NBT.SkullOwner != nil && len(NEUItem.NBT.SkullOwner.Properties.Textures) > 0 {
 			var textureId = utility.GetSkinHash(NEUItem.NBT.SkullOwner.Properties.Textures[0].Value)
-			outputPet.Texture = fmt.Sprintf("/api/head/%s", textureId)
+			outputPet.Texture = fmt.Sprintf("http://localhost:8080/api/head/%s", textureId)
 		}
 
 		data := getPetData(outputPet.Level.Level, pet.Type, strings.ToUpper(petDataRarity))

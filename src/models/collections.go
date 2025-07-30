@@ -11,7 +11,7 @@ type CollectionCategory struct {
 	Texture    string                   `json:"texture"`
 	Items      []CollectionCategoryItem `json:"items"`
 	TotalTiers int                      `json:"totalTiers"`
-	MaxedTiers int                      `json:"maxedTiers"`
+	MaxedTiers int                      `json:"maxTiers"`
 }
 
 type CollectionCategoryItem struct {
