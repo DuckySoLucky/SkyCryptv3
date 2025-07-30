@@ -56,7 +56,7 @@ func SetupRoutes(app *fiber.App) {
 	}))
 
 	// Assets folder
-	app.Static("/assets", "/home/duckysolucky/Desktop/SkyCryptv3/assets")
+	app.Static("/assets", "assets")
 
 	if os.Getenv("DEV") == "false" {
 		fmt.Println("[ENVIROMENT] Running in production mode")
