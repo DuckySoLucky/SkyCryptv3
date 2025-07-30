@@ -80,10 +80,7 @@ func GetMagicalPower(rarity string, id string) int {
 
 func getMagicalPowerData(accessories *[]models.InsertAccessory, userProfile *models.Member) models.GetMagicalPowerOutput {
 	output := models.GetMagicalPowerOutput{
-		Rarities: make(map[string]struct {
-			Rarity int `json:"rarity"`
-			Amount int `json:"magicalPower"`
-		}),
+		Rarities: models.GetMagicalPowerRarities{},
 	}
 
 	for _, accessory := range *accessories {
@@ -94,8 +91,8 @@ func getMagicalPowerData(accessories *[]models.InsertAccessory, userProfile *mod
 		magicalPower := GetMagicalPower(accessory.Rarity, accessory.Id)
 
 		rarity := output.Rarities[accessory.Rarity]
-		rarity.Amount += magicalPower
-		rarity.Rarity++
+		rarity.MagicalPower += magicalPower
+		rarity.Amount++
 		output.Rarities[accessory.Rarity] = rarity
 
 		output.Accessories += magicalPower

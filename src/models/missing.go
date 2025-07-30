@@ -29,10 +29,12 @@ type GetMagicalPowerOutput struct {
 		Rarity string `json:"rarity"`
 		Amount int    `json:"amount"`
 	} `json:"hegemony"`
-	Rarities map[string]struct {
-		Rarity int `json:"rarity"`
-		Amount int `json:"magicalPower"`
-	} `json:"rarities"`
+	Rarities GetMagicalPowerRarities `json:"rarities"`
+}
+
+type GetMagicalPowerRarities map[string]struct {
+	Amount       int `json:"amount"`
+	MagicalPower int `json:"magicalPower"`
 }
 
 type InsertAccessory struct {
