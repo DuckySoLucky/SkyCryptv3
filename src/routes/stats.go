@@ -64,28 +64,18 @@ func StatsHandler(c *fiber.Ctx) error {
 	museum := profileMuseum[mowojang.UUID]
 	userProfile := &userProfileValue
 
+	output, err := stats.GetStats(mowojang, profiles, profile, player, userProfile, museum, members)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": fmt.Sprintf("Failed to get stats: %v", err),
+		})
+	}
+
 	stats.GetItems(userProfile, profile.ProfileID)
 
 	fmt.Printf("Returning /api/stats/%s in %s\n", uuid, time.Since(timeNow))
 
 	return c.JSON(fiber.Map{
-		"username":          mowojang.Name,
-		"displayName":       mowojang.Name,
-		"uuid":              mowojang.UUID,
-		"profile_id":        profile.ProfileID,
-		"profile_cute_name": profile.CuteName,
-		"selected":          profile.Selected,
-		"profiles":          stats.FormatProfiles(profiles),
-		"members":           members,
-		"social":            player.SocialMedia.Links,
-		"rank":              stats.GetRank(player),
-		"skills":            stats.GetSkills(userProfile, profile, player),
-		"skyblock_level":    stats.GetSkyBlockLevel(userProfile),
-		"joined":            userProfile.Profile.FirstJoin,
-		"purse":             userProfile.Currencies.CoinPurse,
-		"bank":              profile.Banking.Balance,
-		"personalBank":      userProfile.Profile.BankAccount,
-		"fairySouls":        stats.GetFairySouls(userProfile, profile.GameMode),
-		"apiSettings":       stats.GetAPISettings(userProfile, profile, museum),
+		"stats": output,
 	})
 }

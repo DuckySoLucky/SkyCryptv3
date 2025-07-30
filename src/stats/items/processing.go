@@ -40,9 +40,7 @@ func ProcessItem(item *models.Item, source string) models.ProcessedItem {
 			potionType = "normal"
 		}
 
-		// TODO: Once pack support is implemented, this should be removed
-		processedItem.Texture = "sky.shiiyu.moe/api/potion/" + potionType + "/" + color
-		// processedItem.Texture = "/api/potion/" + potionType + "/" + color
+		processedItem.Texture = "http://localhost:8080/api/potion/" + potionType + "/" + color
 	}
 
 	rawLore := make([]string, len(processedItem.Lore))

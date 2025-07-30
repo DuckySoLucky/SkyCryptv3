@@ -39,7 +39,7 @@ type InsertAccessory struct {
 	ProcessedItem
 	Id         string `json:"id"`
 	Rarity     string `json:"rarity"`
-	IsInactive bool   `json:"isInactive,omitempty"`
+	IsInactive bool   `json:"isInactive"`
 }
 
 type AccessoryIds struct {

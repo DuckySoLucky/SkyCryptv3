@@ -10,12 +10,7 @@ type Player struct {
 	DisplayName string `json:"displayname"`
 	UUID        string `json:"uuid"`
 	SocialMedia struct {
-		Links struct {
-			Twitter string `json:"TWITTER,omitempty"`
-			Twitch  string `json:"TWITCH,omitempty"`
-			Hypixel string `json:"HYPIXEL,omitempty"`
-			Discord string `json:"DISCORD,omitempty"`
-		} `json:"links"`
+		Links SocialMediaLinks `json:"links"`
 	} `json:"socialMedia"`
 	NewPackageRank     string       `json:"newPackageRank,omitempty"`
 	MonthlyRankColor   string       `json:"monthlyRankColor,omitempty"`
@@ -25,6 +20,13 @@ type Player struct {
 	RankPlusColor      string       `json:"rankPlusColor,omitempty"`
 	PackageRank        string       `json:"packageRank,omitempty"`
 	Achievements       achievements `json:"achievements,omitempty"`
+}
+
+type SocialMediaLinks struct {
+	Twitter string `json:"TWITTER,omitempty"`
+	Twitch  string `json:"TWITCH,omitempty"`
+	Hypixel string `json:"HYPIXEL,omitempty"`
+	Discord string `json:"DISCORD,omitempty"`
 }
 
 type achievements struct {

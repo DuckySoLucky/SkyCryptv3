@@ -112,4 +112,5 @@ func SetupRoutes(app *fiber.App) {
 
 	api.Get("/item/:itemId", routes.ItemHandlers)
 
+	api.Get("/potion/:type/:color", routes.ItemHandlers)
 }
