@@ -71,6 +71,8 @@ var CLAIMABLE_ITEMS = map[string]string{
 	"claim_potato_war_silver_medal": "Silver Medal (Potato War)",
 	"claim_potato_war_crown":        "Crown (Potato War)",
 	"skyblock_free_cookie":          "Free Booster Cookie",
+	"claimed_century_cake":          "Century Cake",
+	"claimed_century_cake200":       "Century Cake (Year 200)",
 }
 
 var BANK_COOLDOWN = map[int]string{

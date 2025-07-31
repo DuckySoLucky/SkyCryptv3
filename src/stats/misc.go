@@ -345,6 +345,18 @@ func getUncategorized(userProfile *models.Member) map[string]any {
 	}
 }
 
+func getClaimedItems(player *models.Player) map[string]int64 {
+	return map[string]int64{
+		"potato_talisman":         player.ClaimedPotatoTalisman,
+		"potato_basket":           player.ClaimedPotatoBasket,
+		"potato_war_silver_medal": player.ClaimPotatoWarSilverMedal,
+		"potato_war_crown":        player.ClaimPotatoWarCrown,
+		"skyblock_free_cookie":    player.SkyblockFreeCookie,
+		"century_cake":            player.ClaimedCenturyCake,
+		"century_cake_(year_200)": player.ClaimedCenturyCake200,
+	}
+}
+
 func GetMisc(userProfile *models.Member, profile *models.Profile, player *models.Player) *MiscOutput {
 	return &MiscOutput{
 		Essence:           getEssence(userProfile),
@@ -359,5 +371,6 @@ func GetMisc(userProfile *models.Member, profile *models.Profile, player *models
 		ProfileUpgrades:   getProfileUpgrades(profile),
 		Auctions:          getAuctions(userProfile),
 		Uncategorized:     getUncategorized(userProfile),
+		ClaimedItems:      getClaimedItems(player),
 	}
 }
