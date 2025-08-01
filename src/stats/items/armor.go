@@ -69,7 +69,7 @@ func GetArmor(armor []models.ProcessedItem) models.ArmorResult {
 			name = strings.TrimSpace(name)
 
 			// Removing modifier (probably should use constants for this, but better than nothing)
-			if armor[i].Tag.ExtraAttributes.Modifier != "" {
+			if armor[i].Tag != nil && armor[i].Tag.ExtraAttributes.Modifier != "" {
 				parts := strings.Split(name, " ")
 				if len(parts) > 1 {
 					name = strings.Join(parts[1:], " ")
@@ -94,10 +94,10 @@ func GetArmor(armor []models.ProcessedItem) models.ArmorResult {
 		}
 
 		sameModifierCount := 0
-		if len(armor) > 0 && armor[0].Tag.ExtraAttributes.Modifier != "" {
+		if len(armor) > 0 && armor[0].Tag != nil && armor[0].Tag.ExtraAttributes.Modifier != "" {
 			firstModifier := armor[0].Tag.ExtraAttributes.Modifier
 			for _, a := range armor {
-				if a.Tag.ExtraAttributes.Modifier == firstModifier {
+				if a.Tag != nil && a.Tag.ExtraAttributes.Modifier == firstModifier {
 					sameModifierCount++
 				}
 			}
