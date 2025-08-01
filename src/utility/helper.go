@@ -101,7 +101,10 @@ func FormatNumber(n any) string {
 		value = v
 	case float32:
 		value = float64(v)
+	case int64:
+		value = float64(v)
 	default:
+		fmt.Printf("Unsupported type for FormatNumber: %T\n", v)
 		return "0"
 	}
 
@@ -135,6 +138,18 @@ func FormatNumber(n any) string {
 		return strconv.Itoa(int(result)) + suffix
 	}
 	return strconv.FormatFloat(result, 'f', 1, 64) + suffix
+}
+
+func AddCommas(n int) string {
+	if n < 1000 {
+		return strconv.Itoa(n)
+	}
+
+	s := strconv.Itoa(n)
+	for i := len(s) - 3; i > 0; i -= 3 {
+		s = s[:i] + "," + s[i:]
+	}
+	return s
 }
 
 func ParseTimestamp(timestamp string) int {

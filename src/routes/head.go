@@ -1,16 +1,14 @@
 package routes
 
 import (
-	"fmt"
 	"skycrypt/src/constants"
 	"skycrypt/src/lib"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func HeadHandlers(c *fiber.Ctx) error {
-	timeNow := time.Now()
+	// timeNow := time.Now()
 	textureId := c.Params("textureId")
 	if textureId == "" {
 		c.Status(400)
@@ -24,6 +22,6 @@ func HeadHandlers(c *fiber.Ctx) error {
 	}
 
 	c.Type("png")
-	fmt.Printf("Returning /api/head/%s in %s\n", textureId, time.Since(timeNow))
+	// fmt.Printf("Returning /api/head/%s in %s\n", textureId, time.Since(timeNow))
 	return c.Send(textureBytes)
 }

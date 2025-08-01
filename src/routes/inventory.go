@@ -19,6 +19,29 @@ func InventoryHandler(c *fiber.Ctx) error {
 	uuid := c.Params("uuid")
 	profileId := c.Params("profileId")
 	inventoryId := c.Params("inventoryId")
+	if inventoryId == "museum" {
+		profileMuseum, err := api.GetMuseum(profileId)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": fmt.Sprintf("Failed to get museum: %v", err),
+			})
+		}
+
+		museum := profileMuseum[uuid]
+		if museum == nil {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"error": fmt.Sprintf("No museum data found for profile %s", profileId),
+			})
+		}
+
+		fmt.Printf("Returning /api/inventory/%s/%s in %s\n", uuid, inventoryId, time.Since(timeNow))
+
+		return c.JSON(fiber.Map{
+			"items": statsItems.GetMuseum(museum),
+		})
+
+	}
+
 	profile, err := api.GetProfile(uuid, profileId)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -59,10 +82,12 @@ func InventoryHandler(c *fiber.Ctx) error {
 
 	}
 
+	itemSlice := items[inventoryId]
+	ouput := statsItems.ProcessItems(&itemSlice, inventoryId)
+
 	fmt.Printf("Returning /api/inventory/%s/%s in %s\n", uuid, inventoryId, time.Since(timeNow))
 
-	itemSlice := items[inventoryId]
 	return c.JSON(fiber.Map{
-		"items": statsItems.ProcessItems(&itemSlice, inventoryId),
+		"items": ouput,
 	})
 }

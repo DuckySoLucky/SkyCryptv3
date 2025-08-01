@@ -98,6 +98,7 @@ func processItems(items *[]models.HypixelItem) map[string]models.ProcessedHypixe
 			Category:          strings.ToLower(item.Category),
 			Origin:            item.Origin,
 			RiftTransferrable: item.RiftTransferrable,
+			MuseumData:        item.MuseumData,
 		}
 	}
 
@@ -140,7 +141,7 @@ func LoadSkyBlockItems() error {
 
 	constants.ITEMS = processItems(&items)
 
-	// Printf("[ITEMS] Loaded %d items in %s\n", len(constants.ITEMS), time.Since(timeNow))
+	// fmt.Printf("[ITEMS] Loaded %d items in %s\n", len(constants.ITEMS), time.Since(timeNow))
 
 	// timeNow = time.Now()
 	collections, err := GetSkyBlockCollections()
