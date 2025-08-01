@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"runtime/debug"
 	"skycrypt/src"
 
 	"github.com/gofiber/fiber/v2"
@@ -23,7 +25,20 @@ func main() {
 		IdleTimeout:               0,
 	})
 
-	app.Use(recover.New())
+	app.Use(recover.New(recover.Config{
+		EnableStackTrace: true,
+		StackTraceHandler: func(c *fiber.Ctx, err interface{}) {
+			stack := debug.Stack()
+			fmt.Printf("\033[31m\n========== FATAL PANIC ==========\nPANIC: %v\n\nSTACK TRACE:\n%s\n==================================\033[0m\n", err, stack)
+			// TODO: Figure out why this doesn't work
+			// Return JSON error to the client
+			_ = c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  "Internal Server Error",
+				"type":   fmt.Sprintf("%T", err),
+				"detail": fmt.Sprintf("%v", err),
+			})
+		},
+	}))
 	app.Use(cors.New())
 
 	err := src.SetupApplication()
