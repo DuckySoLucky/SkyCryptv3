@@ -253,6 +253,6 @@ func GetMining(userProfile *models.Member, player *models.Player, items []models
 		GlaciteTunnels:         getGlaciteTunnels(userProfile),
 		Forge:                  getForge(userProfile),
 		Tools:                  statsItems.GetSkillTools("mining", items),
-		Hotm:                   "todo",
+		Hotm:                   []models.ProcessedItem{},
 	}
 }
