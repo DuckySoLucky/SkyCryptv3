@@ -18,13 +18,13 @@ func GetTexturePath(texturePath string, textureString string) string {
 	textureId := textureString[strings.Index(textureString, "/")+1:]
 	formattedPath := ""
 	if texturePath == "Vanilla" {
-		formattedPath = fmt.Sprintf("%s/assets/firmskyblock/models/item/%s", texturePath, textureId)
+		formattedPath = fmt.Sprintf("resourcepacks/%s/assets/firmskyblock/models/item/%s", texturePath, textureId)
 	} else {
 		if after, ok := strings.CutPrefix(textureId, "firmskyblock:item"); ok {
 			textureId = after
 		}
 
-		formattedPath = fmt.Sprintf("%s/assets/cittofirmgenerated/textures/item/%s.png", texturePath, textureId)
+		formattedPath = fmt.Sprintf("resourcepacks/%s/assets/cittofirmgenerated/textures/item/%s.png", texturePath, textureId)
 	}
 
 	return "http://localhost:8080/assets/" + formattedPath
