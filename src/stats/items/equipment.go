@@ -9,7 +9,7 @@ import (
 func GetEquipment(equipment []models.ProcessedItem) models.EquipmentResult {
 	if utility.Every(equipment, isInvalidItem) {
 		return models.EquipmentResult{
-			Equipment: []models.ProcessedItem{},
+			Equipment: []models.StrippedItem{},
 			Stats:     map[string]float64{},
 		}
 	}
@@ -19,7 +19,7 @@ func GetEquipment(equipment []models.ProcessedItem) models.EquipmentResult {
 	slices.Reverse(reversedEquipment)
 
 	return models.EquipmentResult{
-		Equipment: reversedEquipment,
+		Equipment: StripItems(reversedEquipment),
 		Stats:     GetStatsFromItems(equipment),
 	}
 

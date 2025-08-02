@@ -17,7 +17,7 @@ func GetArmor(armor []models.ProcessedItem) models.ArmorResult {
 	// If all armor pieces have no ID, return empty result
 	if utility.Every(armor, isInvalidItem) {
 		return models.ArmorResult{
-			Armor: []models.ProcessedItem{},
+			Armor: []models.StrippedItem{},
 			Stats: map[string]float64{},
 		}
 	}
@@ -37,7 +37,7 @@ func GetArmor(armor []models.ProcessedItem) models.ArmorResult {
 		slices.Reverse(reversedArmor)
 
 		result := models.ArmorResult{
-			Armor: reversedArmor,
+			Armor: StripItems(reversedArmor),
 			Stats: GetStatsFromItems(armor),
 		}
 
@@ -159,7 +159,7 @@ func GetArmor(armor []models.ProcessedItem) models.ArmorResult {
 		slices.Reverse(reversedArmor)
 
 		result := models.ArmorResult{
-			Armor: reversedArmor,
+			Armor: StripItems(reversedArmor),
 			Stats: GetStatsFromItems(armor),
 		}
 
@@ -178,7 +178,7 @@ func GetArmor(armor []models.ProcessedItem) models.ArmorResult {
 	slices.Reverse(reversedArmor)
 
 	return models.ArmorResult{
-		Armor: reversedArmor,
+		Armor: StripItems(reversedArmor),
 		Stats: GetStatsFromItems(armor),
 	}
 }

@@ -34,6 +34,7 @@ type ProcessedHypixelItem struct {
 	RiftTransferrable bool                   `json:"rift_transferrable,omitempty"`
 	MuseumData        *hypixelItemMuseumData `json:"museum_data,omitempty"`
 	Color             string                 `json:"hex_color,omitempty"`
+	TextureId         string                 `json:"texture_id,omitempty"`
 }
 
 type skin struct {

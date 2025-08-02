@@ -24,18 +24,29 @@ type PetLevel struct {
 }
 
 type OutputPets struct {
-	Pets               []ProcessedPet `json:"pets"`
-	MissingPets        []ProcessedPet `json:"missing"`
-	Amount             int            `json:"amount"`
-	Total              int            `json:"total"`
-	AmountSkins        int            `json:"amountSkins"`
-	TotalSkins         int            `json:"totalSkins"`
-	TotalPetExperience int            `json:"totalPetExp"`
-	TotalCandyUsed     int            `json:"totalCandyUsed"`
-	PetScore           PetScore       `json:"petScore,omitempty"`
+	Pets               []StrippedPet `json:"pets"`
+	MissingPets        []StrippedPet `json:"missing"`
+	Amount             int           `json:"amount"`
+	Total              int           `json:"total"`
+	AmountSkins        int           `json:"amountSkins"`
+	TotalSkins         int           `json:"totalSkins"`
+	TotalPetExperience int           `json:"totalPetExp"`
+	TotalCandyUsed     int           `json:"totalCandyUsed"`
+	PetScore           PetScore      `json:"petScore,omitempty"`
 }
 
 type PetScore struct {
 	Amount int                `json:"amount"`
 	Stats  map[string]float64 `json:"stats"`
+}
+
+type StrippedPet struct {
+	Active      bool               `json:"active,omitempty"`
+	Type        string             `json:"type,omitempty"`
+	Rarity      string             `json:"rarity,omitempty"`
+	Level       int                `json:"level"`
+	DisplayName string             `json:"display_name"`
+	Texture     string             `json:"texture_path,omitempty"`
+	Lore        []string           `json:"lore,omitempty"`
+	Stats       map[string]float64 `json:"stats,omitempty"`
 }

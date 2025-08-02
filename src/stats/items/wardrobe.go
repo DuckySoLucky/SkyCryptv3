@@ -1,30 +1,23 @@
 package stats
 
 import (
-	"fmt"
 	"skycrypt/src/models"
 )
 
-func GetWardrobe(wardrobeInventory []models.ProcessedItem) [][]*models.ProcessedItem {
-	defer func() {
-		if r := recover(); r != nil {
-			err := fmt.Errorf("panic occurred: %v", r)
-			fmt.Print("Recovered from panic in GetWardrobe: ", err)
-		}
-	}()
-
+func GetWardrobe(wardrobeInventory []models.ProcessedItem) [][]*models.StrippedItem {
 	wardrobeColumns := len(wardrobeInventory) / 4
 
-	var wardrobe [][]*models.ProcessedItem
+	var wardrobe [][]*models.StrippedItem
 	for i := range wardrobeColumns {
 		page := i / 9
 
-		var wardrobeSlot []*models.ProcessedItem
+		var wardrobeSlot []*models.StrippedItem
 		for j := range 4 {
 			index := 36*page + (i % 9) + j*9
 
 			if len(GetId(wardrobeInventory[index])) > 0 {
-				wardrobeSlot = append(wardrobeSlot, &wardrobeInventory[index])
+				strippedItems := StripItems([]models.ProcessedItem{wardrobeInventory[index]})
+				wardrobeSlot = append(wardrobeSlot, &strippedItems[0])
 			} else {
 				wardrobeSlot = append(wardrobeSlot, nil)
 			}

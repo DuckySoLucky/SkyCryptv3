@@ -12,11 +12,12 @@ type Override struct {
 }
 
 type TextureItem struct {
-	Count  *int                       `nbt:"Count" json:"Count,omitempty"`
-	Damage *int                       `nbt:"Damage" json:"Damage,omitempty"`
-	ID     *int                       `nbt:"id" json:"id,omitempty"`
-	Tag    TextureItemExtraAttributes `nbt:"tag" json:"tag,omitempty"`
-	RawId  string                     `nbt:"raw_id" json:"raw_id,omitempty"`
+	Count   *int                       `nbt:"Count" json:"Count,omitempty"`
+	Damage  *int                       `nbt:"Damage" json:"Damage,omitempty"`
+	ID      *int                       `nbt:"id" json:"id,omitempty"`
+	Tag     TextureItemExtraAttributes `nbt:"tag" json:"tag,omitempty"`
+	RawId   string                     `nbt:"raw_id" json:"raw_id,omitempty"`
+	Texture string                     `nbt:"texture" json:"texture,omitempty"`
 }
 
 type TextureItemExtraAttributes struct {

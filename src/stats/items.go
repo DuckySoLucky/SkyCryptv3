@@ -11,6 +11,120 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
+func GetRawInventory(useProfile *models.Member, inventoryId string) string {
+	switch inventoryId {
+	case "inventory":
+		return useProfile.Inventory.Inventory.Data
+	case "enderchest":
+		return useProfile.Inventory.Enderchest.Data
+	case "armor":
+		return useProfile.Inventory.Armor.Data
+	case "equipment":
+		return useProfile.Inventory.Equipment.Data
+	case "personal_vault":
+		return useProfile.Inventory.PersonalVault.Data
+	case "wardrobe":
+		return useProfile.Inventory.Wardrobe.Data
+
+	case "rift_inventory":
+		return useProfile.Rift.Inventory.Inventory.Data
+	case "rift_enderchest":
+		return useProfile.Rift.Inventory.Enderchest.Data
+	case "rift_armor":
+		return useProfile.Rift.Inventory.Armor.Data
+	case "rift_equipment":
+		return useProfile.Rift.Inventory.Equipment.Data
+	case "potion_bag":
+		return useProfile.Inventory.BagContents.PotionBag.Data
+	case "talisman_bag":
+		return useProfile.Inventory.BagContents.TalismanBag.Data
+	case "fishing_bag":
+		return useProfile.Inventory.BagContents.FishingBag.Data
+	case "quiver":
+		return useProfile.Inventory.BagContents.Quiver.Data
+	}
+
+	return ""
+}
+
+func GetInventory(useProfile *models.Member, inventoryId string) []models.Item {
+	if inventoryId == "backpack" {
+		encodedInventories := map[string]*string{}
+		for backpackId, backpackData := range useProfile.Inventory.Backpack {
+			encodedInventories[fmt.Sprintf("backpack_%s", backpackId)] = &backpackData.Data
+		}
+
+		for backpackIconId, backpackIconData := range useProfile.Inventory.BackpackIcons {
+			encodedInventories[fmt.Sprintf("backpack_icon_%s", backpackIconId)] = &backpackIconData.Data
+		}
+
+		type result struct {
+			inventoryId string
+			items       []models.Item
+			err         error
+		}
+
+		resultChan := make(chan result, len(encodedInventories))
+		var wg sync.WaitGroup
+
+		for inventoryId, inventoryData := range encodedInventories {
+			wg.Add(1)
+			go func(id string, data *string) {
+				defer wg.Done()
+
+				decodedInventory, err := utility.DecodeInventory(data)
+				if err != nil {
+					resultChan <- result{id, nil, err}
+					return
+				}
+
+				resultChan <- result{id, decodedInventory.Items, nil}
+			}(inventoryId, inventoryData)
+		}
+
+		go func() {
+			wg.Wait()
+			close(resultChan)
+		}()
+
+		decodedInventory := make(map[string][]models.Item, len(encodedInventories))
+		for res := range resultChan {
+			if res.err != nil {
+				fmt.Printf("Error decoding inventory %s: %v\n", res.inventoryId, res.err)
+				continue
+			}
+
+			decodedInventory[res.inventoryId] = res.items
+		}
+
+		output := []models.Item{}
+		for inventoryId, items := range decodedInventory {
+			if strings.HasPrefix(inventoryId, "backpack_") && !strings.Contains(inventoryId, "icon") {
+
+				backpackIndex := strings.Split(inventoryId, "_")[1]
+				backpackIcon, iconExists := decodedInventory[fmt.Sprintf("backpack_icon_%s", backpackIndex)]
+				if iconExists && len(backpackIcon) > 0 {
+					backpackIcon[0].ContainsItems = items
+					output = append(output, backpackIcon[0])
+				} else {
+					fmt.Printf("No icon found for backpack %s\n", backpackIndex)
+				}
+			}
+		}
+
+		return output
+	}
+
+	rawInventory := GetRawInventory(useProfile, inventoryId)
+	decodedInventory, err := utility.DecodeInventory(&rawInventory)
+	if err != nil {
+		fmt.Printf("Error decoding inventory %s: %v\n", inventoryId, err)
+		return nil
+	}
+
+	return decodedInventory.Items
+}
+
 func GetItems(useProfile *models.Member, profileId string) (map[string][]models.Item, error) {
 	encodedInventories := map[string]*string{
 		"inventory":      &useProfile.Inventory.Inventory.Data,

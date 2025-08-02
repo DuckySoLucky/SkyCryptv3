@@ -83,6 +83,16 @@ func getMagicalPowerData(accessories *[]models.InsertAccessory, userProfile *mod
 		Rarities: models.GetMagicalPowerRarities{},
 	}
 
+	for _, rarity := range constants.RARITIES {
+		output.Rarities[rarity] = struct {
+			Amount       int `json:"amount"`
+			MagicalPower int `json:"magicalPower"`
+		}{
+			Amount:       0,
+			MagicalPower: 0,
+		}
+	}
+
 	for _, accessory := range *accessories {
 		if accessory.IsInactive {
 			continue
@@ -218,6 +228,7 @@ func GetMissingAccessories(accessories models.AccessoriesOutput, userProfile *mo
 	processedItems := make([]models.ProcessedItem, len(accessories.Accessories))
 	for i, accessory := range accessories.Accessories {
 		processedItems[i] = accessory.ProcessedItem
+		processedItems[i].IsInactive = &accessory.IsInactive
 	}
 
 	output := models.GetMissingAccessoresOutput{
@@ -229,7 +240,7 @@ func GetMissingAccessories(accessories models.AccessoriesOutput, userProfile *mo
 		TotalRecombobulated: constants.GetRecombableAccessoriesCount(),
 		SelectedPower:       userProfile.AccessoryBagStorage.SelectedPower,
 		MagicalPower:        getMagicalPowerData(&activeAccessories, userProfile),
-		Accessories:         accessories.Accessories,
+		Accessories:         stats.StripItems(processedItems),
 		Upgrades:            missingAccessories.Upgrades,
 		Missing:             missingAccessories.Other,
 	}

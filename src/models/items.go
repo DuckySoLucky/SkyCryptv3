@@ -104,21 +104,34 @@ type ProcessedItem struct {
 	ContainsItems  []ProcessedItem `json:"containsItems,omitempty"`
 	Source         string          `json:"source,omitempty"`
 	Id             string          `json:"id,omitempty"`
+	IsInactive     *bool           `json:"isInactive,omitempty"`
 }
 
 type SkillToolsResult struct {
-	Tools               []ProcessedItem `json:"tools"`
-	HighestPriorityTool *ProcessedItem  `json:"highest_priority_tool"`
+	Tools               []StrippedItem `json:"tools"`
+	HighestPriorityTool *StrippedItem  `json:"highest_priority_tool"`
 }
 
 type ArmorResult struct {
-	Armor     []ProcessedItem    `json:"armor"`
+	Armor     []StrippedItem     `json:"armor"`
 	Stats     map[string]float64 `json:"stats"`
 	SetName   *string            `json:"set_name,omitempty"`
 	SetRarity *string            `json:"set_rarity,omitempty"`
 }
 
 type EquipmentResult struct {
-	Equipment []ProcessedItem    `json:"equipment"`
+	Equipment []StrippedItem     `json:"equipment"`
 	Stats     map[string]float64 `json:"stats"`
+}
+
+type StrippedItem struct {
+	DisplayName    string         `json:"display_name,omitempty"`
+	Lore           []string       `json:"lore,omitempty"`
+	Rarity         string         `json:"rarity,omitempty"`
+	Recombobulated bool           `json:"recombobulated,omitempty"`
+	ContainsItems  []StrippedItem `json:"containsItems,omitempty"`
+	Source         string         `json:"source,omitempty"`
+	Texture        string         `json:"texture_path,omitempty"`
+	IsInactive     *bool          `json:"isInactive,omitempty"`
+	Count          *int           `json:"Count,omitempty"`
 }

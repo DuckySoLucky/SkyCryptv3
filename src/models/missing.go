@@ -9,7 +9,7 @@ type GetMissingAccessoresOutput struct {
 	TotalRecombobulated int                   `json:"totalRecombobulated"`
 	SelectedPower       string                `json:"selected_power"`
 	MagicalPower        GetMagicalPowerOutput `json:"magicalPower"`
-	Accessories         []InsertAccessory     `json:"accessories"`
+	Accessories         []StrippedItem        `json:"accessories"`
 	Missing             []ProcessedItem       `json:"missing"`
 	Upgrades            []ProcessedItem       `json:"upgrades"`
 }

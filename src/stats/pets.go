@@ -3,6 +3,8 @@ package stats
 import (
 	"fmt"
 	notenoughupdates "skycrypt/src/NotEnoughUpdates"
+	stats "skycrypt/src/stats/items"
+
 	"skycrypt/src/constants"
 	"skycrypt/src/models"
 	"skycrypt/src/utility"
@@ -419,7 +421,7 @@ func GetPets(userProfile *models.Member, profile *models.Profile) (models.Output
 	}
 
 	output := models.OutputPets{
-		Pets:               pets,
+		Pets:               stats.StripPets(pets),
 		Amount:             len(petAmount),
 		Total:              len(getMaxPetIds()),
 		AmountSkins:        skinAmount,
@@ -429,7 +431,7 @@ func GetPets(userProfile *models.Member, profile *models.Profile) (models.Output
 		PetScore:           GetPetScore(pets),
 	}
 
-	output.MissingPets = getMissingPets(userProfile, output.Pets, profile.GameMode)
+	output.MissingPets = stats.StripPets(getMissingPets(userProfile, pets, profile.GameMode))
 
 	return output, nil
 }

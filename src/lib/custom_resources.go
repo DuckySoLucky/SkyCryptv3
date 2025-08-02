@@ -307,6 +307,11 @@ func ApplyTexture(item models.TextureItem) string {
 		return fmt.Sprintf("http://localhost:8080/api/head/%s", skinHash)
 	}
 
+	// Preparsed texture from /api/item endpoint
+	if item.Texture != "" {
+		return fmt.Sprintf("http://localhost:8080/api/head/%s", item.Texture)
+	}
+
 	if *item.ID >= 298 && *item.ID <= 301 {
 		armorType := constants.ARMOR_TYPES[*item.ID-298]
 

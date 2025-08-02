@@ -91,8 +91,8 @@ func GetWeapons(allItems []models.ProcessedItem) models.WeaponsResult {
 	}
 
 	return models.WeaponsResult{
-		Weapons:               weapons,
-		HighestPriorityWeapon: highestPriorityWeapon,
+		Weapons:               StripItems(weapons),
+		HighestPriorityWeapon: StripItem(*highestPriorityWeapon),
 	}
 }
 
@@ -106,7 +106,7 @@ func GetSkillTools(skill string, allItems []models.ProcessedItem) models.SkillTo
 	}
 
 	return models.SkillToolsResult{
-		Tools:               tools,
-		HighestPriorityTool: highestPriorityTool,
+		Tools:               StripItems(tools),
+		HighestPriorityTool: StripItem(*highestPriorityTool),
 	}
 }

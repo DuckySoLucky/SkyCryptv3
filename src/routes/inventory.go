@@ -37,7 +37,7 @@ func InventoryHandler(c *fiber.Ctx) error {
 		fmt.Printf("Returning /api/inventory/%s/%s in %s\n", uuid, inventoryId, time.Since(timeNow))
 
 		return c.JSON(fiber.Map{
-			"items": statsItems.GetMuseum(museum),
+			"items": statsItems.StripItems(statsItems.GetMuseum(museum)),
 		})
 
 	}
@@ -52,14 +52,14 @@ func InventoryHandler(c *fiber.Ctx) error {
 	userProfileValue := profile.Members[uuid]
 	userProfile := &userProfileValue
 
-	items, err := stats.GetItems(userProfile, profile.ProfileID)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": fmt.Sprintf("Failed to get items: %v", err),
-		})
-	}
-
 	if inventoryId == "search" {
+		items, err := stats.GetItems(userProfile, profile.ProfileID)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": fmt.Sprintf("Failed to get items: %v", err),
+			})
+		}
+
 		searchString := c.Params("search")
 		output := []models.Item{}
 		for _, inventory := range items {
@@ -82,12 +82,12 @@ func InventoryHandler(c *fiber.Ctx) error {
 
 	}
 
-	itemSlice := items[inventoryId]
-	ouput := statsItems.ProcessItems(&itemSlice, inventoryId)
+	itemSlice := stats.GetInventory(userProfile, inventoryId)
+	output := statsItems.ProcessItems(&itemSlice, inventoryId)
 
 	fmt.Printf("Returning /api/inventory/%s/%s in %s\n", uuid, inventoryId, time.Since(timeNow))
 
 	return c.JSON(fiber.Map{
-		"items": ouput,
+		"items": statsItems.StripItems(output),
 	})
 }
