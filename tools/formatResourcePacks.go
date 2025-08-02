@@ -22,7 +22,7 @@ type McMetaAnimation struct {
 }
 
 func main() {
-	assetsRoot := "assets"
+	assetsRoot := "assets/resourcepacks"
 	packDirs, err := os.ReadDir(assetsRoot)
 	if err != nil {
 		fmt.Printf("Failed to read assets directory: %v\n", err)

@@ -113,4 +113,7 @@ func SetupRoutes(app *fiber.App) {
 	api.Get("/item/:itemId", routes.ItemHandlers)
 
 	api.Get("/potion/:type/:color", routes.PotionHandlers)
+
+	api.Get("/leather/:type/:color", routes.LeatherHandlers)
+
 }

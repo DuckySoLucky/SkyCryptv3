@@ -1,6 +1,7 @@
 /*
 Minecraft Head Rendering in Rust provided by @mat-1: https://github.com/mat-1/msdsmchr
 Rewritten and converted into Go by @DuckySolucky
+Original TS version by @DuckySolucky: https://github.com/SkyCryptWebsite/SkyCryptv2/blob/dev/src/lib/server/helper/renderer.ts
 Originally Inspired by Crafatar: https://github.com/crafatar/crafatar
 */
 
@@ -21,8 +22,158 @@ import (
 	"skycrypt/src/constants"
 	"skycrypt/src/models"
 	"skycrypt/src/utility"
+	"strconv"
 	"strings"
 )
+
+var textureDir = "assets/static"
+
+// ========== ITEM RENDERING (Potions & Armor) ==========
+
+func RenderPotion(potionType, hexColor string) ([]byte, error) {
+	liquidPath := filepath.Join(textureDir, "potion_overlay.png")
+
+	var bottlePath string
+	if potionType == "splash" {
+		bottlePath = filepath.Join(textureDir, "splash_potion.png")
+	} else {
+		bottlePath = filepath.Join(textureDir, "potion.png")
+	}
+
+	liquidChan := make(chan imageResult)
+	bottleChan := make(chan imageResult)
+
+	go func() {
+		img, err := loadImage(liquidPath)
+		liquidChan <- imageResult{img, err}
+	}()
+
+	go func() {
+		img, err := loadImage(bottlePath)
+		bottleChan <- imageResult{img, err}
+	}()
+
+	liquidResult := <-liquidChan
+	bottleResult := <-bottleChan
+
+	if liquidResult.err != nil {
+		return nil, fmt.Errorf("failed to load liquid image: %w", liquidResult.err)
+	}
+	if bottleResult.err != nil {
+		return nil, fmt.Errorf("failed to load bottle image: %w", bottleResult.err)
+	}
+
+	return renderColoredItem("#"+hexColor, liquidResult.img, bottleResult.img)
+}
+
+func RenderArmor(armorType, hexColor string) ([]byte, error) {
+	basePath := filepath.Join(textureDir, fmt.Sprintf("leather_%s.png", armorType))
+	overlayPath := filepath.Join(textureDir, fmt.Sprintf("leather_%s_overlay.png", armorType))
+
+	baseChan := make(chan imageResult)
+	overlayChan := make(chan imageResult)
+
+	go func() {
+		img, err := loadImage(basePath)
+		baseChan <- imageResult{img, err}
+	}()
+
+	go func() {
+		img, err := loadImage(overlayPath)
+		overlayChan <- imageResult{img, err}
+	}()
+
+	baseResult := <-baseChan
+	overlayResult := <-overlayChan
+
+	if baseResult.err != nil {
+		return nil, fmt.Errorf("failed to load armor base image: %w", baseResult.err)
+	}
+	if overlayResult.err != nil {
+		return nil, fmt.Errorf("failed to load armor overlay image: %w", overlayResult.err)
+	}
+
+	return renderColoredItem("#"+hexColor, baseResult.img, overlayResult.img)
+}
+
+func RenderHead(textureId string) []byte {
+	CACHE_PATH := filepath.Join(CACHE_DIR, textureId+".png")
+	if data, err := os.ReadFile(CACHE_PATH); err == nil {
+		return data
+	}
+
+	response, err := http.Get("https://textures.minecraft.net/texture/" + textureId)
+	if err != nil {
+		log.Println("Error fetching texture:", err)
+		return nil
+	}
+	defer response.Body.Close()
+	if response.StatusCode != http.StatusOK {
+		log.Println("Error fetching texture, status code:", response.StatusCode)
+		return nil
+	}
+
+	img, err := png.Decode(response.Body)
+	if err != nil {
+		log.Println("Error decoding texture:", err)
+		return nil
+	}
+
+	var rgbaImg *image.RGBA
+	switch v := img.(type) {
+	case *image.RGBA:
+		rgbaImg = v
+	default:
+		bounds := img.Bounds()
+		rgbaImg = image.NewRGBA(bounds)
+		draw.Draw(rgbaImg, bounds, img, bounds.Min, draw.Src)
+	}
+
+	head := To3DHead(rgbaImg)
+
+	var buf bytes.Buffer
+	if err := png.Encode(&buf, head); err != nil {
+		log.Println("Error encoding head to PNG:", err)
+		return nil
+	}
+	data := buf.Bytes()
+
+	if err := os.MkdirAll(CACHE_DIR, 0755); err == nil {
+		if err := os.WriteFile(CACHE_PATH, data, 0644); err != nil {
+			log.Println("Error saving head to cache:", err)
+		}
+	} else {
+		log.Println("Error creating cache directory:", err)
+	}
+
+	return data
+}
+
+type imageResult struct {
+	img image.Image
+	err error
+}
+
+func renderColoredItem(hexColor string, baseImage, overlayImage image.Image) ([]byte, error) {
+	canvas := image.NewRGBA(image.Rect(0, 0, 16, 16))
+
+	col, err := parseHexColor(hexColor)
+	if err != nil {
+		return nil, fmt.Errorf("invalid color format: %w", err)
+	}
+
+	fillRect(canvas, col)
+
+	multiplyBlend(canvas, baseImage)
+
+	destinationInBlend(canvas, baseImage)
+
+	draw.Draw(canvas, canvas.Bounds(), overlayImage, image.Point{}, draw.Over)
+
+	return imageToPNGBuffer(canvas)
+}
+
+// ========== 3D HEAD RENDERING ==========
 
 const (
 	SKEW_A       = 26.0 / 45.0
@@ -59,6 +210,248 @@ type OverlaySectionOptions struct {
 	Flip       bool
 }
 
+type Matrix [9]float32
+
+type Point2D struct {
+	X, Y float32
+}
+
+func To3DHead(img image.Image) *image.RGBA {
+	size := uint32(128)
+
+	out := image.NewRGBA(image.Rect(0, 0, int(size), int(size)))
+
+	// Left overlay
+	overlay3DSection(out, img, &OverlaySectionOptions{
+		Size:       size,
+		X:          6,
+		Y:          1,
+		Matrix:     TRANSFORM_RIGHT_LEFT_MATRIX,
+		TranslateX: float32(size) * (231.0 / 256.0) * (8.0 / 8.1),
+		TranslateY: float32(size) * (-56.0 / 256.0),
+		Flip:       true,
+		Scale:      float32(size/20) * (9.0 / 8.0),
+	})
+
+	// Back overlay
+	overlay3DSection(out, img, &OverlaySectionOptions{
+		Size:       size,
+		X:          7,
+		Y:          1,
+		Matrix:     TRANSFORM_FRONT_BACK_MATRIX,
+		TranslateX: float32(size) * (26.0 / 256.0),
+		TranslateY: float32(size) * (70.0 / 256.0),
+		Flip:       false,
+		Scale:      float32(size/20) * (9.0 / 8.0),
+	})
+
+	// Bottom overlay
+	overlay3DSection(out, img, &OverlaySectionOptions{
+		Size:       size,
+		X:          6,
+		Y:          0,
+		Matrix:     TRANSFORM_TOP_BOTTOM_MATRIX,
+		TranslateX: float32(size) * (-145.0 / 256.0),
+		TranslateY: float32(size) * (177.0 / 256.0),
+		Flip:       false,
+		Scale:      float32(size/20) * (9.0 / 8.0),
+	})
+
+	// Top
+	overlay3DSection(out, img, &OverlaySectionOptions{
+		Size:       size,
+		X:          1,
+		Y:          0,
+		Matrix:     TRANSFORM_TOP_BOTTOM_MATRIX,
+		TranslateX: float32(size) * (-40.0 / 256.0),
+		TranslateY: float32(size) * (83.0 / 256.0),
+		Flip:       false,
+		Scale:      float32(size / 20),
+	})
+
+	// Front
+	overlay3DSection(out, img, &OverlaySectionOptions{
+		Size:       size,
+		X:          1,
+		Y:          1,
+		Matrix:     TRANSFORM_FRONT_BACK_MATRIX,
+		TranslateX: float32(size) * (132.5 / 256.0),
+		TranslateY: float32(size) * (177.5 / 256.0),
+		Flip:       false,
+		Scale:      float32(size / 20),
+	})
+
+	// Right
+	overlay3DSection(out, img, &OverlaySectionOptions{
+		Size:       size,
+		X:          2,
+		Y:          1,
+		Matrix:     TRANSFORM_RIGHT_LEFT_MATRIX,
+		TranslateX: float32(size) * (121.0 / 256.0),
+		TranslateY: float32(size) * (52.0 / 256.0),
+		Flip:       true,
+		Scale:      float32(size / 20),
+	})
+
+	// Front overlay
+	overlay3DSection(out, img, &OverlaySectionOptions{
+		Size:       size,
+		X:          5,
+		Y:          1,
+		Matrix:     TRANSFORM_FRONT_BACK_MATRIX,
+		TranslateX: float32(size) * (132.5 / 256.0) * (8.1 / 8.0),
+		TranslateY: float32(size) * (177.5 / 256.0),
+		Flip:       false,
+		Scale:      float32(size/20) * (9.0 / 8.0),
+	})
+
+	// Right overlay
+	overlay3DSection(out, img, &OverlaySectionOptions{
+		Size:       size,
+		X:          4,
+		Y:          1,
+		Matrix:     TRANSFORM_RIGHT_LEFT_MATRIX,
+		TranslateX: float32(size) * (26.0 / 256.0) * (8.0 / 8.1),
+		TranslateY: float32(size) * (52.0 / 256.0),
+		Flip:       false,
+		Scale:      float32(size/20) * (9.0 / 8.0),
+	})
+
+	// Top overlay
+	overlay3DSection(out, img, &OverlaySectionOptions{
+		Size:       size,
+		X:          5,
+		Y:          0,
+		Matrix:     TRANSFORM_TOP_BOTTOM_MATRIX,
+		TranslateX: float32(size) * (-40.0 / 256.0) * (8.0 / 8.1),
+		TranslateY: float32(size) * (83.0 / 256.0) * (8.0 / 9.0),
+		Flip:       false,
+		Scale:      float32(size/20) * (9.0 / 8.0),
+	})
+
+	return out
+}
+
+// ========== SHARED UTILITY FUNCTIONS ==========
+
+func loadImage(path string) (image.Image, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	img, _, err := image.Decode(file)
+	return img, err
+}
+
+func parseHexColor(hexColor string) (color.RGBA, error) {
+	if len(hexColor) != 7 || hexColor[0] != '#' {
+		return color.RGBA{}, fmt.Errorf("invalid hex color format: %s", hexColor)
+	}
+
+	rVal, err := strconv.ParseUint(hexColor[1:3], 16, 8)
+	if err != nil {
+		return color.RGBA{}, err
+	}
+	gVal, err := strconv.ParseUint(hexColor[3:5], 16, 8)
+	if err != nil {
+		return color.RGBA{}, err
+	}
+	bVal, err := strconv.ParseUint(hexColor[5:7], 16, 8)
+	if err != nil {
+		return color.RGBA{}, err
+	}
+
+	return color.RGBA{uint8(rVal), uint8(gVal), uint8(bVal), 255}, nil
+}
+
+func fillRect(img *image.RGBA, col color.RGBA) {
+	bounds := img.Bounds()
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+		for x := bounds.Min.X; x < bounds.Max.X; x++ {
+			img.Set(x, y, col)
+		}
+	}
+}
+
+func multiplyBlend(canvas *image.RGBA, src image.Image) {
+	bounds := canvas.Bounds()
+	srcBounds := src.Bounds()
+
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+		for x := bounds.Min.X; x < bounds.Max.X; x++ {
+			if x < srcBounds.Max.X && y < srcBounds.Max.Y {
+				canvasColor := canvas.RGBAAt(x, y)
+				srcColor := color.RGBAModel.Convert(src.At(x, y)).(color.RGBA)
+
+				// Multiply blend: (canvas * src) / 255
+				r := uint8((uint16(canvasColor.R) * uint16(srcColor.R)) / 255)
+				g := uint8((uint16(canvasColor.G) * uint16(srcColor.G)) / 255)
+				b := uint8((uint16(canvasColor.B) * uint16(srcColor.B)) / 255)
+				a := srcColor.A // Keep source alpha
+
+				canvas.Set(x, y, color.RGBA{r, g, b, a})
+			}
+		}
+	}
+}
+
+func destinationInBlend(canvas *image.RGBA, src image.Image) {
+	bounds := canvas.Bounds()
+	srcBounds := src.Bounds()
+
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+		for x := bounds.Min.X; x < bounds.Max.X; x++ {
+			if x < srcBounds.Max.X && y < srcBounds.Max.Y {
+				canvasColor := canvas.RGBAAt(x, y)
+				srcColor := color.RGBAModel.Convert(src.At(x, y)).(color.RGBA)
+
+				// Destination-in: keep canvas color but use source alpha
+				canvas.Set(x, y, color.RGBA{
+					canvasColor.R,
+					canvasColor.G,
+					canvasColor.B,
+					srcColor.A, // Use source alpha as mask
+				})
+			} else {
+				// Outside source bounds, make transparent
+				canvas.Set(x, y, color.RGBA{0, 0, 0, 0})
+			}
+		}
+	}
+}
+
+func imageToPNGBuffer(img image.Image) ([]byte, error) {
+	tmpFile, err := os.CreateTemp("", "render_*.png")
+	if err != nil {
+		return nil, err
+	}
+	defer os.Remove(tmpFile.Name())
+	defer tmpFile.Close()
+
+	if err := png.Encode(tmpFile, img); err != nil {
+		return nil, err
+	}
+
+	tmpFile.Seek(0, 0)
+	buffer := make([]byte, 0)
+	chunk := make([]byte, 1024)
+	for {
+		n, err := tmpFile.Read(chunk)
+		if n > 0 {
+			buffer = append(buffer, chunk[:n]...)
+		}
+		if err != nil {
+			break
+		}
+	}
+
+	return buffer, nil
+}
+
+// ========== 3D HEAD RENDERING HELPER FUNCTIONS ==========
+
 func cropSection(img image.Image, x, y uint32) image.Image {
 	bounds := img.Bounds()
 	x1 := int(x * SECTION_SIZE)
@@ -77,12 +470,6 @@ func cropSection(img image.Image, x, y uint32) image.Image {
 	}
 
 	return cropped
-}
-
-type Matrix [9]float32
-
-type Point2D struct {
-	X, Y float32
 }
 
 func (m Matrix) Transform(p Point2D) Point2D {
@@ -231,174 +618,58 @@ func overlay3DSection(out *image.RGBA, skin image.Image, opts *OverlaySectionOpt
 	fastOverlay(out, sectionWarped)
 }
 
-func To3DHead(img image.Image) *image.RGBA {
-	size := uint32(128)
+/*
+func main() {
 
-	out := image.NewRGBA(image.Rect(0, 0, int(size), int(size)))
-
-	// Left overlay
-	overlay3DSection(out, img, &OverlaySectionOptions{
-		Size:       size,
-		X:          6,
-		Y:          1,
-		Matrix:     TRANSFORM_RIGHT_LEFT_MATRIX,
-		TranslateX: float32(size) * (231.0 / 256.0) * (8.0 / 8.1),
-		TranslateY: float32(size) * (-56.0 / 256.0),
-		Flip:       true,
-		Scale:      float32(size/20) * (9.0 / 8.0),
-	})
-
-	// Back overlay
-	overlay3DSection(out, img, &OverlaySectionOptions{
-		Size:       size,
-		X:          7,
-		Y:          1,
-		Matrix:     TRANSFORM_FRONT_BACK_MATRIX,
-		TranslateX: float32(size) * (26.0 / 256.0),
-		TranslateY: float32(size) * (70.0 / 256.0),
-		Flip:       false,
-		Scale:      float32(size/20) * (9.0 / 8.0),
-	})
-
-	// Bottom overlay
-	overlay3DSection(out, img, &OverlaySectionOptions{
-		Size:       size,
-		X:          6,
-		Y:          0,
-		Matrix:     TRANSFORM_TOP_BOTTOM_MATRIX,
-		TranslateX: float32(size) * (-145.0 / 256.0),
-		TranslateY: float32(size) * (177.0 / 256.0),
-		Flip:       false,
-		Scale:      float32(size/20) * (9.0 / 8.0),
-	})
-
-	// Top
-	overlay3DSection(out, img, &OverlaySectionOptions{
-		Size:       size,
-		X:          1,
-		Y:          0,
-		Matrix:     TRANSFORM_TOP_BOTTOM_MATRIX,
-		TranslateX: float32(size) * (-40.0 / 256.0),
-		TranslateY: float32(size) * (83.0 / 256.0),
-		Flip:       false,
-		Scale:      float32(size / 20),
-	})
-
-	// Front
-	overlay3DSection(out, img, &OverlaySectionOptions{
-		Size:       size,
-		X:          1,
-		Y:          1,
-		Matrix:     TRANSFORM_FRONT_BACK_MATRIX,
-		TranslateX: float32(size) * (132.5 / 256.0),
-		TranslateY: float32(size) * (177.5 / 256.0),
-		Flip:       false,
-		Scale:      float32(size / 20),
-	})
-
-	// Right
-	overlay3DSection(out, img, &OverlaySectionOptions{
-		Size:       size,
-		X:          2,
-		Y:          1,
-		Matrix:     TRANSFORM_RIGHT_LEFT_MATRIX,
-		TranslateX: float32(size) * (121.0 / 256.0),
-		TranslateY: float32(size) * (52.0 / 256.0),
-		Flip:       true,
-		Scale:      float32(size / 20),
-	})
-
-	// Front overlay
-	overlay3DSection(out, img, &OverlaySectionOptions{
-		Size:       size,
-		X:          5,
-		Y:          1,
-		Matrix:     TRANSFORM_FRONT_BACK_MATRIX,
-		TranslateX: float32(size) * (132.5 / 256.0) * (8.1 / 8.0),
-		TranslateY: float32(size) * (177.5 / 256.0),
-		Flip:       false,
-		Scale:      float32(size/20) * (9.0 / 8.0),
-	})
-
-	// Right overlay
-	overlay3DSection(out, img, &OverlaySectionOptions{
-		Size:       size,
-		X:          4,
-		Y:          1,
-		Matrix:     TRANSFORM_RIGHT_LEFT_MATRIX,
-		TranslateX: float32(size) * (26.0 / 256.0) * (8.0 / 8.1),
-		TranslateY: float32(size) * (52.0 / 256.0),
-		Flip:       false,
-		Scale:      float32(size/20) * (9.0 / 8.0),
-	})
-
-	// Top overlay
-	overlay3DSection(out, img, &OverlaySectionOptions{
-		Size:       size,
-		X:          5,
-		Y:          0,
-		Matrix:     TRANSFORM_TOP_BOTTOM_MATRIX,
-		TranslateX: float32(size) * (-40.0 / 256.0) * (8.0 / 8.1),
-		TranslateY: float32(size) * (83.0 / 256.0) * (8.0 / 9.0),
-		Flip:       false,
-		Scale:      float32(size/20) * (9.0 / 8.0),
-	})
-
-	return out
-}
-
-func RenderHead(textureId string) []byte {
-	CACHE_PATH := filepath.Join(CACHE_DIR, textureId+".png")
-	if data, err := os.ReadFile(CACHE_PATH); err == nil {
-		return data
-	}
-
-	response, err := http.Get("https://textures.minecraft.net/texture/" + textureId)
+	// Render a red splash potion
+	pngData, err := RenderPotion("splash", "FF0000")
 	if err != nil {
-		log.Println("Error fetching texture:", err)
-		return nil
-	}
-	defer response.Body.Close()
-	if response.StatusCode != http.StatusOK {
-		log.Println("Error fetching texture, status code:", response.StatusCode)
-		return nil
+		fmt.Printf("Error rendering potion: %v\n", err)
+		return
 	}
 
-	img, err := png.Decode(response.Body)
+	// Save to file
+	err = os.WriteFile("red_splash_potion.png", pngData, 0644)
 	if err != nil {
-		log.Println("Error decoding texture:", err)
-		return nil
+		fmt.Printf("Error saving potion file: %v\n", err)
+		return
 	}
 
-	var rgbaImg *image.RGBA
-	switch v := img.(type) {
-	case *image.RGBA:
-		rgbaImg = v
-	default:
-		bounds := img.Bounds()
-		rgbaImg = image.NewRGBA(bounds)
-		draw.Draw(rgbaImg, bounds, img, bounds.Min, draw.Src)
+	fmt.Println("Potion rendered successfully!")
+
+	// Render a red leather chestplate
+	armorData, err := RenderArmor("chestplate", "0000FF")
+	if err != nil {
+		fmt.Printf("Error rendering armor: %v\n", err)
+		return
 	}
 
-	head := To3DHead(rgbaImg)
-
-	var buf bytes.Buffer
-	if err := png.Encode(&buf, head); err != nil {
-		log.Println("Error encoding head to PNG:", err)
-		return nil
-	}
-	data := buf.Bytes()
-
-	if err := os.MkdirAll(CACHE_DIR, 0755); err == nil {
-		if err := os.WriteFile(CACHE_PATH, data, 0644); err != nil {
-			log.Println("Error saving head to cache:", err)
-		}
-	} else {
-		log.Println("Error creating cache directory:", err)
+	// Save armor to file
+	err = os.WriteFile("blue_leather_chestplate.png", armorData, 0644)
+	if err != nil {
+		fmt.Printf("Error saving armor file: %v\n", err)
+		return
 	}
 
-	return data
+	fmt.Println("Armor rendered successfully!")
+
+	// Render a 3D head from a skin file
+	headData, err := Render3DHead("input2.png")
+	if err != nil {
+		fmt.Printf("Error rendering 3D head: %v\n", err)
+		return
+	}
+
+	// Save 3D head to file
+	err = os.WriteFile("3d_head.png", headData, 0644)
+	if err != nil {
+		fmt.Printf("Error saving 3D head file: %v\n", err)
+		return
+	}
+
+	fmt.Println("3D head rendered successfully!")
 }
+*/
 
 func RenderItem(itemID string) ([]byte, error) {
 	damage := 0

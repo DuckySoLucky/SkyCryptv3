@@ -58,7 +58,7 @@ func GetTexture(item models.TextureItem) string {
 			fmt.Printf("[CUSTOM_RESOURCES] No textures found for vanilla item: %s %+v\n", textureId, VANILLA_ITEM_MAP[textureId])
 			return ""
 		} else {
-			vanillaPath := fmt.Sprintf("assets/Vanilla/assets/firmskyblock/models/item/%s.png", strings.ToLower(item.RawId))
+			vanillaPath := fmt.Sprintf("assets/resourcepacks/Vanilla/assets/firmskyblock/models/item/%s.png", strings.ToLower(item.RawId))
 			if _, err := os.Stat(vanillaPath); err == nil {
 				return "http://localhost:8080/" + vanillaPath
 			}
@@ -229,7 +229,7 @@ var ALLOWED_PARENTS = []string{
 }
 
 func init() {
-	assetsRoot := "assets"
+	assetsRoot := "assets/resourcepacks"
 	packDirs, err := os.ReadDir(assetsRoot)
 	if err != nil {
 		fmt.Printf("Failed to read assets directory: %v\n", err)

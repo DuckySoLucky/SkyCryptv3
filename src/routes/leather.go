@@ -8,24 +8,23 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func PotionHandlers(c *fiber.Ctx) error {
+func LeatherHandlers(c *fiber.Ctx) error {
 	// timeNow := time.Now()
-	potionType := c.Params("type")
-	potionColor := c.Params("color")
-	if potionType == "" || potionColor == "" {
+	armorType := c.Params("type")
+	armorColor := c.Params("color")
+	if armorType == "" || armorColor == "" {
 		c.Status(400)
 		return c.JSON(constants.InvalidItemProvidedError)
 	}
 
-	imageBytes, err := lib.RenderPotion(potionType, potionColor)
+	imageBytes, err := lib.RenderArmor(armorType, armorColor)
 	if err != nil {
 		fmt.Printf("Error rendering armor: %v\n", err)
-
 		c.Status(404)
 		return c.JSON(constants.InvalidItemProvidedError)
 	}
 
 	c.Type("png")
-	// fmt.Printf("Returning /api/potion/%s/%s in %s\n", potionType, potionColor, time.Since(timeNow))
+	// fmt.Printf("Returning /api/armor/%s/%s in %s\n", potionType, potionColor, time.Since(timeNow))
 	return c.Send(imageBytes)
 }
