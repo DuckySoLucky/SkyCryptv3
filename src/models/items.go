@@ -42,6 +42,7 @@ type ExtraAttributes struct {
 	Modifier           string         `nbt:"modifier" json:"modifier,omitempty"`
 	Model              string         `nbt:"model" json:"model,omitempty"`
 	TalismanEnrichment string         `nbt:"talisman_enrichment" json:"talisman_enrichment,omitempty"`
+	Dye                string         `nbt:"dye_item" json:"dye_item,omitempty"`
 }
 
 func (t *ExtraAttributes) ToMap() map[string]interface{} {

@@ -18,6 +18,7 @@ type HypixelItem struct {
 	Origin            string                 `json:"origin,omitempty"`
 	RiftTransferrable bool                   `json:"rift_transferrable,omitempty"`
 	MuseumData        *hypixelItemMuseumData `json:"museum_data,omitempty"`
+	Color             string                 `json:"hex_color,omitempty"`
 }
 
 type ProcessedHypixelItem struct {
@@ -32,6 +33,7 @@ type ProcessedHypixelItem struct {
 	Origin            string                 `json:"origin,omitempty"`
 	RiftTransferrable bool                   `json:"rift_transferrable,omitempty"`
 	MuseumData        *hypixelItemMuseumData `json:"museum_data,omitempty"`
+	Color             string                 `json:"hex_color,omitempty"`
 }
 
 type skin struct {

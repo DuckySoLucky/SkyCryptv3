@@ -25,6 +25,6 @@ func LeatherHandlers(c *fiber.Ctx) error {
 	}
 
 	c.Type("png")
-	// fmt.Printf("Returning /api/armor/%s/%s in %s\n", potionType, potionColor, time.Since(timeNow))
+	// fmt.Printf("Returning /api/leather/%s/%s in %s\n", armorType, armorColor, time.Since(timeNow))
 	return c.Send(imageBytes)
 }

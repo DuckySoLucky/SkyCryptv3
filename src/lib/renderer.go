@@ -31,6 +31,16 @@ var textureDir = "assets/static"
 // ========== ITEM RENDERING (Potions & Armor) ==========
 
 func RenderPotion(potionType, hexColor string) ([]byte, error) {
+	cachePath := filepath.Join(CACHE_DIR, "potions", fmt.Sprintf("potion_%s_%s.png", potionType, hexColor))
+	if _, err := os.Stat(cachePath); err == nil {
+		data, err := os.ReadFile(cachePath)
+		if err == nil {
+			return data, nil
+		}
+
+		log.Println("Error reading cached potion texture:", err)
+	}
+
 	liquidPath := filepath.Join(textureDir, "potion_overlay.png")
 
 	var bottlePath string
@@ -63,10 +73,33 @@ func RenderPotion(potionType, hexColor string) ([]byte, error) {
 		return nil, fmt.Errorf("failed to load bottle image: %w", bottleResult.err)
 	}
 
-	return renderColoredItem("#"+hexColor, liquidResult.img, bottleResult.img)
+	output, err := renderColoredItem("#"+hexColor, liquidResult.img, bottleResult.img)
+	if err != nil {
+		return nil, fmt.Errorf("failed to render colored potion: %w", err)
+	}
+
+	if err := os.MkdirAll(filepath.Join(CACHE_DIR, "potions"), 0755); err != nil {
+		log.Println("Error creating cache directory for potions:", err)
+	} else {
+		if err := os.WriteFile(cachePath, output, 0644); err != nil {
+			log.Println("Error saving potion texture to cache:", err)
+		}
+	}
+
+	return output, nil
 }
 
 func RenderArmor(armorType, hexColor string) ([]byte, error) {
+	cachePath := filepath.Join(CACHE_DIR, "leather", fmt.Sprintf("leather_%s_%s.png", armorType, hexColor))
+	if _, err := os.Stat(cachePath); err == nil {
+		data, err := os.ReadFile(cachePath)
+		if err == nil {
+			return data, nil
+		}
+
+		log.Println("Error reading cached armor texture:", err)
+	}
+
 	basePath := filepath.Join(textureDir, fmt.Sprintf("leather_%s.png", armorType))
 	overlayPath := filepath.Join(textureDir, fmt.Sprintf("leather_%s_overlay.png", armorType))
 
@@ -93,13 +126,31 @@ func RenderArmor(armorType, hexColor string) ([]byte, error) {
 		return nil, fmt.Errorf("failed to load armor overlay image: %w", overlayResult.err)
 	}
 
-	return renderColoredItem("#"+hexColor, baseResult.img, overlayResult.img)
+	output, err := renderColoredItem("#"+hexColor, baseResult.img, overlayResult.img)
+	if err != nil {
+		return nil, fmt.Errorf("failed to render colored armor: %w", err)
+	}
+
+	if err := os.MkdirAll(filepath.Join(CACHE_DIR, "leather"), 0755); err != nil {
+		log.Println("Error creating cache directory for leather armor:", err)
+	} else {
+		if err := os.WriteFile(cachePath, output, 0644); err != nil {
+			log.Println("Error saving leather armor to cache:", err)
+		}
+	}
+
+	return output, nil
 }
 
 func RenderHead(textureId string) []byte {
-	CACHE_PATH := filepath.Join(CACHE_DIR, textureId+".png")
-	if data, err := os.ReadFile(CACHE_PATH); err == nil {
-		return data
+	cachePath := filepath.Join(CACHE_DIR, "heads", textureId+".png")
+	if _, err := os.Stat(cachePath); err == nil {
+		data, err := os.ReadFile(cachePath)
+		if err == nil {
+			return data
+		}
+
+		log.Println("Error reading cached head:", err)
 	}
 
 	response, err := http.Get("https://textures.minecraft.net/texture/" + textureId)
@@ -138,8 +189,8 @@ func RenderHead(textureId string) []byte {
 	}
 	data := buf.Bytes()
 
-	if err := os.MkdirAll(CACHE_DIR, 0755); err == nil {
-		if err := os.WriteFile(CACHE_PATH, data, 0644); err != nil {
+	if err := os.MkdirAll(filepath.Join(CACHE_DIR, "heads"), 0755); err == nil {
+		if err := os.WriteFile(cachePath, data, 0644); err != nil {
 			log.Println("Error saving head to cache:", err)
 		}
 	} else {
@@ -698,22 +749,9 @@ func RenderItem(itemID string) ([]byte, error) {
 		TextureItem.Damage = &damage
 	}
 
-	output := GetTexture(TextureItem)
+	output := ApplyTexture(TextureItem)
 	if output == "" {
 		return nil, fmt.Errorf("couldn't find the texture")
-	}
-
-	// If it's a skull, use RenderHead and return its PNG bytes
-	if strings.Contains(output, "/Vanilla/assets/firmskyblock/models/item/skull") {
-		if itemData.Texture == "" {
-			return nil, fmt.Errorf("no texture id for skull")
-		}
-
-		data := RenderHead(itemData.Texture)
-		if data == nil {
-			return nil, fmt.Errorf("failed to render head for skull")
-		}
-		return data, nil
 	}
 
 	// If output is a localhost asset, read from disk (performance optimization)

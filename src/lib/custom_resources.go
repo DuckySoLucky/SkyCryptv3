@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"skycrypt/src/constants"
 	"skycrypt/src/models"
 	"skycrypt/src/utility"
 	"strings"
@@ -33,39 +34,6 @@ func GetTexturePath(texturePath string, textureString string) string {
 func GetTexture(item models.TextureItem) string {
 	textures := ITEM_MAP[strings.ToLower(item.Tag.ExtraAttributes["id"].(string))]
 	if len(textures) == 0 {
-		textureId := fmt.Sprintf("%d:%d", *item.ID, *item.Damage)
-		// if it's a SKULL, and custom texture is not found, return the skin texture
-		if textureId == "397:3" {
-			if item.Tag.SkullOwner != nil && item.Tag.SkullOwner.Properties.Textures[0].Value != "" {
-				skinHash := utility.GetSkinHash(item.Tag.SkullOwner.Properties.Textures[0].Value)
-				return fmt.Sprintf("http://localhost:8080/api/head/%s", skinHash)
-			}
-
-			return ""
-		}
-
-		if texture, ok := VANILLA_ITEM_MAP[textureId]; ok {
-			if tex, ok := texture.Textures["layer0"]; ok && tex != "" {
-				return tex
-			}
-
-			for _, tex := range texture.Textures {
-				if tex != "" {
-					return tex
-				}
-			}
-
-			fmt.Printf("[CUSTOM_RESOURCES] No textures found for vanilla item: %s %+v\n", textureId, VANILLA_ITEM_MAP[textureId])
-			return ""
-		} else {
-			vanillaPath := fmt.Sprintf("assets/resourcepacks/Vanilla/assets/firmskyblock/models/item/%s.png", strings.ToLower(item.RawId))
-			if _, err := os.Stat(vanillaPath); err == nil {
-				return "http://localhost:8080/" + vanillaPath
-			}
-
-			fmt.Printf("[CUSTOM_RESOURCES] Texture not found for item: %s\n", textureId)
-		}
-
 		return ""
 	}
 
@@ -319,4 +287,68 @@ func init() {
 			return nil
 		})
 	}
+}
+
+func ApplyTexture(item models.TextureItem) string {
+	// ? NOTE: we're ignoring enchanted books because they're quite expensive to render and not really worth the performance hit
+	if item.Tag.ExtraAttributes == nil || item.Tag.ExtraAttributes["id"] == "ENCHANTED_BOOK" {
+		return "http://localhost:8080/assets/resourcepacks/Vanilla/assets/firmskyblock/models/item/enchanted_book.png"
+	}
+
+	customTexture := GetTexture(item)
+	if customTexture != "" {
+		if !strings.Contains(customTexture, "Vanilla") && !strings.Contains(customTexture, "skull") {
+			return customTexture
+		}
+	}
+
+	if item.Tag.SkullOwner != nil && item.Tag.SkullOwner.Properties.Textures[0].Value != "" {
+		skinHash := utility.GetSkinHash(item.Tag.SkullOwner.Properties.Textures[0].Value)
+		return fmt.Sprintf("http://localhost:8080/api/head/%s", skinHash)
+	}
+
+	if *item.ID >= 298 && *item.ID <= 301 {
+		armorType := constants.ARMOR_TYPES[*item.ID-298]
+
+		armorColor := fmt.Sprintf("%06X", item.Tag.Display.Color)
+		if item.Tag.ExtraAttributes["dye_item"] != "" {
+			idStr, ok := item.Tag.ExtraAttributes["id"].(string)
+			if ok {
+				defaultHexColor := constants.ITEMS[idStr].Color
+				if defaultHexColor != "" {
+					armorColor = defaultHexColor
+				}
+
+				if defaultHexColor != "" {
+					armorColor = defaultHexColor
+				}
+			}
+
+		}
+
+		return fmt.Sprintf("http://localhost:8080/api/leather/%s/%s", armorType, armorColor)
+	}
+
+	textureId := fmt.Sprintf("%d:%d", *item.ID, *item.Damage)
+	if texture, ok := VANILLA_ITEM_MAP[textureId]; ok {
+		if tex, ok := texture.Textures["layer0"]; ok && tex != "" {
+			return tex
+		}
+
+		for _, tex := range texture.Textures {
+			if tex == "" {
+				continue
+			}
+
+			return tex
+		}
+	}
+
+	vanillaPath := fmt.Sprintf("assets/resourcepacks/Vanilla/assets/firmskyblock/models/item/%s.png", strings.ToLower(item.RawId))
+	if _, err := os.Stat(vanillaPath); err == nil {
+		return "http://localhost:8080/" + vanillaPath
+	}
+
+	fmt.Printf("[CUSTOM_RESOURCES] No custom texture found for item %s, returning default barrier texture\n", item.Tag.ExtraAttributes["id"])
+	return "http://localhost:8080/assets/resourcepacks/Vanilla/assets/firmskyblock/models/item/barrier.png"
 }

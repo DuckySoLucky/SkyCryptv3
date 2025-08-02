@@ -357,3 +357,12 @@ var ENCHANTMENT_LADDERS = map[string]EnchantmentLadder{
 }
 
 var ITEMS = map[string]models.ProcessedHypixelItem{}
+
+var BLACKLISTED_HEX_ARMOR_PIECES = []string{
+	"VELVET_TOP_HAT",
+	"CASHMERE_JACKET",
+	"SATIN_TROUSERS",
+	"OXFORD_SHOES",
+}
+
+var ARMOR_TYPES = []string{"helmet", "chestplate", "leggings", "boots"}

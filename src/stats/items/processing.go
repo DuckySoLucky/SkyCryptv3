@@ -6,6 +6,7 @@ import (
 	"skycrypt/src/lib"
 	"skycrypt/src/models"
 	"skycrypt/src/utility"
+	"slices"
 )
 
 func ProcessItems(items *[]models.Item, source string) []models.ProcessedItem {
@@ -71,9 +72,18 @@ func ProcessItem(item *models.Item, source string) models.ProcessedItem {
 	}
 
 	if item.Tag.Display.Color != 0 {
-		hex := fmt.Sprintf("#%06X", item.Tag.Display.Color)
+		color := fmt.Sprintf("#%06X", item.Tag.Display.Color)
+		if item.Tag.ExtraAttributes.Dye != "" {
+			defaultHexColor := constants.ITEMS[item.Tag.ExtraAttributes.ID].Color
+			if defaultHexColor != "" {
+				fmt.Printf("[CUSTOM_RESOURCES] Using default color for item %s: %s\n", item.Tag.ExtraAttributes.ID, defaultHexColor)
+				color = defaultHexColor
+			}
+		}
 
-		processedItem.Lore = append(processedItem.Lore, "", fmt.Sprintf("§7Color: %s", hex))
+		if !slices.Contains(constants.BLACKLISTED_HEX_ARMOR_PIECES, item.Tag.ExtraAttributes.ID) {
+			processedItem.Lore = append(processedItem.Lore, "", fmt.Sprintf("§7Color: %s", color))
+		}
 	}
 
 	if item.Tag.ExtraAttributes.Gems != nil {
@@ -114,7 +124,7 @@ func ProcessItem(item *models.Item, source string) models.ProcessedItem {
 			Tag:    item.Tag.ToMap(),
 		}
 
-		processedItem.Texture = lib.GetTexture(TextureItem)
+		processedItem.Texture = lib.ApplyTexture(TextureItem)
 		if processedItem.Texture == "" {
 			fmt.Printf("[CUSTOM_RESOURCES] Found no textures for item: %s\n", item.Tag.ExtraAttributes.ID)
 		}
