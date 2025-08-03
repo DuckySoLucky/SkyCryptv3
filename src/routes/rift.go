@@ -39,12 +39,13 @@ func RiftHandler(c *fiber.Ctx) error {
 				"error": fmt.Sprintf("Failed to parse items: %v", err),
 			})
 		}
-	}
-
-	if items == nil || items["armor"] == nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error": fmt.Sprintf("No items found for profile %s", profileId),
-		})
+	} else {
+		items, err = stats.GetItems(userProfile, profile.ProfileID)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": fmt.Sprintf("Failed to get items: %v", err),
+			})
+		}
 	}
 
 	var processedItems = make(map[string][]models.ProcessedItem)

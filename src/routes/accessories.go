@@ -15,8 +15,6 @@ import (
 func AccessoriesHandler(c *fiber.Ctx) error {
 	timeNow := time.Now()
 
-	var items map[string][]models.Item
-
 	uuid := c.Params("uuid")
 	profileId := c.Params("profileId")
 
@@ -30,6 +28,7 @@ func AccessoriesHandler(c *fiber.Ctx) error {
 	userProfileValue := profile.Members[uuid]
 	userProfile := &userProfileValue
 
+	var items map[string][]models.Item
 	cache, err := redis.Get(fmt.Sprintf("items:%s", profileId))
 	if err == nil && cache != "" {
 		var json = jsoniter.ConfigCompatibleWithStandardLibrary
@@ -39,12 +38,13 @@ func AccessoriesHandler(c *fiber.Ctx) error {
 				"error": fmt.Sprintf("Failed to parse items: %v", err),
 			})
 		}
-	}
-
-	if items == nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error": fmt.Sprintf("No items found for profile %s", profileId),
-		})
+	} else {
+		items, err = stats.GetItems(userProfile, profile.ProfileID)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": fmt.Sprintf("Failed to get items: %v", err),
+			})
+		}
 	}
 
 	fmt.Printf("Returning /api/accessories/%s in %s\n", profileId, time.Since(timeNow))

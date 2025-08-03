@@ -88,7 +88,6 @@ func InventoryHandler(c *fiber.Ctx) error {
 
 	if inventoryId == "search" {
 		var items map[string][]models.Item
-
 		cache, err := redis.Get(fmt.Sprintf("items:%s", profileId))
 		if err == nil && cache != "" {
 			var json = jsoniter.ConfigCompatibleWithStandardLibrary

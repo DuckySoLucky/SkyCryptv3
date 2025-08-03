@@ -34,6 +34,9 @@ func SkillsHandler(c *fiber.Ctx) error {
 		})
 	}
 
+	userProfileValue := profile.Members[uuid]
+	userProfile := &userProfileValue
+
 	var items map[string][]models.Item
 	cache, err := redis.Get(fmt.Sprintf("items:%s", profileId))
 	if err == nil && cache != "" {
@@ -44,12 +47,13 @@ func SkillsHandler(c *fiber.Ctx) error {
 				"error": fmt.Sprintf("Failed to parse items: %v", err),
 			})
 		}
-	}
-
-	if items == nil || items["armor"] == nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error": fmt.Sprintf("No items found for profile %s", profileId),
-		})
+	} else {
+		items, err = stats.GetItems(userProfile, profile.ProfileID)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": fmt.Sprintf("Failed to get items: %v", err),
+			})
+		}
 	}
 
 	var processedItems = make(map[string][]models.ProcessedItem)
@@ -69,9 +73,6 @@ func SkillsHandler(c *fiber.Ctx) error {
 			allItems = append(allItems, processedItems[inventoryId]...)
 		}
 	}
-
-	userProfileValue := profile.Members[uuid]
-	userProfile := &userProfileValue
 
 	fmt.Printf("Returning /api/skills/%s in %s\n", profileId, time.Since(timeNow))
 

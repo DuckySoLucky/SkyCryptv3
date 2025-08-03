@@ -2,6 +2,7 @@ package routes
 
 import (
 	"fmt"
+	"skycrypt/src/api"
 	redis "skycrypt/src/db"
 	"skycrypt/src/models"
 	stats "skycrypt/src/stats"
@@ -16,11 +17,10 @@ import (
 func GearHandler(c *fiber.Ctx) error {
 	timeNow := time.Now()
 
-	var items map[string][]models.Item
-
-	// uuid := c.Params("uuid")
+	uuid := c.Params("uuid")
 	profileId := c.Params("profileId")
 
+	var items map[string][]models.Item
 	cache, err := redis.Get(fmt.Sprintf("items:%s", profileId))
 	if err == nil && cache != "" {
 		var json = jsoniter.ConfigCompatibleWithStandardLibrary
@@ -30,12 +30,23 @@ func GearHandler(c *fiber.Ctx) error {
 				"error": fmt.Sprintf("Failed to parse items: %v", err),
 			})
 		}
-	}
+	} else {
+		profile, err := api.GetProfile(uuid, profileId)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": fmt.Sprintf("Failed to get profile: %v", err),
+			})
+		}
 
-	if items == nil || items["armor"] == nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error": fmt.Sprintf("No items found for profile %s", profileId),
-		})
+		userProfileValue := profile.Members[uuid]
+		userProfile := &userProfileValue
+
+		items, err = stats.GetItems(userProfile, profile.ProfileID)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": fmt.Sprintf("Failed to get items: %v", err),
+			})
+		}
 	}
 
 	var processedItems = make(map[string][]models.ProcessedItem)
