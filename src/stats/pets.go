@@ -263,7 +263,6 @@ func getProfilePets(userProfile *models.Member, pets *[]models.Pet) []models.Pro
 
 				outputPet.Lore = append(outputPet.Lore, fmt.Sprintf("§6Held item: %s", utility.TitleCase(pet.HeldItem)))
 				outputPet.Lore = append(outputPet.Lore, "§cCould not find held item in Not Enough Updates repository.")
-
 			}
 
 			spaces := 0

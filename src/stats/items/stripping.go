@@ -1,14 +1,16 @@
 package stats
 
-import "skycrypt/src/models"
+import (
+	"skycrypt/src/models"
+)
 
-func StripItems(items []models.ProcessedItem) []models.StrippedItem {
+func StripItems(items []models.ProcessedItem, search ...bool) []models.StrippedItem {
 	output := make([]models.StrippedItem, len(items))
 	for i, item := range items {
-		output[i] = *StripItem(item)
+		output[i] = *StripItem(item, search...)
 
 		if len(item.ContainsItems) > 0 {
-			output[i].ContainsItems = StripItems(item.ContainsItems)
+			output[i].ContainsItems = StripItems(item.ContainsItems, search...)
 		}
 	}
 
@@ -25,7 +27,7 @@ func StripItem(item models.ProcessedItem, search ...bool) *models.StrippedItem {
 		ContainsItems:  make([]models.StrippedItem, len(item.ContainsItems)),
 	}
 
-	if search != nil && search[0] {
+	if len(search) > 0 && search[0] {
 		output.Source = item.Source
 	}
 
