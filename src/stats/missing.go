@@ -14,7 +14,9 @@ func hasAccessory(accessories *[]models.InsertAccessory, id string, rarity strin
 				return true
 			}
 
-			return slices.Index(constants.RARITIES, accessory.Rarity) >= slices.Index(constants.RARITIES, rarity)
+			if slices.Index(constants.RARITIES, accessory.Rarity) >= slices.Index(constants.RARITIES, rarity) {
+				return true
+			}
 		}
 	}
 
@@ -22,12 +24,11 @@ func hasAccessory(accessories *[]models.InsertAccessory, id string, rarity strin
 }
 
 func getAccessory(accessories *[]models.InsertAccessory, id string) (*models.InsertAccessory, bool) {
-	for _, accessory := range *accessories {
-		if accessory.Id == id {
-			return &accessory, true
+	for i := range *accessories {
+		if (*accessories)[i].Id == id {
+			return &(*accessories)[i], true
 		}
 	}
-
 	return &models.InsertAccessory{}, false
 }
 
@@ -128,7 +129,7 @@ func getMagicalPowerData(accessories *[]models.InsertAccessory, userProfile *mod
 	return output
 }
 
-func getMissing(accessories []models.InsertAccessory, accessoryIds []models.AccessoryIds) models.MissingOutput {
+func getMissing(accessories *[]models.InsertAccessory, accessoryIds []models.AccessoryIds) models.MissingOutput {
 	ACCESSORIES := constants.GetAllAccessories()
 	unique := make([]models.InsertAccessory, 0)
 	for _, acc := range ACCESSORIES {
@@ -145,8 +146,8 @@ func getMissing(accessories []models.InsertAccessory, accessoryIds []models.Acce
 		}
 
 		for _, duplicate := range aliases {
-			if hasAccessory(&accessories, duplicate, "", true) {
-				accessory, found := getAccessory(&accessories, duplicate)
+			if hasAccessory(accessories, duplicate, "", true) {
+				accessory, found := getAccessory(accessories, duplicate)
 				if found {
 					accessory.Id = item.Id
 				}
@@ -156,7 +157,7 @@ func getMissing(accessories []models.InsertAccessory, accessoryIds []models.Acce
 
 	missing := make([]models.InsertAccessory, 0)
 	for _, accessory := range unique {
-		if !hasAccessory(&accessories, accessory.Id, accessory.Rarity, false) {
+		if !hasAccessory(accessories, accessory.Id, accessory.Rarity, true) {
 			missing = append(missing, accessory)
 		}
 	}
@@ -171,7 +172,7 @@ func getMissing(accessories []models.InsertAccessory, accessoryIds []models.Acce
 
 		shouldKeep := true
 		for _, upgrade := range upgrades {
-			if hasAccessory(&accessories, upgrade, missingAccessory.Rarity, false) {
+			if hasAccessory(accessories, upgrade, missingAccessory.Rarity, false) {
 				shouldKeep = false
 				break
 			}
@@ -215,7 +216,7 @@ func GetMissingAccessories(accessories models.AccessoriesOutput, userProfile *mo
 		return models.GetMissingAccessoresOutput{}
 	}
 
-	missingAccessories := getMissing(accessories.Accessories, accessories.AccessoryIds)
+	missingAccessories := getMissing(&accessories.Accessories, accessories.AccessoryIds)
 	// TODO: Implement prices
 
 	var activeAccessories []models.InsertAccessory

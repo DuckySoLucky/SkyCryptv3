@@ -1,6 +1,7 @@
 package stats
 
 import (
+	notenoughupdates "skycrypt/src/NotEnoughUpdates"
 	"skycrypt/src/constants"
 	"skycrypt/src/models"
 	stats "skycrypt/src/stats/items"
@@ -101,11 +102,13 @@ func GetAccessories(useProfile *models.Member, items map[string][]models.Item) m
 				if utility.RarityNameToInt(duplicateRarity) < utility.RarityNameToInt(rarity) {
 					if len(duplicate.Tag.Display.Lore) == 0 || !strings.Contains(duplicate.Tag.Display.Lore[len(duplicate.Tag.Display.Lore)-1], "§7Inactive: ") {
 						duplicates[i].Tag.Display.Lore = append(duplicates[i].Tag.Display.Lore, "", "§7Inactive: §cFound a higher rarity accessory")
+						// fmt.Printf("Marking accessory %s as inactive due to higher rarity %s\n", duplicate.Id, rarity)
 					}
 					duplicates[i].IsInactive = true
 				} else if duplicate.Rarity == rarity {
 					if len(duplicate.Tag.Display.Lore) == 0 || !strings.Contains(duplicate.Tag.Display.Lore[len(duplicate.Tag.Display.Lore)-1], "§7Inactive:") {
 						duplicates[i].Tag.Display.Lore = append(duplicates[i].Tag.Display.Lore, "", "§7Inactive: §cFound a duplicate accessory")
+						// fmt.Printf("Marking accessory %s as inactive due to duplicate\n", duplicate.Id)
 					}
 					duplicates[i].IsInactive = true
 				}
@@ -166,7 +169,22 @@ func GetAccessories(useProfile *models.Member, items map[string][]models.Item) m
 	}
 
 	if useProfile.Rift.Access.ConsumedPrism {
+		riftPrismItem, _ := notenoughupdates.GetItem("RIFT_PRISM")
+
+		itemId := 397
+		processedItem := stats.ProcessItem(&models.Item{
+			Tag:    &riftPrismItem.NBT,
+			ID:     &itemId,
+			Damage: &riftPrismItem.Damage,
+		}, "Rift")
+
 		accessoryIds = append(accessoryIds, models.AccessoryIds{Id: "RIFT_PRISM", Rarity: "rare"})
+		accessories = append(accessories, models.InsertAccessory{
+			ProcessedItem: processedItem,
+			Id:            "RIFT_PRISM",
+			Rarity:        "rare",
+			IsInactive:    false,
+		})
 	}
 
 	sort.Sort(itemSorter(accessories))
