@@ -246,18 +246,6 @@ func GetMissingAccessories(accessories models.AccessoriesOutput, userProfile *mo
 		Missing:             missingAccessories.Other,
 	}
 
-	includesRiftPrism := false
-	for _, accessory := range accessories.AccessoryIds {
-		if accessory.Id == "RIFT_PRISM" {
-			includesRiftPrism = true
-			break
-		}
-	}
-
-	if includesRiftPrism {
-		output.Unique++
-	}
-
 	return output
 
 }

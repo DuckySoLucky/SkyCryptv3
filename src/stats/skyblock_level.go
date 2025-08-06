@@ -6,6 +6,5 @@ import (
 )
 
 func GetSkyBlockLevel(userProfile *models.Member) models.Skill {
-
 	return stats.GetLevelByXp(userProfile.Leveling.Experience, &stats.ExtraSkillData{Type: "skyblock_level"})
 }

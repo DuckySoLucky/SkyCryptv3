@@ -387,9 +387,26 @@ func GetPetScore(pets []models.ProcessedPet) models.PetScore {
 		}
 	}
 
+	unlocked := false
+	reward := make([]models.PetScoreReward, 0, len(constants.PET_REWARD_ORDER))
+	for _, score := range constants.PET_REWARD_ORDER {
+		bonusValue := constants.PET_REWARDS[score]
+		isUnlocked := !unlocked && total >= score
+		reward = append(reward, models.PetScoreReward{
+			Score:    score,
+			Bonus:    int(bonusValue["magic_find"]),
+			Unlocked: isUnlocked,
+		})
+
+		if isUnlocked {
+			unlocked = true
+		}
+	}
+
 	output := models.PetScore{
 		Amount: total,
 		Stats:  bonus,
+		Reward: reward,
 	}
 
 	return output
@@ -424,7 +441,6 @@ func GetPets(userProfile *models.Member, profile *models.Profile) (models.Output
 		Amount:             len(petAmount),
 		Total:              len(getMaxPetIds()),
 		AmountSkins:        skinAmount,
-		TotalSkins:         0,
 		TotalPetExperience: totalPetExp,
 		TotalCandyUsed:     totalCandyUsed,
 		PetScore:           GetPetScore(pets),

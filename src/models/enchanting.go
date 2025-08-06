@@ -1,6 +1,8 @@
 package models
 
-type EnchantingOutput map[string]EnchantingGameData
+type EnchantingOutput struct {
+	Data map[string]EnchantingGameData `json:"data"`
+}
 
 type EnchantingGameData struct {
 	Name  string              `json:"name"`

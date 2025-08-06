@@ -17,6 +17,10 @@ var PET_REWARDS = map[int]map[string]float64{
 	500: {"magic_find": 13},
 }
 
+var PET_REWARD_ORDER = []int{
+	500, 450, 375, 325, 275, 225, 175, 130, 100, 75, 50, 25, 10, 0,
+}
+
 var PET_PARENTS = map[string]string{
 	"DROPLET_WISP": "WISP",
 	"FROST_WISP":   "WISP",

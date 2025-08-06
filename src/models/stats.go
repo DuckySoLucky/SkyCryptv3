@@ -9,6 +9,6 @@ type ProfilesStats struct {
 
 type MemberStats struct {
 	UUID    string `json:"uuid"`
-	Name    string `json:"name"`
+	Name    string `json:"username"`
 	Removed bool   `json:"removed"`
 }

@@ -100,16 +100,8 @@ func GetAccessories(useProfile *models.Member, items map[string][]models.Item) m
 				duplicateRarity := duplicate.Rarity
 
 				if utility.RarityNameToInt(duplicateRarity) < utility.RarityNameToInt(rarity) {
-					if len(duplicate.Tag.Display.Lore) == 0 || !strings.Contains(duplicate.Tag.Display.Lore[len(duplicate.Tag.Display.Lore)-1], "§7Inactive: ") {
-						duplicates[i].Tag.Display.Lore = append(duplicates[i].Tag.Display.Lore, "", "§7Inactive: §cFound a higher rarity accessory")
-						// fmt.Printf("Marking accessory %s as inactive due to higher rarity %s\n", duplicate.Id, rarity)
-					}
 					duplicates[i].IsInactive = true
 				} else if duplicate.Rarity == rarity {
-					if len(duplicate.Tag.Display.Lore) == 0 || !strings.Contains(duplicate.Tag.Display.Lore[len(duplicate.Tag.Display.Lore)-1], "§7Inactive:") {
-						duplicates[i].Tag.Display.Lore = append(duplicates[i].Tag.Display.Lore, "", "§7Inactive: §cFound a duplicate accessory")
-						// fmt.Printf("Marking accessory %s as inactive due to duplicate\n", duplicate.Id)
-					}
 					duplicates[i].IsInactive = true
 				}
 			}
@@ -160,14 +152,6 @@ func GetAccessories(useProfile *models.Member, items map[string][]models.Item) m
 		}
 	}
 
-	for i, accessory := range accessories {
-		if accessory.IsInactive {
-			if accessory.Source != "" && len(accessory.Tag.Display.Lore) > 0 {
-				accessories[i].Tag.Display.Lore = append(accessories[i].Tag.Display.Lore, "", "§7Location: §c"+utility.TitleCase(accessory.Source))
-			}
-		}
-	}
-
 	if useProfile.Rift.Access.ConsumedPrism {
 		riftPrismItem, _ := notenoughupdates.GetItem("RIFT_PRISM")
 
@@ -177,6 +161,14 @@ func GetAccessories(useProfile *models.Member, items map[string][]models.Item) m
 			ID:     &itemId,
 			Damage: &riftPrismItem.Damage,
 		}, "Rift")
+
+		// Remove the three lines from the lore which say that player should use the prism in Wizard Portal
+		for i, lore := range processedItem.Lore {
+			if strings.TrimSpace(lore) == "" {
+				processedItem.Lore = append(processedItem.Lore[:i], processedItem.Lore[i+3:]...)
+				break
+			}
+		}
 
 		accessoryIds = append(accessoryIds, models.AccessoryIds{Id: "RIFT_PRISM", Rarity: "rare"})
 		accessories = append(accessories, models.InsertAccessory{

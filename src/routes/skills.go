@@ -80,6 +80,6 @@ func SkillsHandler(c *fiber.Ctx) error {
 		"mining":     stats.GetMining(userProfile, player, allItems),
 		"farming":    stats.GetFarming(userProfile, allItems),
 		"fishing":    stats.GetFishing(userProfile, allItems),
-		"enchantign": stats.GetEnchanting(userProfile),
+		"enchanting": stats.GetEnchanting(userProfile),
 	})
 }

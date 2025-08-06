@@ -29,7 +29,6 @@ type OutputPets struct {
 	Amount             int           `json:"amount"`
 	Total              int           `json:"total"`
 	AmountSkins        int           `json:"amountSkins"`
-	TotalSkins         int           `json:"totalSkins"`
 	TotalPetExperience int           `json:"totalPetExp"`
 	TotalCandyUsed     int           `json:"totalCandyUsed"`
 	PetScore           PetScore      `json:"petScore,omitempty"`
@@ -38,6 +37,13 @@ type OutputPets struct {
 type PetScore struct {
 	Amount int                `json:"amount"`
 	Stats  map[string]float64 `json:"stats"`
+	Reward []PetScoreReward   `json:"reward"`
+}
+
+type PetScoreReward struct {
+	Score    int  `json:"score"`
+	Bonus    int  `json:"bonus"`
+	Unlocked bool `json:"unlocked,omitempty"`
 }
 
 type StrippedPet struct {

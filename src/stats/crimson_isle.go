@@ -89,9 +89,14 @@ func getDojo(userProfile *models.Member) models.CrimsonIsleDojo {
 }
 
 func GetCrimsonIsle(userProfile *models.Member) *models.CrimsonIsleOutput {
+	selectedFaction := userProfile.CrimsonIsle.SelectedFaction
+	if selectedFaction == "" {
+		selectedFaction = "None"
+	}
+
 	return &models.CrimsonIsleOutput{
 		Factions: models.CrimsonIsleFactions{
-			SelectedFaction:     userProfile.CrimsonIsle.SelectedFaction,
+			SelectedFaction:     selectedFaction,
 			BarbarianReputation: int(userProfile.CrimsonIsle.BarbarianReputation),
 			MagesReputation:     int(userProfile.CrimsonIsle.MagesReputation),
 		},

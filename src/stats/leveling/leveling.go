@@ -59,7 +59,7 @@ func GetLevelByXp(xp int, extra *ExtraSkillData) models.Skill {
 	}
 
 	// the level ignoring the cap and using only the table
-	uncappedLevel := 1
+	uncappedLevel := 0
 
 	// the amount of xp over the amount required for the level
 	xpCurrent := xp

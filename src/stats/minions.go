@@ -53,6 +53,10 @@ func getCraftedMinions(profile *models.Profile) map[string][]int {
 				continue
 			}
 
+			if slices.Contains(craftedMinions[minionType], tier) {
+				continue
+			}
+
 			craftedMinions[minionType] = append(craftedMinions[minionType], tier)
 		}
 	}
@@ -93,16 +97,21 @@ func GetMinions(profile *models.Profile) models.MinionsOutput {
 				maxTier = 11 // Default max tier if not specified
 			}
 
+			craftedTiers := craftedMinions[minionId]
+			if craftedTiers == nil {
+				craftedTiers = []int{}
+			}
+
 			category.Minions = append(category.Minions, models.Minion{
 				Name:    name,
 				Texture: minionData.Texture,
 				MaxTier: maxTier,
-				Tiers:   craftedMinions[minionId],
+				Tiers:   craftedTiers,
 			})
 
 			totalTiers += maxTier
 			category.MaxedTiers += len(craftedMinions[minionId])
-			if craftedMinions[minionId][len(craftedMinions[minionId])-1] == maxTier {
+			if craftedMinions[minionId] != nil && craftedMinions[minionId][len(craftedMinions[minionId])-1] == maxTier {
 				category.MaxedMinions++
 			}
 		}

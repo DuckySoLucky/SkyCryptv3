@@ -23,33 +23,33 @@ type Profile struct {
 }
 
 type Member struct {
-	PlayerData          *playerData             `json:"player_data"`
-	CoopInvitation      *coopInvitation         `json:"coop_invitation"`
-	Profile             *profileData            `json:"profile"`
-	JacobsContest       *jacobsContest          `json:"jacobs_contest,omitempty"`
-	Pets                *pets                   `json:"pets_data,omitempty"`
-	Leveling            *leveling               `json:"leveling,omitempty"`
-	Currencies          *currencies             `json:"currencies,omitempty"`
-	FairySouls          *fairySouls             `json:"fairy_soul,omitempty"`
-	Inventory           *inventory              `json:"inventory,omitempty"`
-	Rift                *rift                   `json:"rift,omitempty"`
-	AccessoryBagStorage *accessoryBagStorage    `json:"accessory_bag_storage,omitempty"`
-	CrimsonIsle         *crimsonIsleData        `json:"nether_island_player_data,omitempty"`
-	Mining              *mining                 `json:"mining_core,omitempty"`
-	Objectives          *objectives             `json:"objectives,omitempty"`
-	GlaciteTunnels      *glaciteData            `json:"glacite_player_data,omitempty"`
-	Forge               *forge                  `json:"forge,omitempty"`
-	Quests              *quests                 `json:"quests,omitempty"`
-	Garden              *gardenProfileData      `json:"garden_player_data,omitempty"`
-	PlayerStats         *playerStats            `json:"player_stats,omitempty"`
-	TrophyFish          *memberTrophyFish       `json:"trophy_fish,omitempty"`
-	Experimentation     *experimentationData    `json:"experimentation,omitempty"`
-	Dungeons            *Dungeons               `json:"dungeons,omitempty"`
-	Slayer              *slayer                 `json:"slayer,omitempty"`
-	Bestiary            *bestiary               `json:"bestiary,omitempty"`
-	Collections         *map[string]int         `json:"collection,omitempty"`
-	ItemData            *itemData               `json:"item_data,omitempty"`
-	WinterPlayerData    *winterPlayerIslandData `json:"winter_player_data,omitempty"`
+	PlayerData          *playerData            `json:"player_data"`
+	CoopInvitation      *coopInvitation        `json:"coop_invitation"`
+	Profile             *profileData           `json:"profile"`
+	JacobsContest       *jacobsContest         `json:"jacobs_contest,omitempty"`
+	Pets                *pets                  `json:"pets_data,omitempty"`
+	Leveling            *leveling              `json:"leveling,omitempty"`
+	Currencies          *currencies            `json:"currencies,omitempty"`
+	FairySouls          *fairySouls            `json:"fairy_soul,omitempty"`
+	Inventory           *inventory             `json:"inventory,omitempty"`
+	Rift                *rift                  `json:"rift,omitempty"`
+	AccessoryBagStorage *accessoryBagStorage   `json:"accessory_bag_storage,omitempty"`
+	CrimsonIsle         *crimsonIsleData       `json:"nether_island_player_data,omitempty"`
+	Mining              *mining                `json:"mining_core,omitempty"`
+	Objectives          *objectives            `json:"objectives,omitempty"`
+	GlaciteTunnels      *glaciteData           `json:"glacite_player_data,omitempty"`
+	Forge               *forge                 `json:"forge,omitempty"`
+	Quests              *quests                `json:"quests,omitempty"`
+	Garden              *gardenProfileData     `json:"garden_player_data,omitempty"`
+	PlayerStats         *playerStats           `json:"player_stats,omitempty"`
+	TrophyFish          *memberTrophyFish      `json:"trophy_fish,omitempty"`
+	Experimentation     *experimentationData   `json:"experimentation,omitempty"`
+	Dungeons            *Dungeons              `json:"dungeons,omitempty"`
+	Slayer              *slayer                `json:"slayer,omitempty"`
+	Bestiary            *bestiary              `json:"bestiary,omitempty"`
+	Collections         *map[string]int        `json:"collection,omitempty"`
+	ItemData            *itemData              `json:"item_data,omitempty"`
+	WinterPlayerData    winterPlayerIslandData `json:"winter_player_data,omitempty"`
 }
 
 type winterPlayerIslandData struct {
@@ -167,13 +167,13 @@ type bagContents struct {
 }
 
 type rift struct {
-	Inventory  riftInventory   `json:"inventory,omitempty"`
-	Access     *riftAccess     `json:"access,omitempty"`
-	DeadCats   *deadCats       `json:"dead_cats,omitempty"`
-	Enigma     *riftEnigma     `json:"enigma,omitempty"`
-	Castle     *riftCastle     `json:"castle,omitempty"`
-	Gallery    *riftGallery    `json:"gallery,omitempty"`
-	WitherCage *riftWitherCage `json:"wither_cage,omitempty"`
+	Inventory  riftInventory  `json:"inventory,omitempty"`
+	Access     riftAccess     `json:"access,omitempty"`
+	DeadCats   deadCats       `json:"dead_cats,omitempty"`
+	Enigma     riftEnigma     `json:"enigma,omitempty"`
+	Castle     riftCastle     `json:"castle,omitempty"`
+	Gallery    riftGallery    `json:"gallery,omitempty"`
+	WitherCage riftWitherCage `json:"wither_cage,omitempty"`
 }
 
 type riftWitherCage struct {

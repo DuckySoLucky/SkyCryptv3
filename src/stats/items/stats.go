@@ -5,12 +5,9 @@ import (
 	"skycrypt/src/constants"
 	"skycrypt/src/models"
 	"skycrypt/src/utility"
-	"sort"
 	"strconv"
 	"strings"
 )
-
-type ItemStats map[string]float64
 
 var regex = regexp.MustCompile(`^([A-Za-z ]+): ([+-]([0-9]+(?:,[0-9]{3})*(?:\.[0-9]{0,2})?))`)
 
@@ -58,6 +55,8 @@ func GetStatsFromItem(item models.ProcessedItem) ItemStats {
 	return stats
 }
 
+type ItemStats map[string]float64
+
 func GetStatsFromItems(items []models.ProcessedItem) ItemStats {
 	stats := make(ItemStats)
 
@@ -75,24 +74,5 @@ func GetStatsFromItems(items []models.ProcessedItem) ItemStats {
 		}
 	}
 
-	type statEntry struct {
-		key   string
-		value float64
-	}
-
-	entries := make([]statEntry, 0, len(stats))
-	for k, v := range stats {
-		entries = append(entries, statEntry{k, v})
-	}
-
-	sort.Slice(entries, func(i, j int) bool {
-		return entries[i].value > entries[j].value
-	})
-
-	sortedStats := make(ItemStats)
-	for _, entry := range entries {
-		sortedStats[entry.key] = entry.value
-	}
-
-	return sortedStats
+	return stats
 }

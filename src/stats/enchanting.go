@@ -40,8 +40,7 @@ func GetEnchanting(userProfie *models.Member) models.EnchantingOutput {
 		return models.EnchantingOutput{}
 	}
 
-	output := models.EnchantingOutput{}
-
+	output := map[string]models.EnchantingGameData{}
 	games := []struct {
 		key      string
 		gameData *models.ExperimentationGame
@@ -63,5 +62,7 @@ func GetEnchanting(userProfie *models.Member) models.EnchantingOutput {
 		}
 	}
 
-	return output
+	return models.EnchantingOutput{
+		Data: output,
+	}
 }

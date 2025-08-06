@@ -130,6 +130,11 @@ func GetCollections(userProfile *models.Member, profile *models.Profile) models.
 		Categories: map[string]models.CollectionCategory{},
 	}
 
+	userCollections := *userProfile.Collections
+	if userCollections == nil {
+		userCollections = map[string]int{}
+	}
+
 	output.Categories["BOSSES"] = getBossCollections(userProfile)
 	for categoryId, categoryData := range constants.COLLECTIONS {
 		category := models.CollectionCategory{
@@ -139,11 +144,16 @@ func GetCollections(userProfile *models.Member, profile *models.Profile) models.
 		}
 
 		for _, itemData := range categoryData.Collections {
-			amount := (*userProfile.Collections)[itemData.Id]
+			amount := userCollections[itemData.Id]
 
 			totalAmount, amounts := 0, []models.CollectionCategoryItemAmount{}
 			for memberId, memberData := range profile.Members {
-				memberAmount := (*memberData.Collections)[itemData.Id]
+				if memberData.Collections == nil {
+					memberData.Collections = &map[string]int{}
+				}
+
+				memberCollections := *memberData.Collections
+				memberAmount := memberCollections[itemData.Id]
 				totalAmount += memberAmount
 				if memberAmount > 0 {
 					amounts = append(amounts, models.CollectionCategoryItemAmount{

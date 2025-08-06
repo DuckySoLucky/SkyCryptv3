@@ -190,6 +190,10 @@ func getForge(userProfile *models.Member) []models.ForgeOutput {
 }
 
 func getGlaciteTunnels(userProfile *models.Member) models.GlaciteTunnels {
+	if userProfile.GlaciteTunnels == nil {
+		return models.GlaciteTunnels{}
+	}
+
 	output := models.GlaciteTunnels{
 		MineshaftsEntered: userProfile.GlaciteTunnels.MineshaftsEntered,
 		FossilDust:        userProfile.GlaciteTunnels.FossilDust,
@@ -199,6 +203,7 @@ func getGlaciteTunnels(userProfile *models.Member) models.GlaciteTunnels {
 
 	found := 0
 	for corpseId, corpseTexture := range constants.CORPSES {
+		fmt.Printf("[GLACITE_TUNNELS] Found corpse %s with texture %s\n", corpseId, corpseTexture)
 		found += userProfile.GlaciteTunnels.CorpsesLooted[corpseId]
 		corpse := models.Corpse{
 			Amount:  userProfile.GlaciteTunnels.CorpsesLooted[corpseId],

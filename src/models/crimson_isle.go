@@ -1,9 +1,9 @@
 package models
 
 type CrimsonIsleFactions struct {
-	SelectedFaction     string `json:"selected_faction"`
-	BarbarianReputation int    `json:"barbarians_reputation"`
-	MagesReputation     int    `json:"mages_reputation"`
+	SelectedFaction     string `json:"selectedFaction"`
+	BarbarianReputation int    `json:"barbariansReputation"`
+	MagesReputation     int    `json:"magesReputation"`
 }
 
 type CrimsonIsleKuudra struct {

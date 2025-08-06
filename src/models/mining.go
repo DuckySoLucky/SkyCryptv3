@@ -11,7 +11,7 @@ type MiningOutput struct {
 	GlaciteTunnels         GlaciteTunnels    `json:"glaciteTunnels"`
 	Forge                  []ForgeOutput     `json:"forge"`
 	Tools                  SkillToolsResult  `json:"tools"`
-	Hotm                   []ProcessedItem            `json:"hotm"`
+	Hotm                   []ProcessedItem   `json:"hotm"`
 }
 
 type PeakOfTheMountain struct {
