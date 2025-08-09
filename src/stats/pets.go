@@ -16,7 +16,7 @@ import (
 func getMaxPetIds() map[string]int {
 	maxPetIds := make(map[string]int)
 	for petType, petData := range notenoughupdates.NEUConstants.PetNums {
-		if len(petData) == 0 {
+		if len(petData) == 0 || petType == "BINGO" {
 			continue
 		}
 
@@ -303,10 +303,8 @@ func getProfilePets(userProfile *models.Member, pets *[]models.Pet) []models.Pro
 
 	sort.Slice(output, func(i, j int) bool {
 		if output[i].Rarity != output[j].Rarity {
-			return slices.Index(constants.RARITIES, strings.ToLower(output[i].Rarity)) < slices.Index(constants.RARITIES, strings.ToLower(output[j].Rarity))
-		}
-
-		if output[i].Level.Level != output[j].Level.Level {
+			return slices.Index(constants.RARITIES, strings.ToLower(output[i].Rarity)) > slices.Index(constants.RARITIES, strings.ToLower(output[j].Rarity))
+		} else if output[i].Level.Level != output[j].Level.Level {
 			return output[i].Level.Level > output[j].Level.Level
 		}
 

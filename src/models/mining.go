@@ -68,7 +68,7 @@ type Corpse struct {
 
 type Fossil struct {
 	Name    string `json:"name"`
-	Found   bool   `json:"amount"`
+	Found   bool   `json:"found"`
 	Texture string `json:"texture_path"`
 }
 

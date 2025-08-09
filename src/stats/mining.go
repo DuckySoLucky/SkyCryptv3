@@ -204,13 +204,13 @@ func getGlaciteTunnels(userProfile *models.Member) models.GlaciteTunnels {
 	found := 0
 	for corpseId, corpseTexture := range constants.CORPSES {
 		found += userProfile.GlaciteTunnels.CorpsesLooted[corpseId]
-		corpse := models.Corpse{
+		corpseData := models.Corpse{
 			Amount:  userProfile.GlaciteTunnels.CorpsesLooted[corpseId],
 			Name:    utility.TitleCase(corpseId),
 			Texture: corpseTexture,
 		}
 
-		output.Corpses.Corpses = append(output.Corpses.Corpses, corpse)
+		output.Corpses.Corpses = append(output.Corpses.Corpses, corpseData)
 	}
 
 	output.Corpses.Found = found
@@ -228,13 +228,13 @@ func getGlaciteTunnels(userProfile *models.Member) models.GlaciteTunnels {
 			texture = fmt.Sprintf("http://localhost:8080/api/item/%s", fossil)
 		}
 
-		fossil := models.Fossil{
+		fossilData := models.Fossil{
 			Name:    utility.TitleCase(fossil),
 			Texture: texture,
 			Found:   isFound,
 		}
 
-		output.Fossils.Fossils = append(output.Fossils.Fossils, fossil)
+		output.Fossils.Fossils = append(output.Fossils.Fossils, fossilData)
 	}
 
 	output.Fossils.Found = found

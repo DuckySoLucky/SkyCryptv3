@@ -44,7 +44,9 @@ func getCategoryMobs(userProfile *models.Member, mobs []neu.BestiaryMob) []model
 		tier := 0
 		maxTier := slices.Index(mobBracket, mobData.Cap)
 		if maxTier == -1 {
-			maxTier = len(mobBracket) - 1
+			maxTier = len(mobBracket)
+		} else {
+			maxTier++
 		}
 
 		for i, bracketKills := range mobBracket {
@@ -53,11 +55,10 @@ func getCategoryMobs(userProfile *models.Member, mobs []neu.BestiaryMob) []model
 				tier = i
 				break
 			}
+		}
 
-			if i == len(mobBracket)-1 && kills >= bracketKills {
-				tier = maxTier
-				nextTierKills = 0
-			}
+		if nextTierKills == 0 {
+			tier = maxTier
 		}
 
 		mobOutput := models.BestiaryMobOutput{
@@ -103,7 +104,7 @@ func GetBestiary(userProfile *models.Member) *models.BestiaryOutput {
 				categoryData.MobsUnlocked++
 			}
 
-			if mob.Kills >= mob.MaxKills {
+			if mob.Tier >= mob.MaxTier {
 				categoryData.MobsMaxed++
 			}
 

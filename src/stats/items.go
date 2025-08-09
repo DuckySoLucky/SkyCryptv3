@@ -48,6 +48,10 @@ func GetRawInventory(useProfile *models.Member, inventoryId string) string {
 }
 
 func GetInventory(useProfile *models.Member, inventoryId string) []models.Item {
+	if useProfile.Inventory == nil {
+		return []models.Item{}
+	}
+
 	if inventoryId == "backpack" {
 		encodedInventories := map[string]*string{}
 		for backpackId, backpackData := range useProfile.Inventory.Backpack {

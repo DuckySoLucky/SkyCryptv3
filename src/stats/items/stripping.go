@@ -29,6 +29,7 @@ func StripItem(item *models.ProcessedItem, search ...bool) *models.StrippedItem 
 		Recombobulated: item.Recombobulated,
 		Texture:        item.Texture,
 		ContainsItems:  make([]models.StrippedItem, len(item.ContainsItems)),
+		Shiny:          item.Shiny,
 	}
 
 	if len(search) > 0 && search[0] {

@@ -111,7 +111,7 @@ func GetFishing(userProfile *models.Member, items []models.ProcessedItem) models
 			output.Kills = append(output.Kills, models.Kill{
 				Id:      id,
 				Name:    name,
-				Texture: fmt.Sprintf("/img/sea_creatures/%s.png", id),
+				Texture: fmt.Sprintf("/img/sea_creatures/%s.avif", id),
 				Amount:  int(count),
 			})
 		}

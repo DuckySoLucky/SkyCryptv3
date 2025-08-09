@@ -53,6 +53,10 @@ func ProcessItem(item *models.Item, source string) models.ProcessedItem {
 	processedItem.Rarity = itemType.Rarity
 	processedItem.Categories = itemType.Categories
 	processedItem.Recombobulated = item.Tag.ExtraAttributes.Recombobulated == 1
+	if item.Tag.SkullOwner == nil {
+		// Do not apply shiny effecet to skulls
+		processedItem.Shiny = len(item.Tag.ExtraAttributes.Enchantments) > 0
+	}
 
 	if processedItem.Recombobulated {
 		processedItem.Lore = append(processedItem.Lore, "§8(Recombobulated)")
