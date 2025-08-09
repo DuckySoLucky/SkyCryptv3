@@ -19,7 +19,7 @@ func GetEquipment(equipment []models.ProcessedItem) models.EquipmentResult {
 	slices.Reverse(reversedEquipment)
 
 	return models.EquipmentResult{
-		Equipment: StripItems(reversedEquipment),
+		Equipment: StripItems(&reversedEquipment),
 		Stats:     GetStatsFromItems(equipment),
 	}
 

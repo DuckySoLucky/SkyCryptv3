@@ -75,6 +75,21 @@ func ParseNEURepository() error {
 			}
 
 			NEUConstants.Bestiary = neustats.FormatBestiaryConstants(bestiaryConstants)
+		} else if constant.Name() == "garden.json" {
+			filePath := fmt.Sprintf("%s/%s", constantsPath, constant.Name())
+			data, err := os.ReadFile(filePath)
+			if err != nil {
+				return fmt.Errorf("failed to read file %s: %w", filePath, err)
+			}
+
+			var gardenConstants neu.NEUGardenRaw
+			var json = jsoniter.ConfigCompatibleWithStandardLibrary
+			err = json.Unmarshal(data, &gardenConstants)
+			if err != nil {
+				return fmt.Errorf("failed to unmarshal JSON from %s: %w", filePath, err)
+			}
+
+			NEUConstants.Garden = neustats.FormatGardenConstants(gardenConstants)
 		}
 	}
 

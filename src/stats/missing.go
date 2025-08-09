@@ -241,7 +241,7 @@ func GetMissingAccessories(accessories models.AccessoriesOutput, userProfile *mo
 		TotalRecombobulated: constants.GetRecombableAccessoriesCount(),
 		SelectedPower:       userProfile.AccessoryBagStorage.SelectedPower,
 		MagicalPower:        getMagicalPowerData(&activeAccessories, userProfile),
-		Accessories:         stats.StripItems(processedItems),
+		Accessories:         stats.StripItems(&processedItems),
 		Upgrades:            missingAccessories.Upgrades,
 		Missing:             missingAccessories.Other,
 	}

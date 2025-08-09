@@ -70,8 +70,10 @@ func InventoryHandler(c *fiber.Ctx) error {
 
 		fmt.Printf("Returning /api/inventory/%s/%s in %s\n", uuid, inventoryId, time.Since(timeNow))
 
+		museumItems := statsItems.GetMuseum(museum)
+
 		return c.JSON(fiber.Map{
-			"items": statsItems.StripItems(statsItems.GetMuseum(museum)),
+			"items": statsItems.StripItems(&museumItems),
 		})
 
 	}
@@ -133,7 +135,7 @@ func InventoryHandler(c *fiber.Ctx) error {
 			}
 		}
 
-		strippedItems := statsItems.StripItems(formattedItems, true)
+		strippedItems := statsItems.StripItems(&formattedItems, true)
 
 		searchResults := make([]SearchItem, len(strippedItems))
 		for i, item := range strippedItems {
@@ -160,6 +162,6 @@ func InventoryHandler(c *fiber.Ctx) error {
 	fmt.Printf("Returning /api/inventory/%s/%s in %s\n", uuid, inventoryId, time.Since(timeNow))
 
 	return c.JSON(fiber.Map{
-		"items": statsItems.StripItems(output),
+		"items": statsItems.StripItems(&output),
 	})
 }

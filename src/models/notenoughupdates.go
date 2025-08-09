@@ -26,4 +26,5 @@ type NEUConstant struct {
 	PetNums  neu.PetNums           `json:"petnums,omitempty"`
 	Pets     neu.Pets              `json:"pets,omitempty"`
 	Bestiary neu.BestiaryConstants `json:"bestiary,omitempty"`
+	Garden   neu.NEUGarden         `json:"garden,omitempty"`
 }

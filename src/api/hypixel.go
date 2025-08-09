@@ -167,3 +167,36 @@ func GetMuseum(profileId string) (map[string]*models.Museum, error) {
 	redis.Set(fmt.Sprintf(`museum:%s`, profileId), string(body), 60*30) // Cache for 30 minutes
 	return rawReponse.Members, nil
 }
+
+func GetGarden(profileId string) (*models.GardenRaw, error) {
+	var rawReponse models.HypixelGardenResponse
+
+	cache, err := redis.Get(fmt.Sprintf(`garden:%s`, profileId))
+	if err == nil && cache != "" {
+		var json = jsoniter.ConfigCompatibleWithStandardLibrary
+		err = json.Unmarshal([]byte(cache), &rawReponse)
+		if err == nil {
+			return &rawReponse.Garden, nil
+		}
+	}
+
+	resp, err := http.Get(fmt.Sprintf("https://api.hypixel.net/v2/skyblock/garden?key=%s&profile=%s", HYPIXEL_API_KEY, profileId))
+	if err != nil {
+		return nil, fmt.Errorf("error making request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error reading response: %v", err)
+	}
+
+	var json = jsoniter.ConfigCompatibleWithStandardLibrary
+	err = json.Unmarshal(body, &rawReponse)
+	if err != nil {
+		return nil, fmt.Errorf("error parsing JSON: %v", err)
+	}
+
+	redis.Set(fmt.Sprintf(`garden:%s`, profileId), string(body), 60*30) // Cache for 30 minutes
+	return &rawReponse.Garden, nil
+}

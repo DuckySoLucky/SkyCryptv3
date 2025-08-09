@@ -37,7 +37,7 @@ func GetArmor(armor []models.ProcessedItem) models.ArmorResult {
 		slices.Reverse(reversedArmor)
 
 		result := models.ArmorResult{
-			Armor: StripItems(reversedArmor),
+			Armor: StripItems(&reversedArmor),
 			Stats: GetStatsFromItems(armor),
 		}
 
@@ -159,7 +159,7 @@ func GetArmor(armor []models.ProcessedItem) models.ArmorResult {
 		slices.Reverse(reversedArmor)
 
 		result := models.ArmorResult{
-			Armor: StripItems(reversedArmor),
+			Armor: StripItems(&reversedArmor),
 			Stats: GetStatsFromItems(armor),
 		}
 
@@ -178,7 +178,7 @@ func GetArmor(armor []models.ProcessedItem) models.ArmorResult {
 	slices.Reverse(reversedArmor)
 
 	return models.ArmorResult{
-		Armor: StripItems(reversedArmor),
+		Armor: StripItems(&reversedArmor),
 		Stats: GetStatsFromItems(armor),
 	}
 }

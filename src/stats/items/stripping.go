@@ -4,20 +4,24 @@ import (
 	"skycrypt/src/models"
 )
 
-func StripItems(items []models.ProcessedItem, search ...bool) []models.StrippedItem {
-	output := make([]models.StrippedItem, len(items))
-	for i, item := range items {
-		output[i] = *StripItem(item, search...)
+func StripItems(items *[]models.ProcessedItem, search ...bool) []models.StrippedItem {
+	output := make([]models.StrippedItem, len(*items))
+	for i, item := range *items {
+		output[i] = *StripItem(&item, search...)
 
 		if len(item.ContainsItems) > 0 {
-			output[i].ContainsItems = StripItems(item.ContainsItems, search...)
+			output[i].ContainsItems = StripItems(&item.ContainsItems, search...)
 		}
 	}
 
 	return output
 }
 
-func StripItem(item models.ProcessedItem, search ...bool) *models.StrippedItem {
+func StripItem(item *models.ProcessedItem, search ...bool) *models.StrippedItem {
+	if item == nil {
+		return nil
+	}
+
 	output := &models.StrippedItem{
 		DisplayName:    item.DisplayName,
 		Lore:           item.Lore,

@@ -16,7 +16,7 @@ func GetWardrobe(wardrobeInventory []models.ProcessedItem) [][]*models.StrippedI
 			index := 36*page + (i % 9) + j*9
 
 			if len(GetId(wardrobeInventory[index])) > 0 {
-				strippedItems := StripItems([]models.ProcessedItem{wardrobeInventory[index]})
+				strippedItems := StripItems(&[]models.ProcessedItem{wardrobeInventory[index]})
 				wardrobeSlot = append(wardrobeSlot, &strippedItems[0])
 			} else {
 				wardrobeSlot = append(wardrobeSlot, nil)

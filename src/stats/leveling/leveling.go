@@ -2,9 +2,11 @@ package stats
 
 import (
 	"math"
+	notenoughupdates "skycrypt/src/NotEnoughUpdates"
 	"skycrypt/src/constants"
 	"skycrypt/src/models"
 	"skycrypt/src/utility"
+	"strings"
 )
 
 var skillTables = map[string]map[int]int{
@@ -25,6 +27,14 @@ type ExtraSkillData struct {
 func getXpTable(skillType string) map[int]int {
 	if table, exists := skillTables[skillType]; exists {
 		return table
+	}
+
+	if skillType == "garden" {
+		return notenoughupdates.NEUConstants.Garden.GardenExperience
+	} else if skillType == "crop_upgrade" {
+		return notenoughupdates.NEUConstants.Garden.CropUpgrades
+	} else if cropId, ok := strings.CutPrefix(skillType, "crop_milestone_"); ok {
+		return notenoughupdates.NEUConstants.Garden.CropMilestones[cropId]
 	}
 
 	return constants.DEFAULT_LEVELLING_XP
