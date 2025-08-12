@@ -1,5 +1,7 @@
 dario.cat/mergo v1.0.0 h1:AGCNq9Evsj31mOgNPcLyXc+4PNABt905YmuqPYYpBWk=
 dario.cat/mergo v1.0.0/go.mod h1:uNxQE+84aUszobStD9th8a29P2fMDhsBdgRYvZOxGmk=
+github.com/DuckySoLucky/SkyHelper-Networth-Go v1.0.1 h1:8nc7oFO7fsfH88PRmf5RoSiMQQ3gZBL5QzvYS/3+BkQ=
+github.com/DuckySoLucky/SkyHelper-Networth-Go v1.0.1/go.mod h1:cyAFoRKoX8kppvD0VnqgnzRI9gd5XTyaf1Yds1I9bIM=
 github.com/Microsoft/go-winio v0.5.2/go.mod h1:WpS1mjBmmwHBEWmogvA2mj8546UReBk4v8QkMxJ6pZY=
 github.com/Microsoft/go-winio v0.6.2 h1:F2VQgta7ecxGYO8k3ZZz3RS8fVIXVxONVUPlNERoyfY=
 github.com/Microsoft/go-winio v0.6.2/go.mod h1:yd8OoFMLzJbo9gZq8j5qaps8bJ9aShtEA8Ipt1oGCvU=
@@ -19,6 +21,8 @@ github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSs
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f h1:lO4WD4F/rVNCu3HqELle0jiPLLBs70cWOduZpkS1E78=
 github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f/go.mod h1:cuUVRXasLTGF7a8hSLbxyZXjz+1KgoB3wDUb6vlszIc=
+github.com/duckysolucky/skyhelper-networth-go v1.0.0 h1:j91iff59zqP7bpbi5l+hSlEuMn6Cyw4kOQlULVAz9TU=
+github.com/duckysolucky/skyhelper-networth-go v1.0.0/go.mod h1:3slQHY/oObt/1QJGUNxH15pINgrm28djFIMvKjiaFus=
 github.com/ebitengine/gomobile v0.0.0-20240911145611-4856209ac325 h1:Gk1XUEttOk0/hb6Tq3WkmutWa0ZLhNn/6fc6XZpM7tM=
 github.com/ebitengine/gomobile v0.0.0-20240911145611-4856209ac325/go.mod h1:ulhSQcbPioQrallSuIzF8l1NKQoD7xmMZc5NxzibUMY=
 github.com/ebitengine/hideconsole v1.0.0 h1:5J4U0kXF+pv/DhiXt5/lTz0eO5ogJ1iXb8Yj1yReDqE=
