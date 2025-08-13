@@ -18,14 +18,29 @@ import (
 )
 
 func SetupApplication() error {
-	err := redis.InitRedis("localhost:6379", "", 0)
-	if err != nil {
-		return fmt.Errorf("failed to connect to Redis: %v", err)
+	// Load environment variables first (only log if this is the main process)
+	err := godotenv.Load()
+	if err != nil && os.Getenv("FIBER_PREFORK_CHILD") == "" {
+		log.Println("No .env file found, using environment variables")
 	}
 
-	err = godotenv.Load()
+	redisHost := os.Getenv("REDIS_HOST")
+	if redisHost == "" {
+		redisHost = "localhost"
+	}
+
+	redisPort := os.Getenv("REDIS_PORT")
+	if redisPort == "" {
+		redisPort = "6379"
+	}
+
+	redisPassword := os.Getenv("REDIS_PASSWORD")
+
+	redisAddr := fmt.Sprintf("%s:%s", redisHost, redisPort)
+
+	err = redis.InitRedis(redisAddr, redisPassword, 0)
 	if err != nil {
-		log.Fatal("error loading .env file")
+		return fmt.Errorf("failed to connect to Redis: %v", err)
 	}
 
 	if err := api.LoadSkyBlockItems(); err != nil {
@@ -45,7 +60,10 @@ func SetupApplication() error {
 		return fmt.Errorf("error parsing NEU repository: %v", err)
 	}
 
-	fmt.Print("[SKYCRYPT] SkyCrypt initialized successfully\n")
+	// Only log success message from main process to avoid spam
+	if os.Getenv("FIBER_PREFORK_CHILD") == "" {
+		fmt.Print("[SKYCRYPT] SkyCrypt initialized successfully\n")
+	}
 
 	return nil
 }
