@@ -32,6 +32,7 @@ type Member struct {
 	Currencies          *currencies            `json:"currencies,omitempty"`
 	FairySouls          *fairySouls            `json:"fairy_soul,omitempty"`
 	Inventory           *inventory             `json:"inventory,omitempty"`
+	SharedInventory     *sharedInventory       `json:"shared_inventory,omitempty"`
 	Rift                *rift                  `json:"rift,omitempty"`
 	AccessoryBagStorage *accessoryBagStorage   `json:"accessory_bag_storage,omitempty"`
 	CrimsonIsle         *crimsonIsleData       `json:"nether_island_player_data,omitempty"`
@@ -151,6 +152,12 @@ type inventory struct {
 	Backpack      map[string]encodedInventory `json:"backpack_contents"`
 	Wardrobe      encodedInventory            `json:"wardrobe_contents"`
 	BagContents   bagContents                 `json:"bag_contents"`
+	Sacks         map[string]int              `json:"sacks_counts"`
+}
+
+type sharedInventory struct {
+	CandyInventory        encodedInventory `json:"candy_inventory_contents"`
+	CarnivalMaskInventory encodedInventory `json:"carnival_mask_inventory_contents"`
 }
 
 type encodedInventory struct {

@@ -45,7 +45,7 @@ func SetupApplication() error {
 		return fmt.Errorf("error parsing NEU repository: %v", err)
 	}
 
-	// fmt.Print("[SKYCRYPT] SkyCrypt initialized successfully\n")
+	fmt.Print("[SKYCRYPT] SkyCrypt initialized successfully\n")
 
 	return nil
 }
@@ -83,8 +83,12 @@ func SetupRoutes(app *fiber.App) {
 	api.Get("/stats/:uuid/:profileId", routes.StatsHandler)
 	api.Get("/stats/:uuid", routes.StatsHandler)
 
+	api.Get("/networth/:uuid/:profileId", routes.NetworthHandler)
+
 	api.Get("/gear/:uuid/:profileId", routes.GearHandler)
+
 	api.Get("/accessories/:uuid/:profileId", routes.AccessoriesHandler)
+
 	api.Get("/pets/:uuid/:profileId", routes.PetsHandler)
 
 	api.Get("/inventory/:uuid/:profileId/:inventoryId", routes.InventoryHandler)
@@ -107,6 +111,8 @@ func SetupRoutes(app *fiber.App) {
 	api.Get("/rift/:uuid/:profileId", routes.RiftHandler)
 
 	api.Get("/misc/:uuid/:profileId", routes.MiscHandler)
+
+	api.Get("/embed/:uuid/:profileId", routes.EmbedHandler)
 
 	// RENDERING ENDPOINTS
 	api.Get("/head/:textureId", routes.HeadHandlers)

@@ -32,6 +32,12 @@ var InvalidItemProvidedError = fiber.Map{
 	"message": "Please provide a valid item ID",
 }
 
+var InternalServerError = fiber.Map{
+	"error":   "Internal server error",
+	"status":  "error",
+	"message": "An unexpected error occurred",
+}
+
 var FAIRY_SOULS = map[string]int{
 	"normal":   266,
 	"stranded": 4,
