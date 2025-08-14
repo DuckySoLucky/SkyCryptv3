@@ -1,0 +1,7 @@
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/SkyCryptWebsite/SkyCryptv2.git
+	branch = feat/go-api
+[submodule "backend"]
+	path = backend
+	url = https://github.com/DuckySoLucky/SkyCrypt-Backend.git
